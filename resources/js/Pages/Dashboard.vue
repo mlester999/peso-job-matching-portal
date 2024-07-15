@@ -11,18 +11,27 @@ import { GithubIcon } from '@/Components/Icons/brands'
                 <h2 class="text-xl font-semibold leading-tight">
                     Dashboard
                 </h2>
-
-                <Button external variant="black" target="_blank" class="items-center gap-2 max-w-xs"
-                    v-slot="{ iconSizeClasses }" href="https://github.com/kamona-wd/kui-laravel-breeze">
-                    <GithubIcon aria-hidden="true" :class="iconSizeClasses" />
-
-                    <span>Star on Github</span>
-                </Button>
             </div>
         </template>
 
-        <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
-            You're logged in!
+        <div class="grid grid-cols-3 gap-8">
+            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+                <h1 class="font-semibold">Total Admins</h1>
+                <p>0</p>
+            </div>
+
+            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+                <h1 class="font-semibold">Total Employers</h1>
+                <p>0</p>
+            </div>
+
+            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+                <h1 class="font-semibold">Total Applicants</h1>
+                <p>0</p>
+            </div>
         </div>
+
+
+
     </AuthenticatedLayout>
 </template>

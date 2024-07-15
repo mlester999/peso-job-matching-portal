@@ -21,6 +21,10 @@ defineProps({
             </Link>
         </div>
 
+        <div class="max-w-lg text-center">
+            <h1 class="text-4xl">PESO Job Matching Portal</h1>
+        </div>
+
         <main class="flex items-center flex-1 w-full sm:max-w-md">
             <div class="w-full px-6 py-4 overflow-hidden bg-white shadow-md  sm:rounded-lg">
                 <slot />
