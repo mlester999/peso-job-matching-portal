@@ -15,13 +15,13 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon } from '@heroico
             </template>
         </SidebarLink>
 
-        <SidebarLink title="Employers" :href="route('employers')" :active="route().current('employers')">
+        <SidebarLink title="Employers" :href="route('admin.employers.index')" :active="route().current('employers')">
             <template #icon>
                 <UsersIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
             </template>
         </SidebarLink>
 
-        <SidebarLink title="Applicants" :href="route('applicants')" :active="route().current('applicants')">
+        <SidebarLink title="Applicants" :href="route('admin.applicants.index')" :active="route().current('applicants')">
             <template #icon>
                 <UserGroupIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
             </template>

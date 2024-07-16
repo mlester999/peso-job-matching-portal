@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployerController;
+use App\Http\Controllers\ApplicantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,32 +26,33 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route::middleware([
-//     'auth',
-//     'verified',
-// ])->group(function () {
-//     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
-//         Route::group(['prefix' => 'employers', 'as' => 'employers.'], function() {
-//             Route::get('/', EmployerController::class)->name('index');
+Route::middleware([
+    'auth',
+    'verified',
+])->group(function () {
+    Route::group(['middleware' => 'role:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
+        Route::group(['prefix' => 'employers', 'as' => 'employers.'], function() {
+            Route::get('/', [EmployerController::class, 'index'])->name('index');
     
-//             Route::post('/store', [EmployerController::class, 'store'])->name('store');
+            Route::post('/store', [EmployerController::class, 'store'])->name('store');
     
-//             Route::put('/update/{id}', [EmployerController::class, 'update'])->name('update');
+            Route::put('/update/{id}', [EmployerController::class, 'update'])->name('update');
     
-//             Route::delete('/delete/{id}', [EmployerController::class, 'delete'])->name('delete');
-//         });
-//     });
+            Route::delete('/delete/{id}', [EmployerController::class, 'delete'])->name('delete');
+        });
 
-// });
+        Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
+            Route::get('/', [ApplicantController::class, 'index'])->name('index');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+    });
 
-
-Route::get('/employers', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('employers');
-
-Route::get('/applicants', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('applicants');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employer;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class EmployerController extends Controller
 {
@@ -12,7 +13,7 @@ class EmployerController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Employers/Index');
     }
 
     /**
