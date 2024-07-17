@@ -7,14 +7,14 @@ import { GithubIcon } from '@/Components/Icons/brands'
 <template>
     <AuthenticatedLayout title="Dashboard">
         <template #header>
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-4">
                 <h2 class="text-xl font-semibold leading-tight">
                     Dashboard
                 </h2>
             </div>
         </template>
 
-        <div class="grid grid-cols-3 gap-8">
+        <div class="grid grid-cols-3 gap-8 px-4">
             <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
                 <h1 class="font-semibold">Total Admins</h1>
                 <p>0</p>

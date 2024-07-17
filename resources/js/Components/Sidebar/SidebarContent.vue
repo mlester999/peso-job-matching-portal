@@ -15,7 +15,8 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon } from '@heroico
             </template>
         </SidebarLink>
 
-        <SidebarLink title="Employers" :href="route('admin.employers.index')" :active="route().current('employers')">
+        <SidebarLink title="Employers" :href="route('admin.employers.index')"
+            :active="route().current('admin.employers.index')">
             <template #icon>
                 <UsersIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
             </template>

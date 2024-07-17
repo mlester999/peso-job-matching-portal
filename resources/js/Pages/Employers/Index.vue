@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import Button from '@/Components/Button.vue'
 import { GithubIcon } from '@/Components/Icons/brands'
+import { Link } from '@inertiajs/vue3';
 
 const people = [
     { name: 'Lindsay Walton', title: 'Front-end Developer', email: 'lindsay.walton@example.com', role: 'Member' },
@@ -10,20 +11,23 @@ const people = [
 </script>
 
 <template>
-    <AuthenticatedLayout title="Dashboard">
+    <AuthenticatedLayout title="Employers">
         <template #header>
-            <div class="px-4 sm:px-6 lg:px-8">
+            <div class="px-4">
                 <div class="sm:flex sm:items-center">
                     <div class="sm:flex-auto">
-                        <h1 class="text-base font-semibold leading-6 text-gray-900">Employers</h1>
+                        <h2 class="text-xl font-semibold leading-tight">
+                            Employers
+                        </h2>
                         <p class="mt-2 text-sm text-gray-700">A list of all the employers in this portal including
                             their
                             name, title, email and role.</p>
                     </div>
                     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                        <button type="button"
-                            class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Add
-                            employer</button>
+                        <Link :href="route('admin.employers.add')"
+                            class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                        Add
+                        employer</Link>
                     </div>
                 </div>
                 <div class="mt-8 flow-root">

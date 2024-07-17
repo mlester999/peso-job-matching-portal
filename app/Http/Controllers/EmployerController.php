@@ -17,6 +17,14 @@ class EmployerController extends Controller
     }
 
     /**
+     * Display the add page for employers.
+     */
+    public function add()
+    {
+        return Inertia::render('Employers/Add');
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()

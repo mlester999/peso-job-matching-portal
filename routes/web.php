@@ -33,6 +33,8 @@ Route::middleware([
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::group(['prefix' => 'employers', 'as' => 'employers.'], function() {
             Route::get('/', [EmployerController::class, 'index'])->name('index');
+
+            Route::get('/add', [EmployerController::class, 'add'])->name('add');
     
             Route::post('/store', [EmployerController::class, 'store'])->name('store');
     

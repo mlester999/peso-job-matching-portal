@@ -24,8 +24,7 @@ class AdminFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => 'Admin',
-            'last_name' => 'User',
+            'name' => 'Admin User'
         ];
     }
 
