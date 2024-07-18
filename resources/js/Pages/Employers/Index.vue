@@ -2,26 +2,49 @@
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import Button from '@/Components/Button.vue'
 import { GithubIcon } from '@/Components/Icons/brands'
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
+import debounce from 'lodash.debounce'
+import Input from '@/Components/Input.vue';
 
-const people = [
-    { name: 'Lindsay Walton', title: 'Front-end Developer', email: 'lindsay.walton@example.com', role: 'Member' },
-    // More people...
-]
+const props = defineProps({
+    employers: Object,
+    pagination: Object,
+    filters: Object,
+});
+
+let search = ref(props.filters.search);
+
+watch(
+    search,
+    debounce((value) => {
+        const query = {};
+        if (value) {
+            query.search = value;
+        }
+
+        router.get(`/admin/employers`, query, {
+            preserveState: true,
+            replace: true,
+        });
+    }, 500)
+);
+
+
 </script>
 
 <template>
     <AuthenticatedLayout title="Employers">
         <template #header>
             <div class="px-4">
-                <div class="sm:flex sm:items-center">
+                <div class="sm:flex sm:items-center my-4">
                     <div class="sm:flex-auto">
                         <h2 class="text-xl font-semibold leading-tight">
                             Employers
                         </h2>
-                        <p class="mt-2 text-sm text-gray-700">A list of all the employers in this portal including
+                        <!-- <p class="mt-2 text-sm text-gray-700">A list of all the employers in this portal including
                             their
-                            name, title, email and role.</p>
+                            name, title, email and role.</p> -->
                     </div>
                     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                         <Link :href="route('admin.employers.add')"
@@ -29,6 +52,12 @@ const people = [
                         Add
                         employer</Link>
                     </div>
+                </div>
+                <div class="sm:flex sm:items-center">
+                    <div class="sm:flex-auto">
+                        <Input v-model="search" placeholder="Search for employer..." type="search" />
+                    </div>
+
                 </div>
                 <div class="mt-8 flow-root">
                     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -39,16 +68,34 @@ const people = [
                                         <tr>
                                             <th scope="col"
                                                 class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                                                First Name</th>
-                                            <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Last
-                                                Name
-                                            </th>
+                                                Name</th>
                                             <th scope="col"
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email
+                                                Address
                                             </th>
                                             <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                Contact Number
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                Province
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                City
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                Barangay
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                Street Address
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                Zip Code
                                             </th>
                                             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                                                 <span class="sr-only">Edit</span>
@@ -56,21 +103,40 @@ const people = [
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 bg-white">
-                                        <tr v-for="person in people" :key="person.email">
+                                        <tr v-for="employer in props.employers.data" :key="employer.id">
                                             <td
                                                 class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                {{ person.name }}</td>
+                                                {{ employer.name }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                person.title }}</td>
+                                                employer.email }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                person.email }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ person.role
+                                                employer.contact_number
+                                                }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
+                                                employer.province }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
+                                                employer.city
+                                                }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
+                                                employer.barangay
+                                                }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
+                                                employer.street_address
+                                                }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
+                                                employer.zip_code
                                                 }}</td>
                                             <td
                                                 class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                                 <a href="#" class="text-blue-600 hover:text-blue-900">Edit<span
-                                                        class="sr-only">, {{ person.name }}</span></a>
+                                                        class="sr-only">, {{ employer.name }}</span></a>
                                             </td>
+                                        </tr>
+
+                                        <tr v-if="employers.data.length === 0">
+                                            <td colspan="9"
+                                                class="whitespace-nowrap text-center py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                                No Employer Found</td>
                                         </tr>
                                     </tbody>
                                 </table>

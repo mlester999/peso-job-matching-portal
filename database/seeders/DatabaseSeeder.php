@@ -23,8 +23,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Admin::factory()->create([
-            'first_name' => 'Admin',
-            'last_name' => 'User',
+            'name' => 'Admin User',
             'user_id' => 1
         ]);
     }
