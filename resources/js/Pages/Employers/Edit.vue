@@ -7,6 +7,10 @@ import SelectField from '@/Components/SelectField.vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { useToast } from 'vue-toastification';
 
+const props = defineProps({
+    employer: Object
+})
+
 const barangays = [
     'Baclaran',
     'Banay-Banay',
@@ -29,14 +33,14 @@ const barangays = [
 ]
 
 const form = useForm({
-    name: "",
-    email: "",
-    province: "Laguna",
-    city: "Cabuyao",
-    barangay: "",
-    street_address: "",
-    contact_number: "",
-    zip_code: "4025"
+    name: props.employer.name,
+    email: props.employer.user.email,
+    province: props.employer.province,
+    city: props.employer.city,
+    barangay: props.employer.barangay,
+    street_address: props.employer.street_address,
+    contact_number: props.employer.contact_number,
+    zip_code: props.employer.zip_code
 });
 
 const page = usePage();
@@ -44,9 +48,9 @@ const page = usePage();
 const toast = useToast();
 
 const submit = () => {
-    form.post(`/admin/employers/store`, {
+    form.put(`/admin/employers/update/${props.employer.id}`, {
         onSuccess: () => {
-            toast.success("Employer created successfully!");
+            toast.success("Employer updated successfully!");
             router.visit('/admin/employers');
         },
     });
@@ -54,13 +58,13 @@ const submit = () => {
 </script>
 
 <template>
-    <AuthenticatedLayout title="Add Employer">
+    <AuthenticatedLayout title="Edit Employer">
         <template #header>
             <form @submit.prevent="submit">
                 <div class="space-y-12 sm:space-y-16 px-4">
                     <div>
                         <h2 class="text-xl font-semibold leading-tight">
-                            Add Employer
+                            Edit Employer
                         </h2>
                         <!-- <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-600">Use a permanent address where you can
                             receive mail.</p> -->

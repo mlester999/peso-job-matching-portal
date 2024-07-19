@@ -2,6 +2,13 @@
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import Button from '@/Components/Button.vue'
 import { GithubIcon } from '@/Components/Icons/brands'
+
+const props = defineProps({
+    userCount: String,
+    employerCount: String,
+    applicantCount: String,
+})
+
 </script>
 
 <template>
@@ -16,18 +23,18 @@ import { GithubIcon } from '@/Components/Icons/brands'
 
         <div class="grid grid-cols-3 gap-8 px-4">
             <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
-                <h1 class="font-semibold">Total Admins</h1>
-                <p>0</p>
-            </div>
-
-            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
                 <h1 class="font-semibold">Total Employers</h1>
-                <p>0</p>
+                <p>{{ employerCount }}</p>
             </div>
 
             <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
                 <h1 class="font-semibold">Total Applicants</h1>
-                <p>0</p>
+                <p>{{ applicantCount }}</p>
+            </div>
+
+            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+                <h1 class="font-semibold">Total Users</h1>
+                <p>{{ userCount }}</p>
             </div>
         </div>
 

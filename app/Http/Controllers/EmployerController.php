@@ -6,6 +6,7 @@ use App\Models\Employer;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class EmployerController extends Controller
@@ -198,17 +199,68 @@ class EmployerController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Employer $employer)
+    public function edit($id)
     {
-        //
+        $employer = Employer::with('user')->find($id);
+
+        return Inertia::render('Employers/Edit', [
+            'employer' => $employer,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Employer $employer)
+public function update($id)
     {
-        //
+        $employerValidate = Request::validate([
+            'name' => ['required', 'max:50'],
+            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore(Employer::findOrFail($id)->user->id)],
+            'province' => ['required', 'max:50'],
+            'city' => ['required', 'max:50'],
+            'barangay' => ['required', 'max:50'],
+            'street_address' => ['required', 'max:50'],
+            'contact_number' => ['required', 'digits:10'],
+            'zip_code' => ['required', 'max:50'],
+        ]);
+
+        $employer = Employer::findOrFail($id);
+        $user = Employer::findOrFail($id)->user;
+
+        if($employerValidate['name'] !== $employer->name) {
+            $employer->name = $employerValidate['name'];
+        }
+
+        if($employerValidate['email'] !== $user->email) {
+            $user->email = $employerValidate['email'];
+        }
+
+        if($employerValidate['province'] !== $employer->province) {
+            $employer->province = $employerValidate['province'];
+        }
+
+        if($employerValidate['city'] !== $employer->city) {
+            $employer->city = $employerValidate['city'];
+        }
+
+        if($employerValidate['barangay'] !== $employer->barangay) {
+            $employer->barangay = $employerValidate['barangay'];
+        }
+
+        if($employerValidate['street_address'] !== $employer->street_address) {
+            $employer->street_address = $employerValidate['street_address'];
+        }
+
+        if($employerValidate['contact_number'] !== $employer->contact_number) {
+            $employer->contact_number = $employerValidate['contact_number'];
+        }
+
+        if($employerValidate['zip_code'] !== $employer->zip_code) {
+            $employer->zip_code = $employerValidate['zip_code'];
+        }
+
+        $user->save();
+        $employer->save();
     }
 
     /**

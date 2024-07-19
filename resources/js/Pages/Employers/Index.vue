@@ -15,6 +15,10 @@ const props = defineProps({
 
 let search = ref(props.filters.search);
 
+const updateInfo = (userId) => {
+    router.get(`/admin/employers/edit/${userId}`);
+}
+
 watch(
     search,
     debounce((value) => {
@@ -109,7 +113,7 @@ watch(
                                                 {{ employer.name }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 employer.email }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
                                                 employer.contact_number
                                                 }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
@@ -120,7 +124,7 @@ watch(
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 employer.barangay
                                                 }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
+                                            <td class="whitespace px-3 py-4 text-sm text-gray-500">{{
                                                 employer.street_address
                                                 }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
@@ -128,8 +132,9 @@ watch(
                                                 }}</td>
                                             <td
                                                 class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <a href="#" class="text-blue-600 hover:text-blue-900">Edit<span
-                                                        class="sr-only">, {{ employer.name }}</span></a>
+                                                <button type="button" @click="updateInfo(employer.id)"
+                                                    class="text-blue-600 hover:text-blue-900">Edit<span
+                                                        class="sr-only">, {{ employer.name }}</span></button>
                                             </td>
                                         </tr>
 

@@ -6,6 +6,9 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\ApplicantController;
+use App\Models\User;
+use App\Models\Employer;
+use App\Models\Applicant;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +26,15 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $userCount = User::count();
+    $employerCount = Employer::count();
+    $applicantCount = Applicant::count();
+
+    return Inertia::render('Dashboard', [
+        'userCount' => $userCount,
+        'employerCount' => $employerCount,
+        'applicantCount' => $applicantCount,
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware([
@@ -35,6 +46,8 @@ Route::middleware([
             Route::get('/', [EmployerController::class, 'index'])->name('index');
 
             Route::get('/add', [EmployerController::class, 'add'])->name('add');
+
+            Route::get('/edit/{id}', [EmployerController::class, 'edit'])->name('edit');
     
             Route::post('/store', [EmployerController::class, 'store'])->name('store');
     
