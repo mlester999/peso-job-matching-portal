@@ -6,6 +6,7 @@ import { Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
+import Pagination from '@/Components/Pagination.vue';
 
 const props = defineProps({
     employers: Object,
@@ -115,21 +116,21 @@ watch(
                                                 employer.email }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
                                                 employer.contact_number
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 employer.province }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 employer.city
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 employer.barangay
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace px-3 py-4 text-sm text-gray-500">{{
                                                 employer.street_address
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 employer.zip_code
-                                                }}</td>
+                                            }}</td>
                                             <td
                                                 class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                                 <button type="button" @click="updateInfo(employer.id)"
@@ -145,6 +146,10 @@ watch(
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div
+                                    class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between">
+                                    <Pagination :employers="employers" :pagination="pagination" />
+                                </div>
                             </div>
                         </div>
                     </div>
