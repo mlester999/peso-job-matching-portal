@@ -7,10 +7,6 @@ import SelectField from '@/Components/SelectField.vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { useToast } from 'vue-toastification';
 
-const props = defineProps({
-    employer: Object
-})
-
 const barangays = [
     'Baclaran',
     'Banay-Banay',
@@ -33,15 +29,15 @@ const barangays = [
 ]
 
 const form = useForm({
-    name: props.employer.name,
-    email: props.employer.user.email,
-    province: props.employer.province,
-    city: props.employer.city,
-    barangay: props.employer.barangay,
-    street_address: props.employer.street_address,
-    contact_number: props.employer.contact_number,
-    zip_code: props.employer.zip_code,
-    is_active: props.employer.user.is_active
+    first_name: "",
+    last_name: "",
+    email: "",
+    province: "Laguna",
+    city: "Cabuyao",
+    barangay: "",
+    street_address: "",
+    contact_number: "",
+    zip_code: "4025"
 });
 
 const page = usePage();
@@ -49,23 +45,23 @@ const page = usePage();
 const toast = useToast();
 
 const submit = () => {
-    form.put(`/admin/employers/update/${props.employer.id}`, {
+    form.post(`/admin/users/store`, {
         onSuccess: () => {
-            toast.success("Employer updated successfully!");
-            router.visit('/admin/employers');
+            toast.success("User created successfully!");
+            router.visit('/admin/users');
         },
     });
 };
 </script>
 
 <template>
-    <AuthenticatedLayout title="Edit Employer">
+    <AuthenticatedLayout title="Add User">
         <template #header>
             <form @submit.prevent="submit">
                 <div class="space-y-12 sm:space-y-16 px-4">
                     <div>
                         <h2 class="text-xl font-semibold leading-tight">
-                            Edit Employer
+                            Add User
                         </h2>
                         <!-- <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-600">Use a permanent address where you can
                             receive mail.</p> -->
@@ -73,8 +69,13 @@ const submit = () => {
                         <div
                             class="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
                             <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-                                <InputField id="name" v-model="form.name" type="text" label="Name" class="sm:max-w-sm"
-                                    :error="form.errors.name" />
+                                <InputField id="first_name" v-model="form.first_name" type="text" label="First Name"
+                                    class="sm:max-w-sm" :error="form.errors.first_name" />
+                            </div>
+
+                            <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+                                <InputField id="last_name" v-model="form.last_name" type="text" label="Last Name"
+                                    class="sm:max-w-sm" :error="form.errors.last_name" />
                             </div>
 
                             <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
@@ -121,20 +122,12 @@ const submit = () => {
                                     label="Contact Number" class="sm:max-w-sm" :error="form.errors.contact_number"
                                     :isContactNumber="true" :isNumber="true" maxlength="10" />
                             </div>
-
-                            <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-                                <SelectField id="is_active" label="Status" v-model="form.is_active"
-                                    :error="form.errors.is_active" class="sm:max-w-xs">
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </SelectField>
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-6 flex items-center justify-end gap-x-6">
-                    <a :href="route('admin.employers.index')"
+                    <a :href="route('admin.users.index')"
                         class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
                     <button type="submit"
                         class="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Save</button>

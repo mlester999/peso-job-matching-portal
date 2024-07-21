@@ -9,7 +9,7 @@ import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
 
 const props = defineProps({
-    employers: Object,
+    users: Object,
     pagination: Object,
     filters: Object,
 });
@@ -17,7 +17,7 @@ const props = defineProps({
 let search = ref(props.filters.search);
 
 const updateInfo = (userId) => {
-    router.get(`/admin/employers/edit/${userId}`);
+    router.get(`/admin/users/edit/${userId}`);
 }
 
 watch(
@@ -28,7 +28,7 @@ watch(
             query.search = value;
         }
 
-        router.get(`/admin/employers`, query, {
+        router.get(`/admin/users`, query, {
             preserveState: true,
             replace: true,
         });
@@ -39,28 +39,28 @@ watch(
 </script>
 
 <template>
-    <AuthenticatedLayout title="Employers">
+    <AuthenticatedLayout title="Users">
         <template #header>
             <div class="px-4">
                 <div class="sm:flex sm:items-center my-4">
                     <div class="sm:flex-auto">
                         <h2 class="text-xl font-semibold leading-tight">
-                            Employers
+                            Users
                         </h2>
-                        <!-- <p class="mt-2 text-sm text-gray-700">A list of all the employers in this portal including
+                        <!-- <p class="mt-2 text-sm text-gray-700">A list of all the users in this portal including
                             their
                             name, title, email and role.</p> -->
                     </div>
                     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                        <Link :href="route('admin.employers.add')"
+                        <Link :href="route('admin.users.add')"
                             class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                         Add
-                        employer</Link>
+                        user</Link>
                     </div>
                 </div>
                 <div class="sm:flex sm:items-center">
                     <div class="sm:flex-auto">
-                        <Input v-model="search" placeholder="Search for employer..." type="search" />
+                        <Input v-model="search" placeholder="Search for user..." type="search" />
                     </div>
 
                 </div>
@@ -73,7 +73,10 @@ watch(
                                         <tr>
                                             <th scope="col"
                                                 class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                                                Name</th>
+                                                First Name</th>
+                                            <th scope="col"
+                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                                                Last Name</th>
                                             <th scope="col"
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email
                                                 Address
@@ -112,53 +115,56 @@ watch(
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 bg-white">
-                                        <tr v-for="employer in props.employers.data" :key="employer.id">
+                                        <tr v-for="user in props.users.data" :key="user.id">
                                             <td
                                                 class="whitespace py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                {{ employer.name }}</td>
+                                                {{ user.first_name }}</td>
+                                            <td
+                                                class="whitespace py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                                {{ user.last_name }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                employer.email }}</td>
+                                                user.email }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
-                                                employer.contact_number
+                                                user.contact_number
                                                 }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                employer.province }}</td>
+                                                user.province }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                employer.city
+                                                user.city
                                                 }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                employer.barangay
+                                                user.barangay
                                                 }}</td>
                                             <td class="whitespace px-3 py-4 text-sm text-gray-500">{{
-                                                employer.street_address
+                                                user.street_address
                                                 }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                employer.zip_code
+                                                user.zip_code
                                                 }}</td>
                                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                                <span v-if="employer.is_active"
+                                                <span v-if="user.is_active"
                                                     class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
                                                 <span v-else
                                                     class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Inactive</span>
                                             </td>
                                             <td
                                                 class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <button type="button" @click="updateInfo(employer.id)"
+                                                <button type="button" @click="updateInfo(user.id)"
                                                     class="text-blue-600 hover:text-blue-900">Edit<span
-                                                        class="sr-only">, {{ employer.name }}</span></button>
+                                                        class="sr-only">, {{ user.name }}</span></button>
                                             </td>
                                         </tr>
 
-                                        <tr v-if="employers.data.length === 0">
-                                            <td colspan="10"
+                                        <tr v-if="users.data.length === 0">
+                                            <td colspan="11"
                                                 class="whitespace-nowrap text-center py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                No Employer Found</td>
+                                                No User Found</td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <div
                                     class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between">
-                                    <Pagination :users="employers" :pagination="pagination" />
+                                    <Pagination :users="users" :pagination="pagination" />
                                 </div>
                             </div>
                         </div>

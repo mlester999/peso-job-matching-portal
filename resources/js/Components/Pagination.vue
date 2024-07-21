@@ -4,7 +4,7 @@ import PreviousButton from "@/Components/PreviousButton.vue";
 import NextButton from "@/Components/NextButton.vue";
 
 defineProps({
-    employers: Object,
+    users: Object,
     pagination: Object,
 });
 </script>
@@ -12,15 +12,15 @@ defineProps({
 <template>
     <div class="flex items-center mb-4 sm:mb-0">
         <span class="text-sm font-normal text-gray-500">Showing
-            <span v-if="employers.from && employers.to" class="font-semibold text-gray-900">{{
-                employers.from }} -
-                {{ employers.to }}</span>
+            <span v-if="users.from && users.to" class="font-semibold text-gray-900">{{
+                users.from }} -
+                {{ users.to }}</span>
 
             <span v-else class="font-semibold text-gray-900">0 - 0</span>
             of
             <span class="font-semibold text-gray-900">{{
-                employers.total
-                }}</span></span>
+                users.total
+            }}</span></span>
     </div>
     <div class="flex items-center space-x-3">
         <li class="list-none" v-if="pagination.links[0].label !== 'Previous'">

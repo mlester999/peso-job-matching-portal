@@ -13,7 +13,7 @@ const props = defineProps({
 const user = usePage().props.auth.user
 
 const form = useForm({
-    name: user.name,
+    name: user.admin.name,
     email: user.email,
 })
 </script>

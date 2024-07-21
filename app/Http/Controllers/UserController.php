@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Employer;
 use App\Models\User;
+use App\Models\Applicant;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
-class EmployerController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,7 +19,7 @@ class EmployerController extends Controller
         $filters = Request::only(['search']);
         $searchReq = Request::input('search');
 
-        $employers = Employer::query()
+        $users = Applicant::query()
         ->with('user')
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
@@ -27,7 +27,8 @@ class EmployerController extends Controller
                     $query->whereRaw('LOWER(email) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(contact_number) LIKE LOWER(?)', ['%' . $search . '%']);
                 })
-                        ->orWhereRaw('LOWER(name) LIKE LOWER(?)', ['%' . $search . '%']);
+                        ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
             });
 
             // Use this if we like to perform a case-insensitive and approximate matching search
@@ -46,26 +47,27 @@ class EmployerController extends Controller
         ->orderBy('id', 'asc')
         ->paginate(10)
         ->withQueryString()
-        ->through(fn($employer) => [
-            'id' => $employer->id,
-            'name' => $employer->name,
-            'province' => $employer->province,
-            'city' => $employer->city,
-            'barangay' => $employer->barangay,
-            'street_address' => $employer->street_address,
-            'zip_code' => $employer->zip_code,
-            'email' => $employer->user->email,
-            'contact_number' => $employer->contact_number,
-            'is_active' => $employer->user->is_active,
-            'created_at' => $employer->created_at,
+        ->through(fn($user) => [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'province' => $user->province,
+            'city' => $user->city,
+            'barangay' => $user->barangay,
+            'street_address' => $user->street_address,
+            'zip_code' => $user->zip_code,
+            'email' => $user->user->email,
+            'contact_number' => $user->contact_number,
+            'is_active' => $user->user->is_active,
+            'created_at' => $user->created_at,
         ]);
 
         if (empty($searchReq)) {
             unset($filters['search']);
         }
 
-        $currentPage = $employers->currentPage();
-        $lastPage = $employers->lastPage();
+        $currentPage = $users->currentPage();
+        $lastPage = $users->lastPage();
         $firstPage = 1;
 
         $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
@@ -75,19 +77,19 @@ class EmployerController extends Controller
 
         if ($previousPage !== null) {
             $links[] = [
-                'url' => $employers->url($previousPage),
+                'url' => $users->url($previousPage),
                 'label' => 'Previous',
             ];
         }
 
         $links[] = [
-            'url' => $employers->url(1),
+            'url' => $users->url(1),
             'label' => 1,
         ];
 
         if ($currentPage > 3) {
             $links[] = [
-                'url' => $employers->url($currentPage - 1),
+                'url' => $users->url($currentPage - 1),
                 'label' => '...',
             ];
         }
@@ -97,7 +99,7 @@ class EmployerController extends Controller
 
         for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
             $links[] = [
-                'url' => $employers->url($i),
+                'url' => $users->url($i),
                 'label' => $i,
             ];
         }
@@ -105,28 +107,28 @@ class EmployerController extends Controller
 
         if ($currentPage < $lastPage - 2) {
             $links[] = [
-                'url' => $employers->url($currentPage + 1),
+                'url' => $users->url($currentPage + 1),
                 'label' => '...',
             ];
         }
 
         if ($firstPage !== $lastPage) {
             $links[] = [
-                'url' => $employers->url($lastPage),
+                'url' => $users->url($lastPage),
                 'label' => $lastPage,
             ];
-        }
+        }   
 
         if ($nextPage !== null) {
             $links[] = [
-                'url' => $employers->url($nextPage),
+                'url' => $users->url($nextPage),
                 'label' => 'Next',
             ];
         }
 
 
-        return Inertia::render('Employers/Index', [
-            'employers' => $employers,
+        return Inertia::render('Users/Index', [
+            'users' => $users,
             'filters' => $filters,
             'pagination' => [
                 'current_page' => $currentPage,
@@ -137,11 +139,11 @@ class EmployerController extends Controller
     }
 
     /**
-     * Display the add page for employers.
+     * Display the add page for users.
      */
     public function add()
     {
-        return Inertia::render('Employers/Add');
+        return Inertia::render('Users/Add');
     }
 
     /**
@@ -157,8 +159,9 @@ class EmployerController extends Controller
      */
     public function store()
     {
-        $employerValidate = Request::validate([
-            'name' => ['required', 'max:50'],
+        $userValidate = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', 'unique:users'],
             'province' => ['required', 'max:50'],
             'city' => ['required', 'max:50'],
@@ -169,21 +172,22 @@ class EmployerController extends Controller
         ]);
 
         $user = User::create([
-            'email' => $employerValidate['email'],
+            'email' => $userValidate['email'],
             'password' => Hash::make('password'),
             'user_type' => 1,
             'is_active' => 1
         ]);
 
-        Employer::create([
+        Applicant::create([
             'user_id' => $user['id'],
-            'name' => $employerValidate['name'],
-            'province' => $employerValidate['province'],
-            'city' => $employerValidate['city'],
-            'barangay' => $employerValidate['barangay'],
-            'street_address' => $employerValidate['street_address'],
-            'contact_number' => $employerValidate['contact_number'],
-            'zip_code' => $employerValidate['zip_code'],
+            'first_name' => $userValidate['first_name'],
+            'last_name' => $userValidate['last_name'],
+            'province' => $userValidate['province'],
+            'city' => $userValidate['city'],
+            'barangay' => $userValidate['barangay'],
+            'street_address' => $userValidate['street_address'],
+            'contact_number' => $userValidate['contact_number'],
+            'zip_code' => $userValidate['zip_code'],
         ]);
 
     }
@@ -201,10 +205,10 @@ class EmployerController extends Controller
      */
     public function edit($id)
     {
-        $employer = Employer::with('user')->find($id);
+        $applicant = Applicant::with('user')->find($id);
 
-        return Inertia::render('Employers/Edit', [
-            'employer' => $employer,
+        return Inertia::render('Users/Edit', [
+            'applicant' => $applicant,
         ]);
     }
 
@@ -213,9 +217,10 @@ class EmployerController extends Controller
      */
 public function update($id)
     {
-        $employerValidate = Request::validate([
-            'name' => ['required', 'max:50'],
-            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore(Employer::findOrFail($id)->user->id)],
+        $applicantValidate = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore(Applicant::findOrFail($id)->user->id)],
             'province' => ['required', 'max:50'],
             'city' => ['required', 'max:50'],
             'barangay' => ['required', 'max:50'],
@@ -225,53 +230,57 @@ public function update($id)
             'is_active' => ['required', 'max:1'],
         ]);
 
-        $employer = Employer::findOrFail($id);
-        $user = Employer::findOrFail($id)->user;
+        $applicant = Applicant::findOrFail($id);
+        $user = Applicant::findOrFail($id)->user;
 
-        if($employerValidate['name'] !== $employer->name) {
-            $employer->name = $employerValidate['name'];
+        if($applicantValidate['first_name'] !== $applicant->first_name) {
+            $applicant->first_name = $applicantValidate['first_name'];
         }
 
-        if($employerValidate['email'] !== $user->email) {
-            $user->email = $employerValidate['email'];
+        if($applicantValidate['last_name'] !== $applicant->last_name) {
+            $applicant->last_name = $applicantValidate['last_name'];
         }
 
-        if($employerValidate['province'] !== $employer->province) {
-            $employer->province = $employerValidate['province'];
+        if($applicantValidate['email'] !== $user->email) {
+            $user->email = $applicantValidate['email'];
         }
 
-        if($employerValidate['city'] !== $employer->city) {
-            $employer->city = $employerValidate['city'];
+        if($applicantValidate['province'] !== $applicant->province) {
+            $applicant->province = $applicantValidate['province'];
         }
 
-        if($employerValidate['barangay'] !== $employer->barangay) {
-            $employer->barangay = $employerValidate['barangay'];
+        if($applicantValidate['city'] !== $applicant->city) {
+            $applicant->city = $applicantValidate['city'];
         }
 
-        if($employerValidate['street_address'] !== $employer->street_address) {
-            $employer->street_address = $employerValidate['street_address'];
+        if($applicantValidate['barangay'] !== $applicant->barangay) {
+            $applicant->barangay = $applicantValidate['barangay'];
         }
 
-        if($employerValidate['contact_number'] !== $employer->contact_number) {
-            $employer->contact_number = $employerValidate['contact_number'];
+        if($applicantValidate['street_address'] !== $applicant->street_address) {
+            $applicant->street_address = $applicantValidate['street_address'];
         }
 
-        if($employerValidate['zip_code'] !== $employer->zip_code) {
-            $employer->zip_code = $employerValidate['zip_code'];
+        if($applicantValidate['contact_number'] !== $applicant->contact_number) {
+            $applicant->contact_number = $applicantValidate['contact_number'];
         }
 
-        if($employerValidate['is_active'] !== $user->is_active) {
-            $user->is_active = $employerValidate['is_active'];
+        if($applicantValidate['zip_code'] !== $applicant->zip_code) {
+            $applicant->zip_code = $applicantValidate['zip_code'];
+        }
+
+        if($applicantValidate['is_active'] !== $user->is_active) {
+            $user->is_active = $applicantValidate['is_active'];
         }
 
         $user->save();
-        $employer->save();
+        $applicant->save();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Employer $employer)
+    public function destroy(User $user)
     {
         //
     }

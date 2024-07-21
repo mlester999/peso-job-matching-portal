@@ -6,6 +6,8 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\JobPositionController;
 use App\Models\User;
 use App\Models\Employer;
 use App\Models\Applicant;
@@ -56,14 +58,44 @@ Route::middleware([
             Route::delete('/delete/{id}', [EmployerController::class, 'delete'])->name('delete');
         });
 
+        Route::group(['prefix' => 'users', 'as' => 'users.'], function() {
+            Route::get('/', [UserController::class, 'index'])->name('index');
+
+            Route::get('/add', [UserController::class, 'add'])->name('add');
+
+            Route::get('/edit/{id}', [UserController::class, 'edit'])->name('edit');
+    
+            Route::post('/store', [UserController::class, 'store'])->name('store');
+    
+            Route::put('/update/{id}', [UserController::class, 'update'])->name('update');
+    
+            Route::delete('/delete/{id}', [UserController::class, 'delete'])->name('delete');
+        });
+
         Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
             Route::get('/', [ApplicantController::class, 'index'])->name('index');
+
+            Route::get('/edit/{id}', [ApplicantController::class, 'edit'])->name('edit');
     
             Route::post('/store', [ApplicantController::class, 'store'])->name('store');
     
             Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
     
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'job-positions', 'as' => 'job-positions.'], function() {
+            Route::get('/', [JobPositionController::class, 'index'])->name('index');
+
+            Route::get('/add', [JobPositionController::class, 'add'])->name('add');
+
+            Route::get('/edit/{id}', [JobPositionController::class, 'edit'])->name('edit');
+    
+            Route::post('/store', [JobPositionController::class, 'store'])->name('store');
+    
+            Route::put('/update/{id}', [JobPositionController::class, 'update'])->name('update');
+    
+            Route::delete('/delete/{id}', [JobPositionController::class, 'delete'])->name('delete');
         });
     });
 

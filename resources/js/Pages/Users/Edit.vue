@@ -8,7 +8,7 @@ import { router, useForm, usePage } from '@inertiajs/vue3';
 import { useToast } from 'vue-toastification';
 
 const props = defineProps({
-    employer: Object
+    applicant: Object
 })
 
 const barangays = [
@@ -33,15 +33,16 @@ const barangays = [
 ]
 
 const form = useForm({
-    name: props.employer.name,
-    email: props.employer.user.email,
-    province: props.employer.province,
-    city: props.employer.city,
-    barangay: props.employer.barangay,
-    street_address: props.employer.street_address,
-    contact_number: props.employer.contact_number,
-    zip_code: props.employer.zip_code,
-    is_active: props.employer.user.is_active
+    first_name: props.applicant.first_name,
+    last_name: props.applicant.last_name,
+    email: props.applicant.user.email,
+    province: props.applicant.province,
+    city: props.applicant.city,
+    barangay: props.applicant.barangay,
+    street_address: props.applicant.street_address,
+    contact_number: props.applicant.contact_number,
+    zip_code: props.applicant.zip_code,
+    is_active: props.applicant.user.is_active
 });
 
 const page = usePage();
@@ -49,23 +50,23 @@ const page = usePage();
 const toast = useToast();
 
 const submit = () => {
-    form.put(`/admin/employers/update/${props.employer.id}`, {
+    form.put(`/admin/users/update/${props.applicant.id}`, {
         onSuccess: () => {
-            toast.success("Employer updated successfully!");
-            router.visit('/admin/employers');
+            toast.success("User updated successfully!");
+            router.visit('/admin/users');
         },
     });
 };
 </script>
 
 <template>
-    <AuthenticatedLayout title="Edit Employer">
+    <AuthenticatedLayout title="Edit User">
         <template #header>
             <form @submit.prevent="submit">
                 <div class="space-y-12 sm:space-y-16 px-4">
                     <div>
                         <h2 class="text-xl font-semibold leading-tight">
-                            Edit Employer
+                            Edit User
                         </h2>
                         <!-- <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-600">Use a permanent address where you can
                             receive mail.</p> -->
@@ -73,8 +74,13 @@ const submit = () => {
                         <div
                             class="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
                             <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-                                <InputField id="name" v-model="form.name" type="text" label="Name" class="sm:max-w-sm"
-                                    :error="form.errors.name" />
+                                <InputField id="first_name" v-model="form.first_name" type="text" label="First Name"
+                                    class="sm:max-w-sm" :error="form.errors.first_name" />
+                            </div>
+
+                            <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+                                <InputField id="last_name" v-model="form.last_name" type="text" label="Last Name"
+                                    class="sm:max-w-sm" :error="form.errors.last_name" />
                             </div>
 
                             <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">

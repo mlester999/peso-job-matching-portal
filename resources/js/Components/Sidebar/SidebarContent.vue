@@ -4,7 +4,7 @@ import SidebarLink from '@/Components/Sidebar/SidebarLink.vue'
 import { DashboardIcon } from '@/Components/Icons/outline'
 import SidebarCollapsible from '@/Components/Sidebar/SidebarCollapsible.vue'
 import SidebarCollapsibleItem from '@/Components/Sidebar/SidebarCollapsibleItem.vue'
-import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon } from '@heroicons/vue/outline'
+import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon } from '@heroicons/vue/outline'
 </script>
 
 <template>
@@ -15,6 +15,12 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon } from '@heroico
             </template>
         </SidebarLink>
 
+        <SidebarLink title="Users" :href="route('admin.users.index')" :active="route().current('admin.users.index')">
+            <template #icon>
+                <UserCircleIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+            </template>
+        </SidebarLink>
+
         <SidebarLink title="Employers" :href="route('admin.employers.index')"
             :active="route().current('admin.employers.index')">
             <template #icon>
@@ -22,9 +28,17 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon } from '@heroico
             </template>
         </SidebarLink>
 
-        <SidebarLink title="Applicants" :href="route('admin.applicants.index')" :active="route().current('applicants')">
+        <SidebarLink title="Applicants" :href="route('admin.applicants.index')"
+            :active="route().current('admin.applicants.index')">
             <template #icon>
                 <UserGroupIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+            </template>
+        </SidebarLink>
+
+        <SidebarLink title="Job Positions" :href="route('admin.job-positions.index')"
+            :active="route().current('admin.job-positions.index')">
+            <template #icon>
+                <BriefcaseIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
             </template>
         </SidebarLink>
 
