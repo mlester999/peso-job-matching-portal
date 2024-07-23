@@ -1,14 +1,41 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
+import Button from '@/Components/Button.vue'
+import { GithubIcon } from '@/Components/Icons/brands'
 import InputField from '@/Components/InputField.vue';
+import SelectField from '@/Components/SelectField.vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { useToast } from 'vue-toastification';
 
+const props = defineProps({
+    jobPosition: Object
+})
 
+const barangays = [
+    'Baclaran',
+    'Banay-Banay',
+    'Banlic',
+    'Bigaa',
+    'Butong',
+    'Casile',
+    'Diezmo',
+    'Gulod',
+    'Mamatid',
+    'Marinig',
+    'Niugan',
+    'Pittland',
+    'Pulo',
+    'Sala',
+    'San Isidro',
+    'Barangay I Poblacion',
+    'Barangay II Poblacion',
+    'Barangay III Poblacion',
+]
 
 const form = useForm({
-    title: "",
-    description: ""
+    title: props.jobPosition.title,
+    description: props.jobPosition.description,
+    is_active: props.jobPosition.is_active,
 });
 
 const page = usePage();
@@ -16,9 +43,9 @@ const page = usePage();
 const toast = useToast();
 
 const submit = () => {
-    form.post(`/admin/job-positions/store`, {
+    form.put(`/admin/job-positions/update/${props.jobPosition.id}`, {
         onSuccess: () => {
-            toast.success("Job position created successfully!");
+            toast.success("Job position updated successfully!");
             router.visit('/admin/job-positions');
         },
     });
@@ -26,13 +53,13 @@ const submit = () => {
 </script>
 
 <template>
-    <AuthenticatedLayout title="Add Job Position">
+    <AuthenticatedLayout title="Edit Job Position">
         <template #header>
             <form @submit.prevent="submit">
                 <div class="space-y-12 sm:space-y-16 px-4">
                     <div>
                         <h2 class="text-xl font-semibold leading-tight">
-                            Add Job Position
+                            Edit Job Position
                         </h2>
                         <!-- <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-600">Use a permanent address where you can
                             receive mail.</p> -->
@@ -50,8 +77,11 @@ const submit = () => {
                             </div>
 
                             <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-                                <InputField id="skills" v-model="form.skills" type="text" label="Skills"
-                                    class="sm:max-w-md" :error="form.errors.skills" :isMultiline="true" />
+                                <SelectField id="is_active" label="Status" v-model="form.is_active"
+                                    :error="form.errors.is_active" class="sm:max-w-xs">
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </SelectField>
                             </div>
                         </div>
                     </div>

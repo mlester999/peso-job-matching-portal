@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JobAdvertisement;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class JobAdvertisementController extends Controller
 {
@@ -12,7 +13,7 @@ class JobAdvertisementController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('JobAds/Index');
     }
 
     /**

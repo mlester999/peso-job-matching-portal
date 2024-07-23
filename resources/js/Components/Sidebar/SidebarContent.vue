@@ -4,7 +4,7 @@ import SidebarLink from '@/Components/Sidebar/SidebarLink.vue'
 import { DashboardIcon } from '@/Components/Icons/outline'
 import SidebarCollapsible from '@/Components/Sidebar/SidebarCollapsible.vue'
 import SidebarCollapsibleItem from '@/Components/Sidebar/SidebarCollapsibleItem.vue'
-import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon } from '@heroicons/vue/outline'
+import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, CalendarIcon, ClipboardCheckIcon, NewspaperIcon, ClipboardListIcon, InboxInIcon } from '@heroicons/vue/outline'
 </script>
 
 <template>
@@ -15,32 +15,87 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon }
             </template>
         </SidebarLink>
 
-        <SidebarLink title="Users" :href="route('admin.users.index')" :active="route().current('admin.users.index')">
-            <template #icon>
-                <UserCircleIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
-            </template>
-        </SidebarLink>
+        <template v-if="$page.props.auth.user.admin">
+            <SidebarLink title="Users" :href="route('admin.users.index')"
+                :active="route().current('admin.users.index')">
+                <template #icon>
+                    <UserCircleIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
 
-        <SidebarLink title="Employers" :href="route('admin.employers.index')"
-            :active="route().current('admin.employers.index')">
-            <template #icon>
-                <UsersIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
-            </template>
-        </SidebarLink>
+            <SidebarLink title="Employers" :href="route('admin.employers.index')"
+                :active="route().current('admin.employers.index')">
+                <template #icon>
+                    <UsersIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
 
-        <SidebarLink title="Applicants" :href="route('admin.applicants.index')"
-            :active="route().current('admin.applicants.index')">
-            <template #icon>
-                <UserGroupIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
-            </template>
-        </SidebarLink>
+            <SidebarLink title="Applicants" :href="route('admin.applicants.index')"
+                :active="route().current('admin.applicants.index')">
+                <template #icon>
+                    <UserGroupIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
 
-        <SidebarLink title="Job Positions" :href="route('admin.job-positions.index')"
-            :active="route().current('admin.job-positions.index')">
-            <template #icon>
-                <BriefcaseIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
-            </template>
-        </SidebarLink>
+            <SidebarLink title="Job Positions" :href="route('admin.job-positions.index')"
+                :active="route().current('admin.job-positions.index')">
+                <template #icon>
+                    <BriefcaseIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+        </template>
+
+        <template v-if="$page.props.auth.user.employer">
+            <SidebarLink title="Reports" href="#">
+                <template #icon>
+                    <ClipboardListIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+
+            <SidebarLink title="Job Ads" :href="route('employer.job-ads.index')"
+                :active="route().current('employer.job-ads.index')">
+                <template #icon>
+                    <CalendarIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+
+            <SidebarLink title="Applicants" :href="route('employer.applicants.index')"
+                :active="route().current('employer.applicants.index')">
+                <template #icon>
+                    <UserGroupIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+
+            <SidebarLink title="For Interview" href="#">
+                <template #icon>
+                    <UsersIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+
+            <SidebarLink title="For Requirements" href="#">
+                <template #icon>
+                    <NewspaperIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+
+            <SidebarLink title="Qualified" href="#">
+                <template #icon>
+                    <ClipboardCheckIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+
+            <SidebarLink title="For Deployment" href="#">
+                <template #icon>
+                    <InboxInIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+
+            <SidebarLink title="Deployed" href="#">
+                <template #icon>
+                    <BriefcaseIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+        </template>
 
         <!-- <SidebarCollapsible title="Components" :active="route().current('components.*')">
             <template #icon>

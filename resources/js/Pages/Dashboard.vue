@@ -22,7 +22,7 @@ const props = defineProps({
         </template>
 
         <div class="grid grid-cols-3 gap-8 px-4">
-            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+            <div v-if="$page.props.auth.user.admin" class="p-6 overflow-hidden bg-white rounded-md shadow-md">
                 <h1 class="font-semibold">Total Employers</h1>
                 <p>{{ employerCount }}</p>
             </div>
@@ -32,7 +32,7 @@ const props = defineProps({
                 <p>{{ applicantCount }}</p>
             </div>
 
-            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+            <div v-if="$page.props.auth.user.admin" class="p-6 overflow-hidden bg-white rounded-md shadow-md">
                 <h1 class="font-semibold">Total Users</h1>
                 <p>{{ userCount }}</p>
             </div>

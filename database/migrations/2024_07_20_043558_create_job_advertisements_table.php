@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('job_advertisements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('job_position_id')->references('id')->on('job_positions');
-            $table->string('role');
-            $table->string('position_level');
-            $table->string('years_of_experience');
-            $table->boolean('is_draft');
+            $table->string('role')->nullable();
+            $table->string('position_level')->nullable();
+            $table->string('years_of_experience')->nullable();
+            $table->boolean('is_draft')->nullable();
             $table->timestamps();
         });
     }

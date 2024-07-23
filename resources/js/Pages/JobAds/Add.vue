@@ -48,11 +48,6 @@ const submit = () => {
                                 <InputField id="description" v-model="form.description" type="text" label="Description"
                                     class="sm:max-w-md" :error="form.errors.description" />
                             </div>
-
-                            <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-                                <InputField id="skills" v-model="form.skills" type="text" label="Skills"
-                                    class="sm:max-w-md" :error="form.errors.skills" :isMultiline="true" />
-                            </div>
                         </div>
                     </div>
                 </div>

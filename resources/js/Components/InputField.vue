@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import Badge from './Badge.vue';
 
 const props = defineProps({
     id: String,
@@ -11,7 +12,51 @@ const props = defineProps({
     error: String,
     class: String,
     isContactNumber: Boolean,
-    isNumber: Boolean
+    isNumber: Boolean,
+    isMultiline: Boolean
+});
+
+const multilineInput = ref(null);
+const previewSkills = ref(['hello', 'world']);
+
+const adjustHeight = () => {
+    const element = multilineInput.value;
+    if (element) {
+        element.style.height = 'auto';
+        element.style.height = `${element.scrollHeight}px`;
+    }
+};
+
+const addTag = (event) => {
+    if (event.code == 'Comma' || event.code == 'Enter') {
+        event.preventDefault();
+
+        let val = event.target.value.trim()
+
+        if (val.length > 0) {
+            previewSkills.value.push(val);
+            event.target.value = ''
+        }
+    }
+}
+
+const removeTag = (event) => {
+    if (event.code == 'Comma' || event.code == 'Enter') {
+        event.preventDefault();
+
+        let val = event.target.value.trim()
+
+        if (val.length > 0) {
+            previewSkills.value.push(val);
+            event.target.value = ''
+        }
+    }
+}
+
+onMounted(() => {
+    if (props.isMultiline) {
+        adjustHeight();
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -55,7 +100,7 @@ watch(() => props.modelValue, (newVal) => {
 
     <label :for="props.id" class="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
         {{ props.label }}</label>
-    <div class="mt-2 sm:col-span-2 sm:mt-0">
+    <div v-if="!isMultiline" class="mt-2 sm:col-span-2 sm:mt-0">
         <p v-if="isContactNumber" class="absolute text-sm mt-2 ml-2">+63</p>
         <input :type="props.type" :value="modelValue" @input="handleInput" @keydown="checkDigit" :id="props.id"
             :placeholder="props.placeholder" :aria-label="props.label" :disabled="props.disabled"
@@ -66,5 +111,55 @@ watch(() => props.modelValue, (newVal) => {
         </p>
     </div>
 
+    <!-- <div v-else>
+        <div v-for="(tag, index) in previewSkills" :key="tag" class="tag-input__tag">
+            <span @click="removeTag(index)">x</span>
+            {{ tag }}
+        </div>
 
+        <input type="text" class="tag-input__text" @keydown="addTag" />
+    </div> -->
+
+    <div :class="['flex items-center w-full mt-2 sm:col-span-2 sm:mt-0 block bg-white px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 disabled:bg-gray-200 overflow-auto', props.class]"
+        v-else>
+        <div class="flex flex-wrap ml-2" v-for="(skill, index) in previewSkills" :key="skill">
+            <Badge :title="skill" />
+        </div>
+        <input type="text" class="bg-transparent border-none focus:ring-0 text-sm -ml-1 w-full" @keydown="addTag" />
+    </div>
 </template>
+
+<style scoped>
+.tag-input {
+    width: 100%;
+    border: 1px solid #eee;
+    font-size: 0.9em;
+    height: 50px;
+    box-sizing: border-box;
+    padding: 0 10px;
+}
+
+.tag-input__tag {
+    height: 30px;
+    float: left;
+    margin-right: 10px;
+    background-color: #eee;
+    margin-top: 10px;
+    line-height: 30px;
+    padding: 0 5px;
+    border-radius: 5px;
+}
+
+.tag-input__tag>span {
+    cursor: pointer;
+    opacity: 0.75;
+}
+
+.tag-input__text {
+    border: none;
+    outline: none;
+    font-size: 0.9em;
+    line-height: 58px;
+    background: none;
+}
+</style>

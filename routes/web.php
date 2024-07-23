@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\JobPositionController;
+use App\Http\Controllers\JobAdvertisementController;
 use App\Models\User;
 use App\Models\Employer;
 use App\Models\Applicant;
@@ -28,9 +29,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    $userCount = User::count();
+    $userCount = Applicant::count();
     $employerCount = Employer::count();
-    $applicantCount = Applicant::count();
+    $applicantCount = Applicant::whereHas('applications')->count();
 
     return Inertia::render('Dashboard', [
         'userCount' => $userCount,
@@ -96,6 +97,38 @@ Route::middleware([
             Route::put('/update/{id}', [JobPositionController::class, 'update'])->name('update');
     
             Route::delete('/delete/{id}', [JobPositionController::class, 'delete'])->name('delete');
+        });
+    });
+
+});
+
+Route::middleware([
+    'auth',
+    'verified',
+])->group(function () {
+    Route::group(['middleware' => 'role:employer', 'prefix' => 'employer', 'as' => 'employer.'], function () {
+        Route::group(['prefix' => 'job-ads', 'as' => 'job-ads.'], function() {
+            Route::get('/', [JobAdvertisementController::class, 'index'])->name('index');
+
+            Route::get('/edit/{id}', [JobAdvertisementController::class, 'edit'])->name('edit');
+    
+            Route::post('/store', [JobAdvertisementController::class, 'store'])->name('store');
+    
+            Route::put('/update/{id}', [JobAdvertisementController::class, 'update'])->name('update');
+    
+            Route::delete('/delete/{id}', [JobAdvertisementController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
+            Route::get('/', [ApplicantController::class, 'index'])->name('index');
+
+            Route::get('/edit/{id}', [ApplicantController::class, 'edit'])->name('edit');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });
     });
 
