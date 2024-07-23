@@ -16,16 +16,7 @@ const props = defineProps({
     isMultiline: Boolean
 });
 
-const multilineInput = ref(null);
-const previewSkills = ref(['hello', 'world']);
-
-const adjustHeight = () => {
-    const element = multilineInput.value;
-    if (element) {
-        element.style.height = 'auto';
-        element.style.height = `${element.scrollHeight}px`;
-    }
-};
+const previewSkills = ref([]);
 
 const addTag = (event) => {
     if (event.code == 'Comma' || event.code == 'Enter') {
@@ -40,24 +31,15 @@ const addTag = (event) => {
     }
 }
 
-const removeTag = (event) => {
-    if (event.code == 'Comma' || event.code == 'Enter') {
-        event.preventDefault();
-
-        let val = event.target.value.trim()
-
-        if (val.length > 0) {
-            previewSkills.value.push(val);
-            event.target.value = ''
-        }
-    }
+const removeTag = (index) => {
+    previewSkills.value.splice(index, 1);
 }
 
-onMounted(() => {
-    if (props.isMultiline) {
-        adjustHeight();
+const removeLastTag = (event) => {
+    if (event.target.value.length === 0) {
+        removeTag(previewSkills.value.length - 1)
     }
-});
+}
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -90,6 +72,10 @@ const handleInput = (event) => {
 
 }
 
+const truncate = (text) => {
+    return text.length > 20 ? text.substring(0, 20) + '...' : text;
+};
+
 // Watch for changes in props.modelValue and update modelValue ref accordingly
 watch(() => props.modelValue, (newVal) => {
     modelValue.value = newVal;
@@ -120,12 +106,18 @@ watch(() => props.modelValue, (newVal) => {
         <input type="text" class="tag-input__text" @keydown="addTag" />
     </div> -->
 
-    <div :class="['flex items-center w-full mt-2 sm:col-span-2 sm:mt-0 block bg-white px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 disabled:bg-gray-200 overflow-auto', props.class]"
-        v-else>
-        <div class="flex flex-wrap ml-2" v-for="(skill, index) in previewSkills" :key="skill">
-            <Badge :title="skill" />
+    <div v-else>
+        <div
+            :class="['flex flex-wrap items-center w-full mt-2 sm:col-span-2 sm:mt-0 block bg-white px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 disabled:bg-gray-200', props.class]">
+            <div class="flex flex-wrap gap-1 items-center">
+                <div class="ml-2" v-for="(skill, index) in previewSkills" :key="skill">
+                    <Badge :title="truncate(skill)" :removeTag="removeTag" :index="index" />
+                </div>
+                <input type="text" class="bg-transparent border-none focus:ring-0 text-sm -ml-1" @keydown="addTag"
+                    @keydown.delete="removeLastTag" />
+            </div>
         </div>
-        <input type="text" class="bg-transparent border-none focus:ring-0 text-sm -ml-1 w-full" @keydown="addTag" />
+        <p class="text-sm mt-1.5 text-gray-500">Enter a comma after each tag or press Enter.</p>
     </div>
 </template>
 
