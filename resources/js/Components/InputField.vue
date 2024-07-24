@@ -16,7 +16,7 @@ const props = defineProps({
     isMultiline: Boolean
 });
 
-const previewSkills = ref([]);
+const previewSkills = ref(props.modelValue);
 
 const addTag = (event) => {
     if (event.code == 'Comma' || event.code == 'Enter') {
@@ -27,17 +27,20 @@ const addTag = (event) => {
         if (val.length > 0) {
             previewSkills.value.push(val);
             event.target.value = ''
+            emit('update:modelValue', previewSkills.value);
         }
     }
 }
 
 const removeTag = (index) => {
     previewSkills.value.splice(index, 1);
+    emit('update:modelValue', previewSkills.value);
 }
 
 const removeLastTag = (event) => {
     if (event.target.value.length === 0) {
         removeTag(previewSkills.value.length - 1)
+        emit('update:modelValue', previewSkills.value);
     }
 }
 
@@ -111,13 +114,16 @@ watch(() => props.modelValue, (newVal) => {
             :class="['flex flex-wrap items-center w-full mt-2 sm:col-span-2 sm:mt-0 block bg-white px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 disabled:bg-gray-200', props.class]">
             <div class="flex flex-wrap gap-1 items-center">
                 <div class="ml-2" v-for="(skill, index) in previewSkills" :key="skill">
-                    <Badge :title="truncate(skill)" :removeTag="removeTag" :index="index" />
+                    <Badge :title="truncate(skill)" :removeTag="removeTag" :index="index" :isClosable="true" />
                 </div>
                 <input type="text" class="bg-transparent border-none focus:ring-0 text-sm -ml-1" @keydown="addTag"
                     @keydown.delete="removeLastTag" />
             </div>
         </div>
         <p class="text-sm mt-1.5 text-gray-500">Enter a comma after each tag or press Enter.</p>
+        <p v-if="props.error" class="text-red-500 text-sm mt-2">
+            {{ props.error }}
+        </p>
     </div>
 </template>
 

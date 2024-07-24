@@ -7,18 +7,23 @@ import { ref, watch } from 'vue';
 import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
+import Badge from '@/Components/Badge.vue';
 
 const props = defineProps({
     jobPositions: Object,
     pagination: Object,
     filters: Object,
 });
-console.log('props: ', props);
+
 let search = ref(props.filters.search);
 
 const updateInfo = (userId) => {
     router.get(`/admin/job-positions/edit/${userId}`);
 }
+
+const truncate = (text) => {
+    return text.length > 20 ? text.substring(0, 20) + '...' : text;
+};
 
 watch(
     search,
@@ -80,6 +85,10 @@ watch(
                                             </th>
                                             <th scope="col"
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                Skills
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                                 Status
                                             </th>
                                             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -94,6 +103,15 @@ watch(
                                                 {{ jobPosition.title }}</td>
                                             <td class="whitespace px-3 py-4 text-sm text-gray-500">{{
                                                 jobPosition.description }}</td>
+                                            <td
+                                                class="whitespace px-3 py-4 text-sm text-gray-500 flex flex-wrap gap-2 items-center">
+                                                <div class="ml-2"
+                                                    v-for="(skill, index) in JSON.parse(jobPosition.skills)"
+                                                    :key="skill">
+                                                    <Badge :title="truncate(skill)" :removeTag="removeTag"
+                                                        :index="index" :isClosable="false" />
+                                                </div>
+                                            </td>
                                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                                                 <span v-if="jobPosition.is_active"
                                                     class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>

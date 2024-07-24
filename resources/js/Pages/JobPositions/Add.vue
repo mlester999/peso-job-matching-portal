@@ -8,7 +8,8 @@ import { useToast } from 'vue-toastification';
 
 const form = useForm({
     title: "",
-    description: ""
+    description: "",
+    skills: []
 });
 
 const page = usePage();

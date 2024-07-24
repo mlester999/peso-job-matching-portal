@@ -12,6 +12,7 @@ class JobPosition extends Model
     protected $fillable = [
         'title',
         'description',
+        'skills',
         'is_active',
     ];
 }

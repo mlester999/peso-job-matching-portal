@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobAdvertisement;
+use App\Models\JobPosition;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,7 +14,11 @@ class JobAdvertisementController extends Controller
      */
     public function index()
     {
-        return Inertia::render('JobAds/Index');
+        $jobPositions = JobPosition::orderBy('title', 'asc')->get();
+
+        return Inertia::render('JobAds/Index', [
+            'jobPositions' => $jobPositions
+        ]);
     }
 
     /**

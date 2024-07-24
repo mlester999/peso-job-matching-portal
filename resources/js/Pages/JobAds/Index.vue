@@ -1,7 +1,36 @@
 <script setup>
+import CheckboxList from '@/Components/CheckboxList.vue';
+import SelectField from '@/Components/SelectField.vue';
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import { UserCircleIcon, BriefcaseIcon } from '@heroicons/vue/outline'
+import { useForm } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
+import debounce from 'lodash.debounce'
 
+const props = defineProps({
+    jobPositions: Object
+});
+
+const form = useForm({
+    job_position_id: "",
+    role: "",
+    position_level: "",
+    years_of_experience: "",
+    is_draft: ""
+
+});
+
+const selectedJobPositiondId = ref();
+const selectedJobTitleSkills = ref();
+
+watch(
+    selectedJobPositiondId,
+    debounce((value) => {
+        form.job_position_id = value;
+        const jobPosition = props.jobPositions.find((job) => job.id === Number(value))
+        selectedJobTitleSkills.value = JSON.parse(jobPosition.skills)
+    }, 500)
+);
 </script>
 
 <template>
@@ -11,7 +40,7 @@ import { UserCircleIcon, BriefcaseIcon } from '@heroicons/vue/outline'
                 <div class="sm:flex sm:items-center my-4">
                     <div class="sm:flex-auto">
                         <h2 class="text-xl font-semibold leading-tight">
-                            Fill in the Job Ads details
+                            Job Ads
                         </h2>
                         <!-- <p class="mt-2 text-sm text-gray-700">A list of all the job-positions in this portal including
                             their
@@ -21,8 +50,13 @@ import { UserCircleIcon, BriefcaseIcon } from '@heroicons/vue/outline'
                 <div class="mt-8 flow-root">
                     <div class="space-y-10 divide-y divide-gray-900/10">
                         <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-4">
-                            <form class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
-                                <div class="px-4 py-6 sm:p-8 space-y-6">
+
+                            <form class=" md:col-span-2">
+                                <h2 class="text-base font-semibold leading-7 text-gray-900 pb-2">
+                                    Fill in the Job Ads details
+                                </h2>
+                                <div
+                                    class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl px-4 py-6 sm:p-8 space-y-6">
                                     <div class="flex items-center space-x-2">
                                         <BriefcaseIcon class="h-6 w-6 text-gray-900" aria-hidden="true" />
                                         <h2 class="text-xl font-semibold leading-tight">
@@ -31,18 +65,21 @@ import { UserCircleIcon, BriefcaseIcon } from '@heroicons/vue/outline'
                                     </div>
 
                                     <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                        <div class="sm:col-span-4">
+                                        <div class="sm:col-span-6">
                                             <label for="website"
                                                 class="block text-md font-semibold leading-6 text-gray-900">What is the
                                                 Job title?</label>
                                             <div class="mt-2">
-                                                <div
-                                                    class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                                                    <span
-                                                        class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">http://</span>
-                                                    <input type="text" name="website" id="website"
-                                                        class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                                                        placeholder="www.example.com" />
+                                                <div class="sm:max-w-lg">
+                                                    <SelectField id="jobPosition" v-model="selectedJobPositiondId"
+                                                        :error="form.errors.job_position_id">
+                                                        <option value="" disabled selected hidden>~ Select Job Title ~
+                                                        </option>
+                                                        <option v-for="(jobTitle, index) in jobPositions" :key="index"
+                                                            :value="jobTitle.id">
+                                                            {{ jobTitle.title }}
+                                                        </option>
+                                                    </SelectField>
                                                 </div>
                                             </div>
                                         </div>
@@ -100,11 +137,18 @@ import { UserCircleIcon, BriefcaseIcon } from '@heroicons/vue/outline'
                                 </div>
                             </form>
 
-                            <div class="px-4 sm:px-0">
-                                <h2 class="text-base font-semibold leading-7 text-gray-900">Profile</h2>
-                                <p class="mt-1 text-sm leading-6 text-gray-600">This information will be displayed
-                                    publicly so be
-                                    careful what you share.</p>
+                            <div class="px-4 sm:px-0 md:col-span-2">
+                                <h2 class="text-base font-semibold leading-7 text-gray-900 pb-2">Related Skills: </h2>
+
+                                <template v-if="selectedJobTitleSkills && selectedJobTitleSkills.length > 0">
+                                    <template v-for="(jobSkill, index) in selectedJobTitleSkills" :key="index">
+                                        <CheckboxList :title="jobSkill" />
+                                    </template>
+                                </template>
+
+                                <template v-else>
+                                    <CheckboxList :isNoRecord="true" />
+                                </template>
                             </div>
                         </div>
                     </div>

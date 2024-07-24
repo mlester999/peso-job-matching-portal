@@ -2,7 +2,8 @@
 const props = defineProps({
     title: String,
     removeTag: Function,
-    index: Number
+    index: Number,
+    isClosable: Boolean
 });
 
 const handleClick = () => {
@@ -16,7 +17,7 @@ const handleClick = () => {
     <span
         class="inline-flex items-center gap-x-0.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 text-ellipsis">
         {{ title }}
-        <button @click="handleClick" type="button"
+        <button v-if="isClosable" @click="handleClick" type="button"
             class="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-gray-500/20">
             <span class="sr-only">Remove</span>
             <svg viewBox="0 0 14 14" class="h-3.5 w-3.5 stroke-gray-700/50 group-hover:stroke-gray-700/75">

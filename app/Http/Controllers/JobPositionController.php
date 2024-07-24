@@ -46,6 +46,7 @@ class JobPositionController extends Controller
             'id' => $jobPosition->id,
             'title' => $jobPosition->title,
             'description' => $jobPosition->description,
+            'skills' => $jobPosition->skills,
             'is_active' => $jobPosition->is_active,
             'created_at' => $jobPosition->created_at,
         ]);
@@ -150,11 +151,14 @@ class JobPositionController extends Controller
         $applicantValidate = Request::validate([
             'title' => ['required', 'max:50', 'unique:job_positions'],
             'description' => ['required', 'max:200'],
+            'skills' => ['required', 'array'],
+            'skills.*' => ['string', 'max:50'],
         ]);
 
         JobPosition::create([
             'title' => $applicantValidate['title'],
             'description' => $applicantValidate['description'],
+            'skills' => json_encode($applicantValidate['skills']),
             'is_active' => 1
         ]);
 
@@ -188,6 +192,8 @@ class JobPositionController extends Controller
         $jobPositionValidate = Request::validate([
             'title' => ['required', 'max:50', Rule::unique('job_positions')->ignore(JobPosition::findOrFail($id)->id)],
             'description' => ['required', 'max:200'],
+            'skills' => ['required', 'array'],
+            'skills.*' => ['string', 'max:50'],
             'is_active' => ['required', 'max:1'],
         ]);
 
@@ -199,6 +205,10 @@ class JobPositionController extends Controller
 
         if($jobPositionValidate['description'] !== $jobPosition->description) {
             $jobPosition->description = $jobPositionValidate['description'];
+        }
+
+        if($jobPositionValidate['skills'] !== $jobPosition->skills) {
+            $jobPosition->skills = json_encode($jobPositionValidate['skills']);
         }
 
         if($jobPositionValidate['is_active'] !== $jobPosition->is_active) {
