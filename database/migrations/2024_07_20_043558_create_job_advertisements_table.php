@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('role')->nullable();
             $table->string('position_level')->nullable();
             $table->string('years_of_experience')->nullable();
+            $table->string('location')->nullable();
             $table->boolean('is_draft')->nullable();
             $table->timestamps();
         });

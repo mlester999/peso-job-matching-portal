@@ -25,7 +25,7 @@ const toggleBorder = () => {
         <div v-if="!isNoRecord" @click="toggleBorder" class="container mx-auto">
             <div>
                 <div v-if="isTapped"
-                    class="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border border-blue-500 cursor-pointer">
+                    class="flex items-center justify-between px-8 py-4 border border-blue-500 cursor-pointer">
                     <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600 sm:h-9 sm:w-9"
                             viewBox="0 0 20 20" fill="currentColor">
@@ -40,7 +40,7 @@ const toggleBorder = () => {
                     </div>
                 </div>
 
-                <div v-else class="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border cursor-pointer">
+                <div v-else class="flex items-center justify-between px-8 py-4 border cursor-pointer">
                     <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 sm:h-9 sm:w-9"
                             viewBox="0 0 20 20" fill="currentColor">
@@ -54,17 +54,15 @@ const toggleBorder = () => {
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
 
         <div v-else class="container mx-auto">
             <div>
-                <div class="max-w-2xl px-8 py-4 mx-auto border cursor-pointer">
+                <div class="max-w-2xl px-8 py-4 mx-auto">
                     <div>
                         <div class=" mx-5 space-y-1">
-                            <h2 class="text-lg font-medium text-gray-700 sm:text-2xl text-center">Please select a Job
+                            <h2 class="text-lg font-medium text-gray-700 sm:text-xl text-center">Please select a Job
                                 Title</h2>
                         </div>
                     </div>

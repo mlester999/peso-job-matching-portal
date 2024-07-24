@@ -7,6 +7,59 @@ import { useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import debounce from 'lodash.debounce'
 
+const roles = [
+    { id: 'full-time', title: 'Full Time' },
+    { id: 'part-time', title: 'Part Time' },
+    { id: 'contract', title: 'Contract' },
+    { id: 'temporary', title: 'Temporary' },
+]
+
+const positionLevels = [
+    { id: 'trainee', title: 'Trainee' },
+    { id: 'junior-associate', title: 'Junior Associate' },
+    { id: 'associate', title: 'Associate' },
+    { id: 'senior-associate', title: 'Senior Associate' },
+    { id: 'junior-executive', title: 'Junior Executive' },
+    { id: 'executive', title: 'Executive' },
+    { id: 'senior-executive', title: 'Senior Executive' },
+    { id: 'assistant-manager', title: 'Assistant Manager' },
+    { id: 'manager', title: 'Manager' },
+]
+
+const yearsOfExperiences = [
+    { id: '1', title: '1' },
+    { id: '2', title: '2' },
+    { id: '3', title: '3' },
+    { id: '4', title: '4' },
+    { id: '5', title: '5' },
+    { id: '6', title: '6' },
+    { id: '7', title: '7' },
+    { id: '8', title: '8' },
+    { id: '9', title: '9' },
+    { id: '10', title: '10' },
+]
+
+const barangays = [
+    'Baclaran',
+    'Banay-Banay',
+    'Banlic',
+    'Bigaa',
+    'Butong',
+    'Casile',
+    'Diezmo',
+    'Gulod',
+    'Mamatid',
+    'Marinig',
+    'Niugan',
+    'Pittland',
+    'Pulo',
+    'Sala',
+    'San Isidro',
+    'Barangay I Poblacion',
+    'Barangay II Poblacion',
+    'Barangay III Poblacion',
+]
+
 const props = defineProps({
     jobPositions: Object
 });
@@ -16,6 +69,7 @@ const form = useForm({
     role: "",
     position_level: "",
     years_of_experience: "",
+    location: "",
     is_draft: ""
 
 });
@@ -65,10 +119,10 @@ watch(
                                     </div>
 
                                     <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                        <div class="sm:col-span-6">
-                                            <label for="website"
+                                        <div class="col-span-full">
+                                            <label for="title"
                                                 class="block text-md font-semibold leading-6 text-gray-900">What is the
-                                                Job title?</label>
+                                                job title?</label>
                                             <div class="mt-2">
                                                 <div class="sm:max-w-lg">
                                                     <SelectField id="jobPosition" v-model="selectedJobPositiondId"
@@ -85,44 +139,79 @@ watch(
                                         </div>
 
                                         <div class="col-span-full">
-                                            <label for="about"
-                                                class="block text-sm font-medium leading-6 text-gray-900">About</label>
-                                            <div class="mt-2">
-                                                <textarea id="about" name="about" rows="3"
-                                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                            </div>
-                                            <p class="mt-3 text-sm leading-6 text-gray-600">Write a few sentences about
-                                                yourself.</p>
-                                        </div>
-
-                                        <div class="col-span-full">
-                                            <label for="photo"
-                                                class="block text-sm font-medium leading-6 text-gray-900">Photo</label>
-                                            <div class="mt-2 flex items-center gap-x-3">
-                                                <UserCircleIcon class="h-12 w-12 text-gray-300" aria-hidden="true" />
-                                                <button type="button"
-                                                    class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Change</button>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-span-full">
-                                            <label for="cover-photo"
-                                                class="block text-sm font-medium leading-6 text-gray-900">Cover
-                                                photo</label>
-                                            <div
-                                                class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                                                <div class="text-center">
-                                                    <div class="mt-4 flex text-sm leading-6 text-gray-600">
-                                                        <label for="file-upload"
-                                                            class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                                                            <span>Upload a file</span>
-                                                            <input id="file-upload" name="file-upload" type="file"
-                                                                class="sr-only" />
-                                                        </label>
-                                                        <p class="pl-1">or drag and drop</p>
+                                            <fieldset>
+                                                <label for="role"
+                                                    class="block text-md font-semibold leading-6 text-gray-900">What
+                                                    type of role is it?</label>
+                                                <div class="mt-6 space-y-4">
+                                                    <div v-for="role in roles" :key="role.id" class="flex items-center">
+                                                        <input :id="role.id" v-model="form.role" name="role"
+                                                            type="radio"
+                                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-600" />
+                                                        <label :for="role.id"
+                                                            class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{
+                                                                role.title }}</label>
                                                     </div>
-                                                    <p class="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB
-                                                    </p>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-span-full">
+                                            <label for="title"
+                                                class="block text-md font-semibold leading-6 text-gray-900">What is the
+                                                position level?</label>
+                                            <div class="mt-2">
+                                                <div class="sm:max-w-lg">
+                                                    <SelectField id="positionLevel" v-model="form.position_level"
+                                                        :error="form.errors.position_level">
+                                                        <option value="" disabled selected hidden>~ Select Position
+                                                            Level ~
+                                                        </option>
+                                                        <option v-for="(positionLevel, index) in positionLevels"
+                                                            :key="index" :value="positionLevel.title">
+                                                            {{ positionLevel.title }}
+                                                        </option>
+                                                    </SelectField>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-span-full">
+                                            <label for="title"
+                                                class="block text-md font-semibold leading-6 text-gray-900">What are the
+                                                required years of experience?</label>
+                                            <div class="mt-2">
+                                                <div class="sm:max-w-lg">
+                                                    <SelectField id="yearsOfExperience"
+                                                        v-model="form.years_of_experience"
+                                                        :error="form.errors.years_of_experience">
+                                                        <option value="" disabled selected hidden>~ Select Years of
+                                                            Experience ~
+                                                        </option>
+                                                        <option v-for="(yearsOfExperience, index) in yearsOfExperiences"
+                                                            :key="index" :value="yearsOfExperience.title">
+                                                            {{ yearsOfExperience.title }}
+                                                        </option>
+                                                    </SelectField>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-span-full">
+                                            <label for="title"
+                                                class="block text-md font-semibold leading-6 text-gray-900">Work
+                                                Location</label>
+                                            <div class="mt-2">
+                                                <div class="sm:max-w-lg">
+                                                    <SelectField id="location" v-model="form.location"
+                                                        :error="form.errors.location">
+                                                        <option value="" disabled selected hidden>~ Select Location ~
+                                                        </option>
+                                                        <option v-for="(barangay, index) in barangays" :key="index"
+                                                            :value="barangay">
+                                                            {{ barangay }}
+                                                        </option>
+                                                    </SelectField>
                                                 </div>
                                             </div>
                                         </div>
@@ -133,7 +222,7 @@ watch(
                                     <button type="button"
                                         class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
                                     <button type="submit"
-                                        class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+                                        class="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Save</button>
                                 </div>
                             </form>
 
