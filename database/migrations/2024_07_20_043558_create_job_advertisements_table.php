@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('job_position_id')->references('id')->on('job_positions');
             $table->string('role')->nullable();
+            $table->json('skills')->nullable();
             $table->string('position_level')->nullable();
             $table->string('years_of_experience')->nullable();
             $table->string('location')->nullable();

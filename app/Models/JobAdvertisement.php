@@ -12,6 +12,7 @@ class JobAdvertisement extends Model
     protected $fillable = [
         'job_position_id',
         'role',
+        'skills',
         'position_level',
         'years_of_experience',
         'location',

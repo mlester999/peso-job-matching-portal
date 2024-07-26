@@ -3,9 +3,10 @@ import CheckboxList from '@/Components/CheckboxList.vue';
 import SelectField from '@/Components/SelectField.vue';
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import { UserCircleIcon, BriefcaseIcon } from '@heroicons/vue/outline'
-import { useForm } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { Link, useForm } from '@inertiajs/vue3';
+import { ref, watch, onBeforeUnmount, onBeforeUpdate } from 'vue';
 import debounce from 'lodash.debounce'
+import { useToast } from 'vue-toastification';
 
 const roles = [
     { id: 'full-time', title: 'Full Time' },
@@ -67,15 +68,41 @@ const props = defineProps({
 const form = useForm({
     job_position_id: "",
     role: "",
+    skills: [],
     position_level: "",
     years_of_experience: "",
     location: "",
-    is_draft: ""
-
+    is_draft: true
 });
+
+const addSkill = (val) => {
+    form.skills.push(val);
+}
+
+const removeSkill = (title) => {
+    const index = form.skills.indexOf(title);
+    if (index !== -1) {
+        form.skills.splice(index, 1);
+    }
+}
 
 const selectedJobPositiondId = ref();
 const selectedJobTitleSkills = ref();
+
+const toast = useToast();
+
+const autoSaveDraft = () => {
+    form.post('/employer/job-ads/draft');
+};
+
+const submit = () => {
+    form.post(`/employer/job-ads/store`, {
+        onSuccess: () => {
+            toast.success("Job ads created successfully!");
+            router.visit('/employer/job-ads');
+        },
+    });
+};
 
 watch(
     selectedJobPositiondId,
@@ -85,6 +112,13 @@ watch(
         selectedJobTitleSkills.value = JSON.parse(jobPosition.skills)
     }, 500)
 );
+
+onBeforeUnmount(() => {
+    console.log('test');
+    if (form.job_position_id || form.role || form.skills.length > 0 || form.position_level || form.years_of_experience || form.location) {
+        autoSaveDraft();
+    }
+})
 </script>
 
 <template>
@@ -105,7 +139,7 @@ watch(
                     <div class="space-y-10 divide-y divide-gray-900/10">
                         <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-4">
 
-                            <form class=" md:col-span-2">
+                            <form @submit.prevent="submit" class=" md:col-span-2">
                                 <h2 class="text-base font-semibold leading-7 text-gray-900 pb-2">
                                     Fill in the Job Ads details
                                 </h2>
@@ -219,8 +253,8 @@ watch(
                                 </div>
                                 <div
                                     class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-                                    <button type="button"
-                                        class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
+                                    <Link :href="route('dashboard')"
+                                        class="text-sm font-semibold leading-6 text-gray-900">Cancel</Link>
                                     <button type="submit"
                                         class="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Save</button>
                                 </div>
@@ -231,7 +265,8 @@ watch(
 
                                 <template v-if="selectedJobTitleSkills && selectedJobTitleSkills.length > 0">
                                     <template v-for="(jobSkill, index) in selectedJobTitleSkills" :key="index">
-                                        <CheckboxList :title="jobSkill" />
+                                        <CheckboxList :index="index" :title="jobSkill" :addSkill="addSkill"
+                                            :removeSkill="removeSkill" />
                                     </template>
                                 </template>
 

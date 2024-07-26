@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JobAdvertisement;
 use App\Models\JobPosition;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
 class JobAdvertisementController extends Controller
@@ -29,12 +29,57 @@ class JobAdvertisementController extends Controller
         //
     }
 
+    public function saveDraft()
+    {
+        $jobPositionValidate = Request::validate([
+            'job_position_id' => ['nullable'],
+            'role' => ['nullable', 'string'],
+            'skills' => ['nullable', 'array'],
+            'skills.*' => ['string', 'max:50'],
+            'position_level' => ['nullable', 'string'],
+            'years_of_experience' => ['nullable', 'string'],
+            'location' => ['nullable', 'string'],
+        ]);
+
+        $data = JobAdvertisement::updateOrCreate(
+            ['id' => Request::get('id')],
+            [
+                'job_position_id' => $jobPositionValidate['job_position_id'],
+                'role' => $jobPositionValidate['role'],
+                'skills' => json_encode($jobPositionValidate['skills']),
+                'position_level' => $jobPositionValidate['position_level'],
+                'years_of_experience' => $jobPositionValidate['years_of_experience'],
+                'location' => $jobPositionValidate['location'],
+                'is_draft' => true,
+                'is_active' => false
+            ]
+        );
+    }
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        $jobPositionValidate = Request::validate([
+            'job_position_id' => ['required'],
+            'role' => ['required', 'string'],
+            'skills' => ['required', 'array'],
+            'skills.*' => ['string', 'max:50'],
+            'position_level' => ['required', 'string'],
+            'years_of_experience' => ['required', 'string'],
+            'location' => ['required', 'string'],
+        ]);
+
+        JobAdvertisement::create([
+            'job_position_id' => $jobPositionValidate['job_position_id'],
+            'role' => $jobPositionValidate['role'],
+            'skills' => json_encode($jobPositionValidate['skills']),
+            'position_level' => $jobPositionValidate['position_level'],
+            'years_of_experience' => $jobPositionValidate['years_of_experience'],
+            'location' => $jobPositionValidate['location'],
+            'is_active' => 1
+        ]);
     }
 
     /**

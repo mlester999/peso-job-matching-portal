@@ -2,8 +2,11 @@
 import { computed, ref } from 'vue';
 
 const props = defineProps({
+    index: Number,
     title: String,
-    isNoRecord: Boolean
+    isNoRecord: Boolean,
+    addSkill: Function,
+    removeSkill: Function
 })
 
 const isTapped = ref(false);
@@ -15,6 +18,12 @@ const capitalizedTitle = computed(() => {
 });
 
 const toggleBorder = () => {
+    if (!isTapped.value) {
+        props.addSkill(props.title);
+    } else {
+        props.removeSkill(props.title);
+    }
+
     isTapped.value = !isTapped.value;
 };
 </script>

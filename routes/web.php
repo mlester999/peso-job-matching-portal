@@ -111,6 +111,8 @@ Route::middleware([
             Route::get('/', [JobAdvertisementController::class, 'index'])->name('index');
 
             Route::get('/edit/{id}', [JobAdvertisementController::class, 'edit'])->name('edit');
+
+            Route::post('/draft', [JobAdvertisementController::class, 'saveDraft']);
     
             Route::post('/store', [JobAdvertisementController::class, 'store'])->name('store');
     
