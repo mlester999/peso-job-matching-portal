@@ -3,7 +3,7 @@ import CheckboxList from '@/Components/CheckboxList.vue';
 import SelectField from '@/Components/SelectField.vue';
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import { UserCircleIcon, BriefcaseIcon } from '@heroicons/vue/outline'
-import { Link, useForm } from '@inertiajs/vue3';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import { ref, watch, onBeforeUnmount, onBeforeUpdate } from 'vue';
 import debounce from 'lodash.debounce'
 import { useToast } from 'vue-toastification';
@@ -99,7 +99,7 @@ const submit = () => {
     form.post(`/employer/job-ads/store`, {
         onSuccess: () => {
             toast.success("Job ads created successfully!");
-            router.visit('/employer/job-ads');
+            router.visit('/employer/reports?tab=postedJobs');
         },
     });
 };

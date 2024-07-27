@@ -110,12 +110,14 @@ const updateDraft = (jobAdsId) => {
                                                 <p class="text-sm font-medium text-gray-600">Location: {{
                                                     jobAdvertisement.location ?? 'N/A' }}</p>
                                                 <p class="text-sm font-medium text-gray-600 mt-1">Status:
-                                                    <span
-                                                        class="inline-flex items-center gap-x-0.5 rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-600 text-ellipsis">
-                                                        {{
-                                                            jobAdvertisement.is_active ? 'Active' : 'Inactive' }}
+                                                    <span v-if="jobAdvertisement.is_active"
+                                                        class="inline-flex items-center gap-x-0.5 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-600 text-ellipsis">
+                                                        Active
                                                     </span>
-
+                                                    <span v-else
+                                                        class="inline-flex items-center gap-x-0.5 rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-600 text-ellipsis">
+                                                        Inactive
+                                                    </span>
                                                 </p>
                                             </div>
                                         </div>

@@ -6,10 +6,11 @@ const props = defineProps({
     title: String,
     isNoRecord: Boolean,
     addSkill: Function,
-    removeSkill: Function
+    removeSkill: Function,
+    currentSkills: Object,
 })
 
-const isTapped = ref(false);
+const isTapped = ref(props.currentSkills?.some(skill => skill === props.title) ?? false);
 
 // Computed property to capitalize the first letter of the title
 const capitalizedTitle = computed(() => {

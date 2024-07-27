@@ -165,9 +165,46 @@ class JobAdvertisementController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, JobAdvertisement $jobAdvertisement)
+    public function update($id)
     {
-        //
+        $jobAdvertisementValidate = Request::validate([
+            'job_position_id' => ['required'],
+            'role' => ['required', 'string'],
+            'skills' => ['required', 'array'],
+            'skills.*' => ['string', 'max:50'],
+            'position_level' => ['required', 'string'],
+            'years_of_experience' => ['required', 'string'],
+            'location' => ['required', 'string'],
+        ]);
+
+        $jobAdvertisement = JobAdvertisement::findOrFail($id);
+
+        if($jobAdvertisementValidate['job_position_id'] !== $jobAdvertisement->job_position_id) {
+            $jobAdvertisement->job_position_id = $jobAdvertisementValidate['job_position_id'];
+        }
+
+        if($jobAdvertisementValidate['role'] !== $jobAdvertisement->role) {
+            $jobAdvertisement->role = $jobAdvertisementValidate['role'];
+        }
+
+        if($jobAdvertisementValidate['skills'] !== $jobAdvertisement->skills) {
+            $jobAdvertisement->skills = json_encode($jobAdvertisementValidate['skills']);
+        }
+
+        if($jobAdvertisementValidate['position_level'] !== $jobAdvertisement->position_level) {
+            $jobAdvertisement->position_level = $jobAdvertisementValidate['position_level'];
+        }
+        
+        if($jobAdvertisementValidate['years_of_experience'] !== $jobAdvertisement->years_of_experience) {
+            $jobAdvertisement->years_of_experience = $jobAdvertisementValidate['years_of_experience'];
+        }
+
+        if($jobAdvertisementValidate['location'] !== $jobAdvertisement->location) {
+            $jobAdvertisement->location = $jobAdvertisementValidate['location'];
+        }
+        $jobAdvertisement->is_active = 1;
+        $jobAdvertisement->is_draft = false;
+        $jobAdvertisement->save();
     }
 
     /**

@@ -3,7 +3,7 @@ import CheckboxList from '@/Components/CheckboxList.vue';
 import SelectField from '@/Components/SelectField.vue';
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import { UserCircleIcon, BriefcaseIcon } from '@heroicons/vue/outline'
-import { Link, useForm } from '@inertiajs/vue3';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import { ref, watch, onBeforeUnmount, onBeforeUpdate } from 'vue';
 import debounce from 'lodash.debounce'
 import { useToast } from 'vue-toastification';
@@ -65,7 +65,7 @@ const props = defineProps({
     jobPositions: Object,
     jobAdvertisement: Object
 });
-console.log(props);
+
 const form = useForm({
     job_position_id: props.jobAdvertisement.job_position_id,
     role: props.jobAdvertisement.role,
@@ -97,10 +97,17 @@ const autoSaveDraft = () => {
 };
 
 const submit = () => {
-    form.post(`/employer/job-ads/store`, {
+    const isDraft = props.jobAdvertisement.is_draft;
+
+    form.put(`/employer/job-ads/update/${props.jobAdvertisement.id}`, {
         onSuccess: () => {
-            toast.success("Job ads created successfully!");
-            router.visit('/employer/job-ads');
+            if (isDraft) {
+                toast.success("Job ads created successfully!");
+            } else {
+                toast.success("Job ads edited successfully!");
+            }
+
+            router.visit('/employer/reports');
         },
     });
 };
@@ -116,7 +123,9 @@ watch(
 
 onBeforeUnmount(() => {
     if (form.job_position_id || form.role || form.skills.length > 0 || form.position_level || form.years_of_experience || form.location) {
-        autoSaveDraft();
+        if (props.jobAdvertisement.is_draft) {
+            autoSaveDraft();
+        }
     }
 })
 </script>
@@ -186,6 +195,9 @@ onBeforeUnmount(() => {
                                                             class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{
                                                                 role.title }}</label>
                                                     </div>
+                                                    <p v-if="form.errors.role" class="text-red-500 text-sm mt-2">
+                                                        {{ form.errors.role }}
+                                                    </p>
                                                 </div>
                                             </fieldset>
                                         </div>
@@ -253,7 +265,7 @@ onBeforeUnmount(() => {
                                 </div>
                                 <div
                                     class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-                                    <Link :href="route('dashboard')"
+                                    <Link :href="route('employer.reports.index')"
                                         class="text-sm font-semibold leading-6 text-gray-900">Cancel</Link>
                                     <button type="submit"
                                         class="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Save</button>
@@ -266,8 +278,11 @@ onBeforeUnmount(() => {
                                 <template v-if="selectedJobTitleSkills && selectedJobTitleSkills.length > 0">
                                     <template v-for="(jobSkill, index) in selectedJobTitleSkills" :key="index">
                                         <CheckboxList :index="index" :title="jobSkill" :addSkill="addSkill"
-                                            :removeSkill="removeSkill" />
+                                            :removeSkill="removeSkill" :currentSkills="form.skills" />
                                     </template>
+                                    <p v-if="form.errors.skills" class="text-red-500 text-sm mt-2">
+                                        {{ form.errors.skills }}
+                                    </p>
                                 </template>
 
                                 <template v-else>
