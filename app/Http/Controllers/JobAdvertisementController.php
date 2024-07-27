@@ -16,10 +16,35 @@ class JobAdvertisementController extends Controller
     {
         $jobPositions = JobPosition::orderBy('title', 'asc')->get();
 
-        return Inertia::render('JobAds/Index', [
+        return Inertia::render('JobAds/Add', [
             'jobPositions' => $jobPositions
         ]);
     }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function reports()
+    {
+        $filters = Request::only(['tab']);
+        $postedJobsCounts = JobAdvertisement::with('jobPosition')->where('is_draft', false)->count();
+        $draftJobsCounts = JobAdvertisement::with('jobPosition')->where('is_draft', true)->count();
+        $jobAdvertisements;
+
+        if (isset($filters['tab']) && $filters['tab'] === 'drafts') {
+            $jobAdvertisements = JobAdvertisement::with('jobPosition')->where('is_draft', true)->get();
+        } else {
+            $jobAdvertisements = JobAdvertisement::with('jobPosition')->where('is_draft', false)->get();
+        }
+
+        return Inertia::render('JobAds/Reports', [
+            'jobAdvertisements' => $jobAdvertisements,
+            'filters' => $filters,
+            'postedJobsCount' => $postedJobsCounts,
+            'draftJobsCounts' => $draftJobsCounts
+        ]);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -51,7 +76,34 @@ class JobAdvertisementController extends Controller
                 'years_of_experience' => $jobPositionValidate['years_of_experience'],
                 'location' => $jobPositionValidate['location'],
                 'is_draft' => true,
-                'is_active' => false
+                'is_active' => 0
+            ]
+        );
+    }
+
+    public function editDraft($id)
+    {
+        $jobPositionValidate = Request::validate([
+            'job_position_id' => ['nullable'],
+            'role' => ['nullable', 'string'],
+            'skills' => ['nullable', 'array'],
+            'skills.*' => ['string', 'max:50'],
+            'position_level' => ['nullable', 'string'],
+            'years_of_experience' => ['nullable', 'string'],
+            'location' => ['nullable', 'string'],
+        ]);
+
+        $data = JobAdvertisement::updateOrCreate(
+            ['id' => $id],
+            [
+                'job_position_id' => $jobPositionValidate['job_position_id'],
+                'role' => $jobPositionValidate['role'],
+                'skills' => json_encode($jobPositionValidate['skills']),
+                'position_level' => $jobPositionValidate['position_level'],
+                'years_of_experience' => $jobPositionValidate['years_of_experience'],
+                'location' => $jobPositionValidate['location'],
+                'is_draft' => true,
+                'is_active' => 0
             ]
         );
     }
@@ -78,6 +130,7 @@ class JobAdvertisementController extends Controller
             'position_level' => $jobPositionValidate['position_level'],
             'years_of_experience' => $jobPositionValidate['years_of_experience'],
             'location' => $jobPositionValidate['location'],
+            'is_draft' => false,
             'is_active' => 1
         ]);
     }
@@ -93,9 +146,20 @@ class JobAdvertisementController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(JobAdvertisement $jobAdvertisement)
+    public function edit($id)
     {
-        //
+        $jobAdvertisement = JobAdvertisement::with('jobPosition')->find($id);
+
+        if (!$jobAdvertisement) {
+            return back()->with('message', 'No Job Advertisement Found');
+        }
+
+        $jobPositions = JobPosition::orderBy('title', 'asc')->get();
+
+        return Inertia::render('JobAds/Edit', [
+            'jobPositions' => $jobPositions,
+            'jobAdvertisement' => $jobAdvertisement
+        ]);
     }
 
     /**

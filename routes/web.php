@@ -107,12 +107,18 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::group(['middleware' => 'role:employer', 'prefix' => 'employer', 'as' => 'employer.'], function () {
+        Route::group(['prefix' => 'reports', 'as' => 'reports.'], function() {
+            Route::get('/', [JobAdvertisementController::class, 'reports'])->name('index');
+        });
+
         Route::group(['prefix' => 'job-ads', 'as' => 'job-ads.'], function() {
-            Route::get('/', [JobAdvertisementController::class, 'index'])->name('index');
+            Route::get('/add', [JobAdvertisementController::class, 'index'])->name('index');
 
             Route::get('/edit/{id}', [JobAdvertisementController::class, 'edit'])->name('edit');
 
             Route::post('/draft', [JobAdvertisementController::class, 'saveDraft']);
+
+            Route::post('/edit-draft/{id}', [JobAdvertisementController::class, 'editDraft']);
     
             Route::post('/store', [JobAdvertisementController::class, 'store'])->name('store');
     

@@ -46,7 +46,8 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, 
         </template>
 
         <template v-if="$page.props.auth.user.employer">
-            <SidebarLink title="Reports" href="#">
+            <SidebarLink title="Reports" :href="route('employer.reports.index')"
+                :active="route().current('employer.reports.index')">
                 <template #icon>
                     <ClipboardListIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>

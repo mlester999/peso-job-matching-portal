@@ -114,7 +114,7 @@ watch(
 );
 
 onBeforeUnmount(() => {
-    console.log('test');
+    console.log('form.role: ', form.role);
     if (form.job_position_id || form.role || form.skills.length > 0 || form.position_level || form.years_of_experience || form.location) {
         autoSaveDraft();
     }
@@ -179,8 +179,8 @@ onBeforeUnmount(() => {
                                                     type of role is it?</label>
                                                 <div class="mt-6 space-y-4">
                                                     <div v-for="role in roles" :key="role.id" class="flex items-center">
-                                                        <input :id="role.id" v-model="form.role" name="role"
-                                                            type="radio"
+                                                        <input :id="role.id" v-model="form.role" :value="role.title"
+                                                            name="role" type="radio"
                                                             class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-600" />
                                                         <label :for="role.id"
                                                             class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{
@@ -253,7 +253,7 @@ onBeforeUnmount(() => {
                                 </div>
                                 <div
                                     class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-                                    <Link :href="route('dashboard')"
+                                    <Link :href="route('employer.reports.index')"
                                         class="text-sm font-semibold leading-6 text-gray-900">Cancel</Link>
                                     <button type="submit"
                                         class="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Save</button>
