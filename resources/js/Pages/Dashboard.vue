@@ -14,7 +14,7 @@ const props = defineProps({
 <template>
     <AuthenticatedLayout title="Dashboard">
         <template #header>
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-4">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-4 my-4">
                 <h2 class="text-xl font-semibold leading-tight">
                     Dashboard
                 </h2>

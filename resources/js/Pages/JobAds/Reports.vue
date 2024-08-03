@@ -8,6 +8,7 @@ import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { BriefcaseIcon } from '@heroicons/vue/solid';
+import { useToast } from 'vue-toastification';
 
 const props = defineProps({
     jobAdvertisements: Object,
@@ -16,6 +17,8 @@ const props = defineProps({
     postedJobsCount: Number
 });
 
+const toast = useToast();
+
 const tabs = [
     { name: 'Posted Jobs', alias: 'postedJobs', href: 'employer.reports.index', count: props.postedJobsCount, params: { tab: 'postedJobs' } },
     { name: 'Drafts', alias: 'drafts', href: 'employer.reports.index', count: props.draftJobsCounts, params: { tab: 'drafts' } },
@@ -23,6 +26,22 @@ const tabs = [
 
 const updateDraft = (jobAdsId) => {
     router.get(`/employer/job-ads/edit/${jobAdsId}`);
+}
+
+const deactivate = (id) => {
+    router.put(`/employer/job-ads/deactivate/${id}`, {}, {
+        onSuccess: () => {
+            toast.success("Job ads deactivated successfully!");
+        }
+    });
+}
+
+const activate = (id) => {
+    router.put(`/employer/job-ads/activate/${id}`, {}, {
+        onSuccess: () => {
+            toast.success("Job ads activated successfully!");
+        }
+    });
 }
 
 // let search = ref(props.filters.search);
@@ -52,12 +71,12 @@ const updateDraft = (jobAdsId) => {
 <template>
     <AuthenticatedLayout title="Employers">
         <template #header>
-            <div class="px-4 sm:px-6 lg:px-8">
-                <div class="sm:flex sm:items-center">
+            <div class="px-4">
+                <div class="sm:flex sm:items-center my-4">
                     <div class="sm:flex-auto">
-                        <h1 class="text-base font-semibold leading-6 text-gray-900">Reports</h1>
-                        <p class="mt-2 text-sm text-gray-700">A list of all the users in your account including
-                            their name, title, email and role.</p>
+                        <h2 class="text-xl font-semibold leading-tight">
+                            Reports
+                        </h2>
                     </div>
                     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                         <button type="button"
@@ -121,7 +140,8 @@ const updateDraft = (jobAdsId) => {
                                                 </p>
                                             </div>
                                         </div>
-                                        <div class="mt-5 flex justify-center sm:mt-0">
+                                        <div v-if="filters.tab !== 'postedJobs'"
+                                            class="mt-5 flex justify-center sm:mt-0">
                                             <button @click="updateDraft(jobAdvertisement.id)"
                                                 class="flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                                                 View
@@ -131,13 +151,17 @@ const updateDraft = (jobAdsId) => {
                                 </div>
                                 <div v-if="filters.tab !== 'drafts'"
                                     class="grid grid-cols-1 divide-y divide-gray-200 border-t border-gray-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-                                    <button
-                                        class="px-6 py-5 text-center text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-200">
-                                        View
-                                    </button>
                                     <button @click="updateDraft(jobAdvertisement.id)"
                                         class="px-6 py-5 text-center text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-200">
                                         Edit
+                                    </button>
+                                    <button v-if="jobAdvertisement.is_active" @click="deactivate(jobAdvertisement.id)"
+                                        class="px-6 py-5 text-center text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-200">
+                                        Deactivate
+                                    </button>
+                                    <button v-else @click="activate(jobAdvertisement.id)"
+                                        class="px-6 py-5 text-center text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-200">
+                                        Activate
                                     </button>
                                     <button
                                         class="px-6 py-5 text-center text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-200">

@@ -202,8 +202,32 @@ class JobAdvertisementController extends Controller
         if($jobAdvertisementValidate['location'] !== $jobAdvertisement->location) {
             $jobAdvertisement->location = $jobAdvertisementValidate['location'];
         }
+
+        if ($jobAdvertisement->is_draft) {
+            $jobAdvertisement->is_active = 1;
+            $jobAdvertisement->is_draft = false;
+        }
+
+        $jobAdvertisement->save();
+    }
+
+       /**
+     * Update the specified resource in storage.
+     */
+    public function activate($id)
+    {
+        $jobAdvertisement = JobAdvertisement::findOrFail($id);
         $jobAdvertisement->is_active = 1;
-        $jobAdvertisement->is_draft = false;
+        $jobAdvertisement->save();
+    }
+
+           /**
+     * Update the specified resource in storage.
+     */
+    public function deactivate($id)
+    {
+        $jobAdvertisement = JobAdvertisement::findOrFail($id);
+        $jobAdvertisement->is_active = 0;
         $jobAdvertisement->save();
     }
 

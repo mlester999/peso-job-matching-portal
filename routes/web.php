@@ -123,6 +123,10 @@ Route::middleware([
             Route::post('/store', [JobAdvertisementController::class, 'store'])->name('store');
     
             Route::put('/update/{id}', [JobAdvertisementController::class, 'update'])->name('update');
+
+            Route::put('/activate/{id}', [JobAdvertisementController::class, 'activate'])->name('activate');
+
+            Route::put('/deactivate/{id}', [JobAdvertisementController::class, 'deactivate'])->name('deactivate');
     
             Route::delete('/delete/{id}', [JobAdvertisementController::class, 'delete'])->name('delete');
         });
