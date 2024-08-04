@@ -373,4 +373,83 @@ class ApplicantController extends Controller
         {
             return response()->json($request->user());
         }
+
+        // Register a new user
+        public function submitPersonalInformation(\Illuminate\Http\Request $request, $id)
+        {
+            $validator = Validator::make($request->all(), [
+                'firstName' => 'required|string',
+                'middleName' => 'nullable|string',
+                'lastName' => 'required|string',
+                'email' => 'nullable|max:50|email|' . Rule::unique('users')->ignore(Applicant::findOrFail($id)->user->id),
+                'birthDate' => 'required|date',
+                'sex' => 'required|string',
+                'province' => 'required|string',
+                'city' => 'required|string',
+                'barangay' => 'required|string',
+                'streetAddress' => 'required|string',
+                'zipCode' => 'required|string',
+                'contactNumber' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $applicant = Applicant::findOrFail($id);
+            $user = Applicant::findOrFail($id)->user;
+
+            if($validator['first_name'] !== $applicant->first_name) {
+                $applicant->first_name = $validator['first_name'];
+            }
+
+            if($validator['middle_name'] !== $applicant->middle_name) {
+                $applicant->middle_name = $validator['middle_name'];
+            }
+    
+            if($validator['last_name'] !== $applicant->last_name) {
+                $applicant->last_name = $validator['last_name'];
+            }
+    
+            if($validator['email'] !== $user->email) {
+                $user->email = $validator['email'];
+            }
+
+            if($validator['birthDate'] !== $applicant->birthDate) {
+                $applicant->birthDate = $validator['birthDate'];
+            }
+
+            if($validator['sex'] !== $applicant->sex) {
+                $applicant->sex = $validator['sex'];
+            }
+    
+            if($validator['province'] !== $applicant->province) {
+                $applicant->province = $validator['province'];
+            }
+    
+            if($validator['city'] !== $applicant->city) {
+                $applicant->city = $validator['city'];
+            }
+    
+            if($validator['barangay'] !== $applicant->barangay) {
+                $applicant->barangay = $validator['barangay'];
+            }
+    
+            if($validator['street_address'] !== $applicant->street_address) {
+                $applicant->street_address = $validator['street_address'];
+            }
+    
+            if($validator['contact_number'] !== $applicant->contact_number) {
+                $applicant->contact_number = $validator['contact_number'];
+            }
+    
+            if($validator['zip_code'] !== $applicant->zip_code) {
+                $applicant->zip_code = $validator['zip_code'];
+            }
+    
+            $user->save();
+            $applicant->save();
+
+            return response()->json(['message' => 'Personal Information updated successfully'], 201);
+        }
 }

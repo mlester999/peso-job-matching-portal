@@ -32,3 +32,6 @@ Route::post('logout', [ApplicantController::class, 'logout']);
 Route::post('refresh', [ApplicantController::class, 'refresh']);
 Route::get('details', [ApplicantController::class, 'details']);
 
+// Onboarding user
+Route::post('submit-personal-information/{id}', [ApplicantController::class, 'submitPersonalInformation']);
+
