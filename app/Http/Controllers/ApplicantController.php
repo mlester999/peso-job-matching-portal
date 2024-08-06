@@ -381,7 +381,12 @@ class ApplicantController extends Controller
                 'firstName' => 'required|string',
                 'middleName' => 'nullable|string',
                 'lastName' => 'required|string',
-                'email' => 'nullable|max:50|email|' . Rule::unique('users')->ignore(Applicant::findOrFail($id)->user->id),
+                'email' => [
+                    'nullable',
+                    'max:50',
+                    'email',
+                    Rule::unique('users')->ignore(Applicant::findOrFail($id)->user->id),
+                ],
                 'birthDate' => 'required|date',
                 'sex' => 'required|string',
                 'province' => 'required|string',
@@ -399,52 +404,54 @@ class ApplicantController extends Controller
             $applicant = Applicant::findOrFail($id);
             $user = Applicant::findOrFail($id)->user;
 
-            if($validator['first_name'] !== $applicant->first_name) {
-                $applicant->first_name = $validator['first_name'];
+            $validatedData = $validator->validated();
+
+            if($validatedData['firstName'] !== $applicant->first_name) {
+                $applicant->first_name = $validatedData['firstName'];
             }
 
-            if($validator['middle_name'] !== $applicant->middle_name) {
-                $applicant->middle_name = $validator['middle_name'];
+            if($validatedData['middleName'] !== $applicant->middle_name) {
+                $applicant->middle_name = $validatedData['middleName'];
             }
     
-            if($validator['last_name'] !== $applicant->last_name) {
-                $applicant->last_name = $validator['last_name'];
+            if($validatedData['lastName'] !== $applicant->last_name) {
+                $applicant->last_name = $validatedData['lastName'];
             }
     
-            if($validator['email'] !== $user->email) {
-                $user->email = $validator['email'];
+            if($validatedData['email'] !== $user->email) {
+                $user->email = $validatedData['email'];
             }
 
-            if($validator['birthDate'] !== $applicant->birthDate) {
-                $applicant->birthDate = $validator['birthDate'];
+            if($validatedData['birthDate'] !== $applicant->birthDate) {
+                $applicant->birth_date = $validatedData['birthDate'];
             }
 
-            if($validator['sex'] !== $applicant->sex) {
-                $applicant->sex = $validator['sex'];
+            if($validatedData['sex'] !== $applicant->sex) {
+                $applicant->sex = $validatedData['sex'];
             }
     
-            if($validator['province'] !== $applicant->province) {
-                $applicant->province = $validator['province'];
+            if($validatedData['province'] !== $applicant->province) {
+                $applicant->province = $validatedData['province'];
             }
     
-            if($validator['city'] !== $applicant->city) {
-                $applicant->city = $validator['city'];
+            if($validatedData['city'] !== $applicant->city) {
+                $applicant->city = $validatedData['city'];
             }
     
-            if($validator['barangay'] !== $applicant->barangay) {
-                $applicant->barangay = $validator['barangay'];
+            if($validatedData['barangay'] !== $applicant->barangay) {
+                $applicant->barangay = $validatedData['barangay'];
             }
     
-            if($validator['street_address'] !== $applicant->street_address) {
-                $applicant->street_address = $validator['street_address'];
+            if($validatedData['streetAddress'] !== $applicant->street_address) {
+                $applicant->street_address = $validatedData['streetAddress'];
             }
     
-            if($validator['contact_number'] !== $applicant->contact_number) {
-                $applicant->contact_number = $validator['contact_number'];
+            if($validatedData['contactNumber'] !== $applicant->contact_number) {
+                $applicant->contact_number = $validatedData['contactNumber'];
             }
     
-            if($validator['zip_code'] !== $applicant->zip_code) {
-                $applicant->zip_code = $validator['zip_code'];
+            if($validatedData['zipCode'] !== $applicant->zip_code) {
+                $applicant->zip_code = $validatedData['zipCode'];
             }
     
             $user->save();

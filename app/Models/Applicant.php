@@ -14,6 +14,7 @@ class Applicant extends Model
     protected $fillable = [
         'user_id',
         'first_name',
+        'middle_name',
         'last_name',
         'province',
         'city',
@@ -21,6 +22,9 @@ class Applicant extends Model
         'street_address',
         'zip_code',
         'contact_number',
+        'education',
+        'work_experience',
+        'skills',
     ];
 
     public function applications(): HasMany
