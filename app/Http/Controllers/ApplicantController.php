@@ -374,7 +374,7 @@ class ApplicantController extends Controller
             return response()->json($request->user());
         }
 
-        // Register a new user
+        // Submit the personal information of the applicant
         public function submitPersonalInformation(\Illuminate\Http\Request $request, $id)
         {
             $validator = Validator::make($request->all(), [
@@ -458,5 +458,41 @@ class ApplicantController extends Controller
             $applicant->save();
 
             return response()->json(['message' => 'Personal Information updated successfully'], 201);
+        }
+
+        // Submit the educational background of the applicant
+        public function submitEducationalBackground(\Illuminate\Http\Request $request, $id)
+        {
+            $validator = Validator::make($request->all(), [
+                '*.schoolName' => 'required|string|max:255',
+                '*.educationalLevel' => 'required|string',
+                '*.educationalLevelQuery' => 'nullable|string|max:255',
+                '*.level' => 'nullable|string|max:255',
+                '*.levelQuery' => 'nullable|string|max:255',
+                '*.course' => 'nullable|string|max:255',
+                '*.courseQuery' => 'nullable|string|max:255',
+                '*.startDate' => 'required|date',
+                '*.endDate' => 'required|date|after_or_equal:*.startDate',
+            ], [
+                '*.schoolName.required' => 'The school name field is required.',
+                '*.educationalLevel.required' => 'The educational level field is required.',
+                '*.startDate.required' => 'The start date field is required.',
+                '*.endDate.required' => 'The end date field is required.',
+                '*.endDate.after_or_equal' => 'The end date must be a date after or equal to the start date.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $applicant = Applicant::findOrFail($id);
+
+            $validatedData = $validator->validated();
+
+            $applicant->education = json_encode($validatedData);
+    
+            $applicant->save();
+
+            return response()->json(['message' => $validatedData], 201);
         }
 }

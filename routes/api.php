@@ -34,4 +34,5 @@ Route::get('details', [ApplicantController::class, 'details']);
 
 // Onboarding user
 Route::post('submit-personal-information/{id}', [ApplicantController::class, 'submitPersonalInformation']);
+Route::post('submit-educational-background/{id}', [ApplicantController::class, 'submitEducationalBackground']);
 
