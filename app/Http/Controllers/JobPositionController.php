@@ -225,4 +225,14 @@ class JobPositionController extends Controller
     {
         //
     }
+
+    /**
+     * Show the job positions.
+     */
+    public function jobPositions()
+    {
+        $jobPositions = JobPosition::all();
+
+        return response()->json(['jobPositions' => $jobPositions], 201);
+    }
 }

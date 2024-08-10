@@ -466,11 +466,8 @@ class ApplicantController extends Controller
             $validator = Validator::make($request->all(), [
                 '*.schoolName' => 'required|string|max:255',
                 '*.educationalLevel' => 'required|string',
-                '*.educationalLevelQuery' => 'nullable|string|max:255',
                 '*.level' => 'nullable|string|max:255',
-                '*.levelQuery' => 'nullable|string|max:255',
                 '*.course' => 'nullable|string|max:255',
-                '*.courseQuery' => 'nullable|string|max:255',
                 '*.startDate' => 'required|date',
                 '*.endDate' => 'required|date|after_or_equal:*.startDate',
             ], [
@@ -493,6 +490,36 @@ class ApplicantController extends Controller
     
             $applicant->save();
 
-            return response()->json(['message' => $validatedData], 201);
+            return response()->json(['message' => 'Educational Background updated successfully'], 201);
+        }
+
+        // Submit the work experience of the applicant
+        public function submitWorkExperience(\Illuminate\Http\Request $request, $id)
+        {
+            $validator = Validator::make($request->all(), [
+                '*.companyName' => 'nullable|string|max:255',
+                '*.companyAddress' => 'nullable|string|max:255',
+                '*.employmentType' => 'nullable|string',
+                '*.jobTitle' => 'nullable|string|max:255',
+                '*.industry' => 'nullable|string|max:255',
+                '*.startDate' => 'nullable|date',
+                '*.endDate' => 'nullable|date|after_or_equal:*.startDate',
+            ], [
+                '*.endDate.after_or_equal' => 'The end date must be a date after or equal to the start date.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $applicant = Applicant::findOrFail($id);
+
+            $validatedData = $validator->validated();
+
+            $applicant->work_experience = json_encode($validatedData);
+    
+            $applicant->save();
+
+            return response()->json(['message' => 'Work Experience updated successfully'], 201);
         }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\JobPositionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,7 +33,12 @@ Route::post('logout', [ApplicantController::class, 'logout']);
 Route::post('refresh', [ApplicantController::class, 'refresh']);
 Route::get('details', [ApplicantController::class, 'details']);
 
+// Job Position
+Route::get('job-positions', [JobPositionController::class, 'jobPositions']);
+
+
 // Onboarding user
 Route::post('submit-personal-information/{id}', [ApplicantController::class, 'submitPersonalInformation']);
 Route::post('submit-educational-background/{id}', [ApplicantController::class, 'submitEducationalBackground']);
+Route::post('submit-work-experience/{id}', [ApplicantController::class, 'submitWorkExperience']);
 
