@@ -41,4 +41,5 @@ Route::get('job-positions', [JobPositionController::class, 'jobPositions']);
 Route::post('submit-personal-information/{id}', [ApplicantController::class, 'submitPersonalInformation']);
 Route::post('submit-educational-background/{id}', [ApplicantController::class, 'submitEducationalBackground']);
 Route::post('submit-work-experience/{id}', [ApplicantController::class, 'submitWorkExperience']);
+Route::post('submit-skills/{id}', [ApplicantController::class, 'submitSkills']);
 

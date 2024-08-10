@@ -463,11 +463,21 @@ class ApplicantController extends Controller
         // Submit the educational background of the applicant
         public function submitEducationalBackground(\Illuminate\Http\Request $request, $id)
         {
-            $validator = Validator::make($request->all(), [
+            $input = $request->all();
+
+            // Replace null values with empty strings
+            array_walk_recursive($input, function (&$item) {
+                $item = $item === null ? '' : $item;
+            });
+
+            $validator = Validator::make($input, [
                 '*.schoolName' => 'required|string|max:255',
                 '*.educationalLevel' => 'required|string',
+                '*.educationalLevelQuery' => 'nullable|string',
                 '*.level' => 'nullable|string|max:255',
+                '*.levelQuery' => 'nullable|string|max:255',
                 '*.course' => 'nullable|string|max:255',
+                '*.courseQuery' => 'nullable|string|max:255',
                 '*.startDate' => 'required|date',
                 '*.endDate' => 'required|date|after_or_equal:*.startDate',
             ], [
@@ -496,12 +506,21 @@ class ApplicantController extends Controller
         // Submit the work experience of the applicant
         public function submitWorkExperience(\Illuminate\Http\Request $request, $id)
         {
-            $validator = Validator::make($request->all(), [
+            $input = $request->all();
+
+            // Replace null values with empty strings
+            array_walk_recursive($input, function (&$item) {
+                $item = $item === null ? '' : $item;
+            });
+
+            $validator = Validator::make($input, [
                 '*.companyName' => 'nullable|string|max:255',
                 '*.companyAddress' => 'nullable|string|max:255',
                 '*.employmentType' => 'nullable|string',
+                '*.employmentTypeQuery' => 'nullable|string',
                 '*.jobTitle' => 'nullable|string|max:255',
                 '*.industry' => 'nullable|string|max:255',
+                '*.industryQuery' => 'nullable|string|max:255',
                 '*.startDate' => 'nullable|date',
                 '*.endDate' => 'nullable|date|after_or_equal:*.startDate',
             ], [
@@ -522,4 +541,37 @@ class ApplicantController extends Controller
 
             return response()->json(['message' => 'Work Experience updated successfully'], 201);
         }
+
+         // Submit the skills of the applicant
+         public function submitSkills(\Illuminate\Http\Request $request, $id)
+         { 
+            $input = $request->all();
+
+            // Replace null values with empty strings
+            array_walk_recursive($input, function (&$item) {
+                $item = $item === null ? '' : $item;
+            });
+
+            $validator = Validator::make($input, [
+                 'jobPositionId' => 'required|numeric|max:255',
+                 'jobPositionTitle' => 'required|string|max:255',
+                 'jobPositionSkills' => 'required|array',
+                 'jobPositionQuery' => 'nullable|string|max:255',
+                 'skills' => 'required|array',
+             ]);
+ 
+             if ($validator->fails()) {
+                 return response()->json(['error' => $validator->errors()], 422);
+             }
+ 
+             $applicant = Applicant::findOrFail($id);
+ 
+             $validatedData = $validator->validated();
+ 
+             $applicant->skills = json_encode($validatedData);
+     
+             $applicant->save();
+ 
+             return response()->json(['message' => 'Skills updated successfully'], 201);
+         }
 }
