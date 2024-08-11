@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Applicant;
+use App\Models\Application;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Hash;
@@ -574,4 +575,17 @@ class ApplicantController extends Controller
  
              return response()->json(['message' => 'Skills updated successfully'], 201);
          }
+
+        // Submit all the information of the applicant
+        public function confirmOnboarding($id)
+        { 
+            $applicant = Applicant::findOrFail($id);
+
+            Application::create([
+                'applicant_id' => $applicant->id,
+                'status' => 0,
+            ]);
+
+            return response()->json(['message' => 'Applicant onboarded successfully'], 201);
+        }
 }

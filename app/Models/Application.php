@@ -10,6 +10,11 @@ class Application extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'applicant_id',
+        'status',
+    ];
+
     public function applicant(): BelongsTo
     {
         return $this->belongsTo(Applicant::class);
