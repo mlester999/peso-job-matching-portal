@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use App\Semaphore\Facades\Semaphore;
 
 class ApplicantController extends Controller
 {
@@ -297,6 +298,7 @@ class ApplicantController extends Controller
             'firstName' => 'required|string',
             'lastName' => 'required|string',
             'email' => 'required|email|unique:users',
+            'contactNumber' => 'required|string',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
@@ -313,11 +315,17 @@ class ApplicantController extends Controller
 
         Applicant::create([
             'user_id' => $user->id,
+            'contact_number' => $request->input('contactNumber'),
             'first_name' => $request->input('firstName'),
             'last_name' => $request->input('lastName')
         ]);
 
         $token = $user->createToken('Applicant Dashboard')->plainTextToken;
+
+        Semaphore::message()->sendOtp(
+            $request->input('contactNumber'),
+            'NEVER SHARE YOUR ONE-TIME PIN.'
+        );
 
         return response()->json(['token' => $token], 201);
     }
@@ -593,9 +601,9 @@ class ApplicantController extends Controller
         public function updatePersonalInformation(\Illuminate\Http\Request $request, $id)
         {
             $validator = Validator::make($request->all(), [
-                'firstName' => 'required|string',
+                'firstName' => 'nullable|string',
                 'middleName' => 'nullable|string',
-                'lastName' => 'required|string',
+                'lastName' => 'nullable|string',
                 'email' => [
                     'nullable',
                     'max:50',
