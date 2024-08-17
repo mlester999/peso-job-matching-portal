@@ -588,4 +588,114 @@ class ApplicantController extends Controller
 
             return response()->json(['message' => 'Applicant onboarded successfully'], 201);
         }
+
+        // Update the personal information of the applicant
+        public function updatePersonalInformation(\Illuminate\Http\Request $request, $id)
+        {
+            $validator = Validator::make($request->all(), [
+                'firstName' => 'required|string',
+                'middleName' => 'nullable|string',
+                'lastName' => 'required|string',
+                'email' => [
+                    'nullable',
+                    'max:50',
+                    'email',
+                    Rule::unique('users')->ignore(Applicant::findOrFail($id)->user->id),
+                ]
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $applicant = Applicant::findOrFail($id);
+            $user = Applicant::findOrFail($id)->user;
+
+            $validatedData = $validator->validated();
+
+            if($validatedData['firstName'] !== $applicant->first_name) {
+                $applicant->first_name = $validatedData['firstName'];
+            }
+
+            if($validatedData['middleName'] !== $applicant->middle_name) {
+                $applicant->middle_name = $validatedData['middleName'];
+            }
+    
+            if($validatedData['lastName'] !== $applicant->last_name) {
+                $applicant->last_name = $validatedData['lastName'];
+            }
+    
+            if($validatedData['email'] !== $user->email) {
+                $user->email = $validatedData['email'];
+            }
+    
+            $user->save();
+            $applicant->save();
+
+            return response()->json(['message' => 'Personal Information updated successfully'], 201);
+        }
+
+        // Update the password of the applicant
+        public function updatePassword(\Illuminate\Http\Request $request, $id)
+        {
+            $applicant = Applicant::findOrFail($id);
+            $user = Applicant::findOrFail($id)->user;
+
+            $validator = Validator::make($request->all(), [
+                'currentPassword' => [
+                    'required',
+                    'string',
+                    'min:6',
+                    function ($attribute, $value, $fail) use ($user) {
+                        if (!Hash::check($value, $user->password)) {
+                            $fail('The current password is incorrect.');
+                        }
+                    },
+                ],
+                'newPassword' => 'required|string|min:6',
+                'confirmNewPassword' => 'required|string|same:newPassword'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $validatedData = $validator->validated();
+    
+            $user->password = Hash::make($validatedData['newPassword']);
+    
+            $user->save();
+
+            return response()->json(['message' => 'Password updated successfully'], 201);
+        }
+
+        
+        // Logout the other sessions of the applicant
+        public function logoutOtherSessions(\Illuminate\Http\Request $request, $id)
+        {
+            $applicant = Applicant::findOrFail($id);
+            $user = Applicant::findOrFail($id)->user;
+
+            $validator = Validator::make($request->all(), [
+                'currentPassword' => [
+                    'required',
+                    'string',
+                    'min:6',
+                    function ($attribute, $value, $fail) use ($user) {
+                        if (!Hash::check($value, $user->password)) {
+                            $fail('The current password is incorrect.');
+                        }
+                    },
+                ]
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $validatedData = $validator->validated();
+            Auth::logoutOtherDevices($validatedData['currentPassword']);
+
+            return response()->json(['message' => 'Logout other sessions successfully'], 201);
+        }
 }
