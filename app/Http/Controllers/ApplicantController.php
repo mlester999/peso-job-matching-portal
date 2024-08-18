@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Applicant;
 use App\Models\Application;
 use App\Models\User;
+use App\Mail\SendOtpEmail;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Semaphore\Facades\Semaphore;
@@ -728,5 +730,30 @@ class ApplicantController extends Controller
 
             $applicant->save();
             return response()->json(['message' => 'Contact number verified successfully'], 201);
+        }
+
+        // Verify the account of the applicant using email
+        public function verifyUsingEmail(\Illuminate\Http\Request $request, $id)
+        {
+            $applicant = Applicant::findOrFail($id);
+            $user = Applicant::findOrFail($id)->user;
+
+            $otp = random_int(100000, 999999);
+
+            Mail::to($user->email)->send(new SendOtpEmail($applicant->first_name, $otp));
+
+            return response()->json(['otp' => $otp], 201);
+        }
+
+        // Verify the account of the applicant using SMS
+        public function verifyEmailAddress(\Illuminate\Http\Request $request, $id)
+        {
+            $applicant = Applicant::findOrFail($id);
+            $user = Applicant::findOrFail($id)->user;
+
+            $user->email_verified_at = now();
+
+            $user->save();
+            return response()->json(['message' => 'Email address verified successfully'], 201);
         }
 }
