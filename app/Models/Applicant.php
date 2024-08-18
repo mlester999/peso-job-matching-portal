@@ -22,6 +22,7 @@ class Applicant extends Model
         'street_address',
         'zip_code',
         'contact_number',
+        'contact_number_verified_at',
         'education',
         'work_experience',
         'skills',

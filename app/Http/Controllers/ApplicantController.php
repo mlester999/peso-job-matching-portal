@@ -298,7 +298,7 @@ class ApplicantController extends Controller
             'firstName' => 'required|string',
             'lastName' => 'required|string',
             'email' => 'required|email|unique:users',
-            'contactNumber' => 'required|string',
+            'contact_number' => 'required|string|unique:'.Applicant::class,
             'password' => 'required|string|min:6|confirmed',
         ]);
 
@@ -315,17 +315,17 @@ class ApplicantController extends Controller
 
         Applicant::create([
             'user_id' => $user->id,
-            'contact_number' => $request->input('contactNumber'),
+            'contact_number' => $request->input('contact_number'),
             'first_name' => $request->input('firstName'),
             'last_name' => $request->input('lastName')
         ]);
 
         $token = $user->createToken('Applicant Dashboard')->plainTextToken;
 
-        Semaphore::message()->sendOtp(
-            $request->input('contactNumber'),
-            'NEVER SHARE YOUR ONE-TIME PIN.'
-        );
+        // Semaphore::message()->sendOtp(
+        //     $request->input('contactNumber'),
+        //     'NEVER SHARE YOUR ONE-TIME PIN.'
+        // );
 
         return response()->json(['token' => $token], 201);
     }
@@ -705,5 +705,28 @@ class ApplicantController extends Controller
             Auth::logoutOtherDevices($validatedData['currentPassword']);
 
             return response()->json(['message' => 'Logout other sessions successfully'], 201);
+        }
+
+        // Verify the account of the applicant using SMS
+        public function verifyUsingSms(\Illuminate\Http\Request $request, $id)
+        {
+            $applicant = Applicant::findOrFail($id);
+
+            $messageResponse = Semaphore::message()->sendOtp(
+            $applicant->contact_number,
+            'NEVER SHARE YOUR ONE-TIME PIN.'
+            );
+
+            return response()->json(['otp' => $messageResponse], 201);
+        }
+
+        // Verify the account of the applicant using SMS
+        public function verifyContactNumber(\Illuminate\Http\Request $request, $id)
+        {
+            $applicant = Applicant::findOrFail($id);
+            $applicant->contact_number_verified_at = now();
+
+            $applicant->save();
+            return response()->json(['message' => 'Contact number verified successfully'], 201);
         }
 }

@@ -36,6 +36,11 @@ Route::get('details', [ApplicantController::class, 'details']);
 // Job Position
 Route::get('job-positions', [JobPositionController::class, 'jobPositions']);
 
+// Verify user
+Route::post('verify-using-email/{id}', [ApplicantController::class, 'verifyUsingEmail']);
+Route::post('verify-using-sms/{id}', [ApplicantController::class, 'verifyUsingSms']);
+Route::put('verify-email/{id}', [ApplicantController::class, 'verifyEmail']);
+Route::put('verify-contact-number/{id}', [ApplicantController::class, 'verifyContactNumber']);
 
 // Onboarding user
 Route::post('submit-personal-information/{id}', [ApplicantController::class, 'submitPersonalInformation']);
