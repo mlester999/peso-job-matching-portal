@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Authenticating and signing up user
 Route::post('login', [ApplicantController::class, 'login']);
 Route::post('register', [ApplicantController::class, 'register']);
+Route::post('send-reset-password-link', [ApplicantController::class, 'sendResetPasswordLink']);
 Route::post('logout', [ApplicantController::class, 'logout']);
 Route::post('refresh', [ApplicantController::class, 'refresh']);
 Route::get('details', [ApplicantController::class, 'details']);

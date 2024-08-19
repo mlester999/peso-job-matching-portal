@@ -6,8 +6,10 @@ use App\Models\Applicant;
 use App\Models\Application;
 use App\Models\User;
 use App\Mail\SendOtpEmail;
+use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -299,7 +301,7 @@ class ApplicantController extends Controller
         $validator = Validator::make($request->all(), [
             'firstName' => 'required|string',
             'lastName' => 'required|string',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email:dns,rfc|unique:users',
             'contact_number' => 'required|string|unique:'.Applicant::class,
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -755,5 +757,44 @@ class ApplicantController extends Controller
 
             $user->save();
             return response()->json(['message' => 'Email address verified successfully'], 201);
+        }
+        
+        // Verify the account of the applicant using SMS
+        public function sendResetPasswordLink(\Illuminate\Http\Request $request)
+        {
+            $validator = Validator::make($request->all(), [
+                'email' => [
+                    'required',
+                    'max:50',
+                    'email:dns,rfc'
+                ]
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $validatedData = $validator->validated();
+
+            $user = User::where('email', $validatedData['email'])->with('applicant')->first();
+
+            if (!$user) {
+                return response()->json(['error' => 'No account with that email address exists.'], 422);
+            }
+
+            // Generate a random verification code
+            $verificationCode = random_int(100000, 999999);
+
+            // Store the verification code in the password_resets table
+            $status = Password::broker()->createToken($user);
+
+            // if ($status !== Password::RESET_LINK_SENT) {
+            //     return response()->json(['error' => __($status)], 422);
+            // }
+
+            // Send the email with the reset link and verification code
+            Mail::to($user->email)->send(new ResetPasswordMail($status, $user->applicant->first_name, $user->email, $verificationCode));
+
+            return response()->json(['message' => 'Reset password link sent successfully'], 201);
         }
 }
