@@ -10,6 +10,7 @@ use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -782,9 +783,6 @@ class ApplicantController extends Controller
                 return response()->json(['error' => 'No account with that email address exists.'], 422);
             }
 
-            // Generate a random verification code
-            $verificationCode = random_int(100000, 999999);
-
             // Store the verification code in the password_resets table
             $status = Password::broker()->createToken($user);
 
@@ -793,8 +791,44 @@ class ApplicantController extends Controller
             // }
 
             // Send the email with the reset link and verification code
-            Mail::to($user->email)->send(new ResetPasswordMail($status, $user->applicant->first_name, $user->email, $verificationCode));
+            Mail::to($user->email)->send(new ResetPasswordMail($status, $user->applicant->first_name, $user->email));
 
             return response()->json(['message' => 'Reset password link sent successfully'], 201);
+        }
+
+        public function getEmailFromToken($token)
+        {
+            // Find the password reset entry in the database
+            $resetEntry = DB::table('password_reset_tokens')->where('token', hash('sha256', $token))->first();
+
+            if ($resetEntry) {
+                // Return the email address associated with the token
+                return response()->json(['email' => $resetEntry->email], 201);
+            }
+
+            return response()->json(['message' => 'The reset token is invalid. Please try again.', 'token' => hash('sha256', $token)], 422);
+        }
+
+        public function resetPassword(Request $request)
+        {
+            $request->validate([
+                'token' => 'required',
+                'email' => 'required|email',
+                'password' => 'required|confirmed|min:8',
+            ]);
+    
+            $resetStatus = Password::broker()->reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user, $password) use ($request) {
+                    $user->password = Hash::make($password);
+                    $user->save();
+                }
+            );
+    
+            if ($resetStatus === Password::INVALID_TOKEN) {
+                return response()->json(['token' => 'The reset token is invalid or expired.'], 422);
+            }
+    
+            return response()->json(['message' => 'Password has been reset!'], 201);
         }
 }

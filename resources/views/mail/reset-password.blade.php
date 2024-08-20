@@ -6,13 +6,13 @@
 <body>
     <p>Dear {{ $firstName }},</p>
 
-    <p>Please use the following verification code to reset your password: <strong>{{ $verificationCode }}</strong>.</p>
-
-    <p>Or, click the button below to reset your password:</p>
+    <p>You are receiving this email because we received a password reset request for your account.</p>
 
     @component('mail::button', ['url' => $resetLink])
     Reset Password
     @endcomponent
+
+    <p>The password reset link will expire in 60 minutes.</p>
 
     <p>If you didn't request this, simply ignore this message.</p>
 

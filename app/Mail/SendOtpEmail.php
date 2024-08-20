@@ -31,16 +31,25 @@ class SendOtpEmail extends Mailable
         );
     }
 
+    public function build()
+    {
+        return $this->markdown('mail.send-otp')
+            ->with([
+                'firstName' => $this->firstName,
+                'otp' => $this->otp
+            ]);
+    }
+
     /**
      * Get the message content definition.
      */
-    public function content(): Content
-    {
-        return new Content(
-            view: 'mail.send-otp',
-            with: ['firstName' => $this->firstName, 'otp' => $this->otp]
-        );
-    }
+    // public function content(): Content
+    // {
+    //     return new Content(
+    //         view: 'mail.send-otp',
+    //         with: ['firstName' => $this->firstName, 'otp' => $this->otp]
+    //     );
+    // }
 
     /**
      * Get the attachments for the message.

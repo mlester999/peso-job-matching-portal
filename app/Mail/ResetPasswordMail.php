@@ -16,7 +16,7 @@ class ResetPasswordMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(private string $token, private string $firstName, private string $email, private int $verificationCode)
+    public function __construct(private string $token, private string $firstName, private string $email)
     {
         //
     }
@@ -34,13 +34,12 @@ class ResetPasswordMail extends Mailable
     public function build()
     {
         $frontendUrl = 'http://localhost:3000/reset-password'; // Frontend URL
-        $resetLink = $frontendUrl . '?token=' . $this->token . '&email=' . urlencode($this->email);
+        $resetLink = $frontendUrl . '?token=' . $this->token;
 
         return $this->markdown('mail.reset-password')
             ->with([
                 'resetLink' => $resetLink,
-                'firstName' => $this->firstName,
-                'verificationCode' => $this->verificationCode,
+                'firstName' => $this->firstName
             ]);
     }
 
