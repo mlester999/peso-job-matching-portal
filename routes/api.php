@@ -33,7 +33,7 @@ Route::post('send-reset-password-link', [ApplicantController::class, 'sendResetP
 Route::post('logout', [ApplicantController::class, 'logout']);
 Route::post('refresh', [ApplicantController::class, 'refresh']);
 Route::get('details', [ApplicantController::class, 'details']);
-Route::post('get-email-from-token/{token}', [ApplicantController::class, 'getEmailFromToken']);
+Route::post('get-email-from-token', [ApplicantController::class, 'getEmailFromToken']);
 Route::post('reset-password', [ApplicantController::class, 'resetPassword']);
 
 // Job Position

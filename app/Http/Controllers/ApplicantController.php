@@ -59,7 +59,9 @@ class ApplicantController extends Controller
         ->withQueryString()
         ->through(fn($applicant) => [
             'id' => $applicant->id,
-            'name' => $applicant->name,
+            'first_name' => $applicant->first_name,
+            'middle_name' => $applicant->middle_name,
+            'last_name' => $applicant->last_name,
             'province' => $applicant->province,
             'city' => $applicant->city,
             'barangay' => $applicant->barangay,
@@ -796,39 +798,53 @@ class ApplicantController extends Controller
             return response()->json(['message' => 'Reset password link sent successfully'], 201);
         }
 
-        public function getEmailFromToken($token)
-        {
-            // Find the password reset entry in the database
-            $resetEntry = DB::table('password_reset_tokens')->where('token', hash('sha256', $token))->first();
-
-            if ($resetEntry) {
-                // Return the email address associated with the token
-                return response()->json(['email' => $resetEntry->email], 201);
-            }
-
-            return response()->json(['message' => 'The reset token is invalid. Please try again.', 'token' => hash('sha256', $token)], 422);
-        }
-
-        public function resetPassword(Request $request)
+        public function getEmailFromToken(\Illuminate\Http\Request $request)
         {
             $request->validate([
                 'token' => 'required',
-                'email' => 'required|email',
-                'password' => 'required|confirmed|min:8',
+                'email' => 'required|email:dns,rfc',
             ]);
-    
-            $resetStatus = Password::broker()->reset(
-                $request->only('email', 'password', 'password_confirmation', 'token'),
-                function ($user, $password) use ($request) {
-                    $user->password = Hash::make($password);
-                    $user->save();
-                }
-            );
-    
-            if ($resetStatus === Password::INVALID_TOKEN) {
-                return response()->json(['token' => 'The reset token is invalid or expired.'], 422);
+
+            // Find the password reset entry in the database
+            $resetEntry = DB::table('password_reset_tokens')->where('email', $request->email)->first();
+
+            if (!$resetEntry || !Hash::check($request->token, $resetEntry->token)) {
+                return response()->json(['message' => 'The reset token is invalid. Please try again.'], 422);
+            }
+        }
+
+        public function resetPassword(\Illuminate\Http\Request $request)
+        {
+            $validator = Validator::make($request->all(), [
+                'token' => 'required',
+                'email' => 'required|email:dns,rfc',
+                'password' => 'required|string|min:6',
+                'confirmNewPassword' => 'required|string|same:password'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }   
+
+            $user = User::where('email', $request->email)->firstOrFail();
+
+            if (!$user) {
+                return response()->json(['error' => 'No account with that email address exists.'], 422);
             }
     
-            return response()->json(['message' => 'Password has been reset!'], 201);
+            if ($user) {
+                $resetStatus = Password::broker()->reset(
+                    $request->only('email', 'password', 'token'),
+                    function ($user, $password) use ($request) {
+                        $user->password = Hash::make($password);
+                        $user->save();
+                    }
+                );
+                if ($resetStatus === Password::INVALID_TOKEN) {
+                    return response()->json(['message' => 'The reset token is invalid or expired.', 'resetStatus' => $resetStatus, 'invalidToken' => Password::INVALID_TOKEN], 422);
+                }
+                return response()->json(['message' => 'Password has been reset!'], 201);
+            }
+            return response()->json(['message' => 'The reset token is invalid or expired.'], 422);
         }
 }

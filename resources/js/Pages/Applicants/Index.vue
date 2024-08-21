@@ -103,9 +103,6 @@ watch(
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                                 Status
                                             </th>
-                                            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                                <span class="sr-only">Edit</span>
-                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 bg-white">
@@ -120,32 +117,26 @@ watch(
                                                 applicant.email }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
                                                 applicant.contact_number
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 applicant.province }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 applicant.city
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 applicant.barangay
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace px-3 py-4 text-sm text-gray-500">{{
                                                 applicant.street_address
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 applicant.zip_code
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                                                 <span v-if="applicant.is_active"
                                                     class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
                                                 <span v-else
                                                     class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Inactive</span>
-                                            </td>
-                                            <td
-                                                class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <button type="button" @click="updateInfo(applicant.id)"
-                                                    class="text-blue-600 hover:text-blue-900">Edit<span
-                                                        class="sr-only">, {{ applicant.name }}</span></button>
                                             </td>
                                         </tr>
 
