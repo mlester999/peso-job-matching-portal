@@ -79,9 +79,10 @@ const activate = (id) => {
                         </h2>
                     </div>
                     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                        <button type="button"
-                            class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Add
-                            job ads</button>
+                        <Link :href="route('employer.job-ads.index')"
+                            class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                        Add
+                        job ads</Link>
                     </div>
                 </div>
                 <div class="mt-8 flow-root">
@@ -181,7 +182,7 @@ const activate = (id) => {
                                         <div class="items-center">
                                             <div class="mt-4 text-center sm:mt-0 sm:pt-1">
                                                 <p class="text-lg text-center font-semibold text-gray-900 sm:text-xl">No
-                                                    Job Ads
+                                                    Posted Jobs
                                                     found
                                                 </p>
                                             </div>

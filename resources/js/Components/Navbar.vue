@@ -34,8 +34,6 @@ onUnmounted(() => {
 })
 
 const page = usePage()
-
-console.log('page: ', page);
 </script>
 
 <template>

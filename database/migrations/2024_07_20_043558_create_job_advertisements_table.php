@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('job_advertisements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('job_position_id')->references('id')->on('job_positions')->nullable();
+            $table->foreignId('employer_id')->references('id')->on('employers')->nullable();
             $table->string('role')->nullable();
             $table->json('skills')->nullable();
             $table->string('position_level')->nullable();

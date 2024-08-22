@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import Button from '@/Components/Button.vue'
 import { GithubIcon } from '@/Components/Icons/brands'
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
@@ -16,8 +16,14 @@ const props = defineProps({
 
 let search = ref(props.filters.search);
 
+const page = usePage()
+
 const updateInfo = (applicantId) => {
-    router.get(`/admin/applicants/edit/${applicantId}`);
+    if (page.props.auth.user.employer) {
+        router.get(`/employer/applicants/edit/${applicantId}`);
+    } else if (page.props.auth.user.admin) {
+        router.get(`/admin/applicants/edit/${applicantId}`);
+    }
 }
 
 watch(
@@ -27,11 +33,19 @@ watch(
         if (value) {
             query.search = value;
         }
+        if (page.props.auth.user.employer) {
+            router.get(`/employer/applicants`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        } else if (page.props.auth.user.admin) {
+            router.get(`/admin/applicants`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        }
 
-        router.get(`/admin/applicants`, query, {
-            preserveState: true,
-            replace: true,
-        });
+
     }, 500)
 );
 

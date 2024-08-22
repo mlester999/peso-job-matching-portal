@@ -3,7 +3,7 @@ import CheckboxList from '@/Components/CheckboxList.vue';
 import SelectField from '@/Components/SelectField.vue';
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import { UserCircleIcon, BriefcaseIcon } from '@heroicons/vue/outline'
-import { Link, router, useForm } from '@inertiajs/vue3';
+import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { ref, watch, onBeforeUnmount, onBeforeUpdate } from 'vue';
 import debounce from 'lodash.debounce'
 import { useToast } from 'vue-toastification';
@@ -65,8 +65,11 @@ const props = defineProps({
     jobPositions: Object
 });
 
+const page = usePage()
+
 const form = useForm({
     job_position_id: "",
+    employer_id: page.props.auth.user.employer.id,
     role: "",
     skills: [],
     position_level: "",
@@ -89,6 +92,8 @@ const removeSkill = (title) => {
 const selectedJobPositiondId = ref();
 const selectedJobTitleSkills = ref();
 
+const isSubmitted = ref(false);
+
 const toast = useToast();
 
 const autoSaveDraft = () => {
@@ -98,6 +103,7 @@ const autoSaveDraft = () => {
 const submit = () => {
     form.post(`/employer/job-ads/store`, {
         onSuccess: () => {
+            isSubmitted.value = true;
             toast.success("Job ads created successfully!");
             router.visit('/employer/reports?tab=postedJobs');
         },
@@ -114,9 +120,10 @@ watch(
 );
 
 onBeforeUnmount(() => {
-    console.log('form.role: ', form.role);
-    if (form.job_position_id || form.role || form.skills.length > 0 || form.position_level || form.years_of_experience || form.location) {
-        autoSaveDraft();
+    if (!isSubmitted.value) {
+        if (form.job_position_id || form.role || form.skills.length > 0 || form.position_level || form.years_of_experience || form.location) {
+            autoSaveDraft();
+        }
     }
 })
 </script>

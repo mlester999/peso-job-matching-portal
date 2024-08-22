@@ -58,6 +58,7 @@ class JobAdvertisementController extends Controller
     {
         $jobPositionValidate = Request::validate([
             'job_position_id' => ['nullable'],
+            'employer_id' => ['nullable'],
             'role' => ['nullable', 'string'],
             'skills' => ['nullable', 'array'],
             'skills.*' => ['string', 'max:50'],
@@ -70,6 +71,7 @@ class JobAdvertisementController extends Controller
             ['id' => Request::get('id')],
             [
                 'job_position_id' => $jobPositionValidate['job_position_id'],
+                'employer_id' => $jobPositionValidate['employer_id'],
                 'role' => $jobPositionValidate['role'],
                 'skills' => json_encode($jobPositionValidate['skills']),
                 'position_level' => $jobPositionValidate['position_level'],
@@ -85,6 +87,7 @@ class JobAdvertisementController extends Controller
     {
         $jobPositionValidate = Request::validate([
             'job_position_id' => ['nullable'],
+            'employer_id' => ['nullable'],
             'role' => ['nullable', 'string'],
             'skills' => ['nullable', 'array'],
             'skills.*' => ['string', 'max:50'],
@@ -97,6 +100,7 @@ class JobAdvertisementController extends Controller
             ['id' => $id],
             [
                 'job_position_id' => $jobPositionValidate['job_position_id'],
+                'employer_id' => $jobPositionValidate['employer_id'],
                 'role' => $jobPositionValidate['role'],
                 'skills' => json_encode($jobPositionValidate['skills']),
                 'position_level' => $jobPositionValidate['position_level'],
@@ -115,6 +119,7 @@ class JobAdvertisementController extends Controller
     {
         $jobPositionValidate = Request::validate([
             'job_position_id' => ['required'],
+            'employer_id' => ['required'],
             'role' => ['required', 'string'],
             'skills' => ['required', 'array'],
             'skills.*' => ['string', 'max:50'],
@@ -125,6 +130,7 @@ class JobAdvertisementController extends Controller
 
         JobAdvertisement::create([
             'job_position_id' => $jobPositionValidate['job_position_id'],
+            'employer_id' => $jobPositionValidate['employer_id'],
             'role' => $jobPositionValidate['role'],
             'skills' => json_encode($jobPositionValidate['skills']),
             'position_level' => $jobPositionValidate['position_level'],
@@ -169,6 +175,7 @@ class JobAdvertisementController extends Controller
     {
         $jobAdvertisementValidate = Request::validate([
             'job_position_id' => ['required'],
+            'employer_id' => ['required'],
             'role' => ['required', 'string'],
             'skills' => ['required', 'array'],
             'skills.*' => ['string', 'max:50'],

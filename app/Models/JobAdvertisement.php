@@ -12,16 +12,23 @@ class JobAdvertisement extends Model
 
     protected $fillable = [
         'job_position_id',
+        'employer_id',
         'role',
         'skills',
         'position_level',
         'years_of_experience',
         'location',
         'is_draft',
+        'is_active',
     ];
 
     public function jobPosition(): BelongsTo
     {
         return $this->belongsTo(JobPosition::class);
+    }
+
+    public function employer(): BelongsTo
+    {
+        return $this->belongsTo(Employer::class);
     }
 }
