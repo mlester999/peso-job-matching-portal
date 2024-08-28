@@ -14,7 +14,19 @@ return new class extends Migration
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_id')->references('id')->on('applicants');
+            $table->foreignId('job_advertisement_id')->references('id')->on('job_advertisements')->nullable();
+            $table->string('birth_date')->nullable();
+            $table->string('sex')->nullable();
+            $table->string('province')->nullable();
+            $table->string('city')->nullable();
+            $table->string('barangay')->nullable();
+            $table->string('street_address')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->json('education')->nullable();
+            $table->json('work_experience')->nullable();
+            $table->json('skills')->nullable();
             $table->tinyInteger('status');
+            $table->tinyInteger('is_draft')->nullable();
             $table->timestamps();
         });
     }

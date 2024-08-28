@@ -16,16 +16,8 @@ class Applicant extends Model
         'first_name',
         'middle_name',
         'last_name',
-        'province',
-        'city',
-        'barangay',
-        'street_address',
-        'zip_code',
         'contact_number',
         'contact_number_verified_at',
-        'education',
-        'work_experience',
-        'skills',
     ];
 
     public function applications(): HasMany

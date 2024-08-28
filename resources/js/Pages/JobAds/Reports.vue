@@ -141,8 +141,7 @@ const activate = (id) => {
                                                 </p>
                                             </div>
                                         </div>
-                                        <div v-if="filters.tab !== 'postedJobs'"
-                                            class="mt-5 flex justify-center sm:mt-0">
+                                        <div v-if="filters.tab === 'drafts'" class="mt-5 flex justify-center sm:mt-0">
                                             <button @click="updateDraft(jobAdvertisement.id)"
                                                 class="flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                                                 View

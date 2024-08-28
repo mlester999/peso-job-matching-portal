@@ -12,7 +12,19 @@ class Application extends Model
 
     protected $fillable = [
         'applicant_id',
+        'job_advertisement_id',
+        'birth_date',
+        'sex',
+        'province',
+        'city',
+        'barangay',
+        'street_address',
+        'zip_code',
+        'education',
+        'work_experience',
+        'skills',
         'status',
+        'is_draft',
     ];
 
     public function applicant(): BelongsTo

@@ -17,15 +17,8 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name'); 
-            $table->string('province')->nullable();
-            $table->string('city')->nullable();
-            $table->string('barangay')->nullable();
-            $table->string('street_address')->nullable();
-            $table->string('zip_code')->nullable();
             $table->string('contact_number')->nullable();
-            $table->json('education')->nullable();
-            $table->json('work_experience')->nullable();
-            $table->json('skills')->nullable();
+            $table->unsignedInteger('contact_number_verified_at')->nullable();
             $table->timestamps();
         });
     }
