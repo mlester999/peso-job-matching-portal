@@ -711,9 +711,9 @@ class ApplicantController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
 
-            $application->is_draft = 1;
+            $application->is_draft = 0;
 
-            $applicant->save();
+            $application->save();
 
             return response()->json(['message' => 'Applicant onboarded successfully'], 201);
         }
