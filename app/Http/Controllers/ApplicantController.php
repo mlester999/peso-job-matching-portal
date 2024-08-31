@@ -528,6 +528,7 @@ class ApplicantController extends Controller
                 'streetAddress' => 'required|string',
                 'zipCode' => 'required|string',
                 'contactNumber' => 'required|string',
+                'isCreate' => 'nullable|boolean',
             ]);
 
             if ($validator->fails()) {
@@ -541,36 +542,114 @@ class ApplicantController extends Controller
 
             $validatedData = $validator->validated();
 
+            if ($validatedData['isCreate'] && !$application->is_draft) {
+                Application::create([
+                    'applicant_id' => $applicant->id,
+                    'birth_date' => $validatedData['birthDate'],
+                    'sex' => $validatedData['sex'],
+                    'province' => $validatedData['province'],
+                    'city' => $validatedData['city'],
+                    'barangay' => $validatedData['barangay'],
+                    'street_address' => $validatedData['streetAddress'],
+                    'zip_code' => $validatedData['zipCode'],
+                    'status' => 0,
+                    'is_draft' => 1
+                ]);
+            } else {
+                if($validatedData['birthDate'] !== $application->birth_date) {
+                    $application->birth_date = $validatedData['birthDate'];
+                }
 
-            if($validatedData['birthDate'] !== $application->birth_date) {
-                $application->birth_date = $validatedData['birthDate'];
+                if($validatedData['sex'] !== $application->sex) {
+                    $application->sex = $validatedData['sex'];
+                }
+        
+                if($validatedData['province'] !== $application->province) {
+                    $application->province = $validatedData['province'];
+                }
+        
+                if($validatedData['city'] !== $application->city) {
+                    $application->city = $validatedData['city'];
+                }
+        
+                if($validatedData['barangay'] !== $application->barangay) {
+                    $application->barangay = $validatedData['barangay'];
+                }
+        
+                if($validatedData['streetAddress'] !== $application->street_address) {
+                    $application->street_address = $validatedData['streetAddress'];
+                }
+        
+                if($validatedData['zipCode'] !== $application->zip_code) {
+                    $application->zip_code = $validatedData['zipCode'];
+                }
+        
+                $application->save();
             }
 
-            if($validatedData['sex'] !== $application->sex) {
-                $application->sex = $validatedData['sex'];
+            return response()->json(['message' => 'Personal Information updated successfully'], 201);
+        }
+
+        
+        // Update the personal information of the applicant
+        public function updatePersonalInformation(\Illuminate\Http\Request $request, $id)
+        {
+            $validator = Validator::make($request->all(), [
+                'firstName' => 'required|string',
+                'middleName' => 'nullable|string',
+                'lastName' => 'required|string',
+                'email' => [
+                    'nullable',
+                    'max:50',
+                    'email'
+                ],
+                'birthDate' => 'required|date',
+                'sex' => 'required|string',
+                'province' => 'required|string',
+                'city' => 'required|string',
+                'barangay' => 'required|string',
+                'streetAddress' => 'required|string',
+                'zipCode' => 'required|string',
+                'contactNumber' => 'required|string'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
             }
-    
-            if($validatedData['province'] !== $application->province) {
-                $application->province = $validatedData['province'];
-            }
-    
-            if($validatedData['city'] !== $application->city) {
-                $application->city = $validatedData['city'];
-            }
-    
-            if($validatedData['barangay'] !== $application->barangay) {
-                $application->barangay = $validatedData['barangay'];
-            }
-    
-            if($validatedData['streetAddress'] !== $application->street_address) {
-                $application->street_address = $validatedData['streetAddress'];
-            }
-    
-            if($validatedData['zipCode'] !== $application->zip_code) {
-                $application->zip_code = $validatedData['zipCode'];
-            }
-    
-            $application->save();
+
+            $application = Application::findOrFail($id);
+
+            $validatedData = $validator->validated();
+
+                if($validatedData['birthDate'] !== $application->birth_date) {
+                    $application->birth_date = $validatedData['birthDate'];
+                }
+
+                if($validatedData['sex'] !== $application->sex) {
+                    $application->sex = $validatedData['sex'];
+                }
+        
+                if($validatedData['province'] !== $application->province) {
+                    $application->province = $validatedData['province'];
+                }
+        
+                if($validatedData['city'] !== $application->city) {
+                    $application->city = $validatedData['city'];
+                }
+        
+                if($validatedData['barangay'] !== $application->barangay) {
+                    $application->barangay = $validatedData['barangay'];
+                }
+        
+                if($validatedData['streetAddress'] !== $application->street_address) {
+                    $application->street_address = $validatedData['streetAddress'];
+                }
+        
+                if($validatedData['zipCode'] !== $application->zip_code) {
+                    $application->zip_code = $validatedData['zipCode'];
+                }
+        
+                $application->save();
 
             return response()->json(['message' => 'Personal Information updated successfully'], 201);
         }
@@ -615,8 +694,65 @@ class ApplicantController extends Controller
 
             $validatedData = $validator->validated();
 
-            $application->education = json_encode($validatedData);
+            if ($application->is_draft) {
+                Application::create([
+                    'applicant_id' => $applicant->id,
+                    'birth_date' => $validatedData['birthDate'],
+                    'sex' => $validatedData['sex'],
+                    'province' => $validatedData['province'],
+                    'city' => $validatedData['city'],
+                    'barangay' => $validatedData['barangay'],
+                    'street_address' => $validatedData['streetAddress'],
+                    'zip_code' => $validatedData['zipCode'],
+                    'status' => 0,
+                    'is_draft' => 1
+                ]);
+            } else {
+                $application->education = json_encode($validatedData);
     
+                $application->save();
+            }
+            return response()->json(['message' => 'Educational Background updated successfully'], 201);
+        }
+
+        // Update the educational background of the applicant
+        public function updateEducationalBackground(\Illuminate\Http\Request $request, $id)
+        {
+            $input = $request->all();
+
+            // Replace null values with empty strings
+            array_walk_recursive($input, function (&$item) {
+                $item = $item === null ? '' : $item;
+            });
+
+            $validator = Validator::make($input, [
+                '*.schoolName' => 'required|string|max:255',
+                '*.educationalLevel' => 'required|string',
+                '*.educationalLevelQuery' => 'nullable|string',
+                '*.level' => 'nullable|string|max:255',
+                '*.levelQuery' => 'nullable|string|max:255',
+                '*.course' => 'nullable|string|max:255',
+                '*.courseQuery' => 'nullable|string|max:255',
+                '*.startDate' => 'required|date',
+                '*.endDate' => 'required|date|after_or_equal:*.startDate',
+            ], [
+                '*.schoolName.required' => 'The school name field is required.',
+                '*.educationalLevel.required' => 'The educational level field is required.',
+                '*.startDate.required' => 'The start date field is required.',
+                '*.endDate.required' => 'The end date field is required.',
+                '*.endDate.after_or_equal' => 'The end date must be a date after or equal to the start date.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $application = Application::findOrFail($id);
+
+            $validatedData = $validator->validated();
+
+            $application->education = json_encode($validatedData);
+
             $application->save();
 
             return response()->json(['message' => 'Educational Background updated successfully'], 201);
@@ -665,6 +801,45 @@ class ApplicantController extends Controller
             return response()->json(['message' => 'Work Experience updated successfully'], 201);
         }
 
+        // Update the work experience of the applicant
+        public function updateWorkExperience(\Illuminate\Http\Request $request, $id)
+        {
+            $input = $request->all();
+
+            // Replace null values with empty strings
+            array_walk_recursive($input, function (&$item) {
+                $item = $item === null ? '' : $item;
+            });
+
+            $validator = Validator::make($input, [
+                '*.companyName' => 'nullable|string|max:255',
+                '*.companyAddress' => 'nullable|string|max:255',
+                '*.employmentType' => 'nullable|string',
+                '*.employmentTypeQuery' => 'nullable|string',
+                '*.jobTitle' => 'nullable|string|max:255',
+                '*.industry' => 'nullable|string|max:255',
+                '*.industryQuery' => 'nullable|string|max:255',
+                '*.startDate' => 'nullable|date',
+                '*.endDate' => 'nullable|date|after_or_equal:*.startDate',
+            ], [
+                '*.endDate.after_or_equal' => 'The end date must be a date after or equal to the start date.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $application = Application::findOrFail($id);
+
+            $validatedData = $validator->validated();
+
+            $application->work_experience = json_encode($validatedData);
+    
+            $application->save();
+
+            return response()->json(['message' => 'Work Experience updated successfully'], 201);
+        }
+
          // Submit the skills of the applicant
          public function submitSkills(\Illuminate\Http\Request $request, $id)
          { 
@@ -702,6 +877,39 @@ class ApplicantController extends Controller
              return response()->json(['message' => 'Skills updated successfully'], 201);
          }
 
+        // Update the skills of the applicant
+        public function updateSkills(\Illuminate\Http\Request $request, $id)
+        { 
+            $input = $request->all();
+
+            // Replace null values with empty strings
+            array_walk_recursive($input, function (&$item) {
+                $item = $item === null ? '' : $item;
+            });
+
+            $validator = Validator::make($input, [
+                'jobPositionId' => 'required|numeric|max:255',
+                'jobPositionTitle' => 'required|string|max:255',
+                'jobPositionSkills' => 'required|array',
+                'jobPositionQuery' => 'nullable|string|max:255',
+                'skills' => 'required|array',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $application = Application::findOrFail($id);
+
+            $validatedData = $validator->validated();
+
+            $application->skills = json_encode($validatedData);
+    
+            $application->save();
+
+            return response()->json(['message' => 'Skills updated successfully'], 201);
+        }
+
         // Submit all the information of the applicant
         public function confirmOnboarding($id)
         { 
@@ -718,8 +926,8 @@ class ApplicantController extends Controller
             return response()->json(['message' => 'Applicant onboarded successfully'], 201);
         }
 
-        // Update the personal information of the applicant
-        public function updatePersonalInformation(\Illuminate\Http\Request $request, $id)
+        // Update the profile information of the applicant
+        public function updateProfileInformation(\Illuminate\Http\Request $request, $id)
         {
             $validator = Validator::make($request->all(), [
                 'firstName' => 'nullable|string',

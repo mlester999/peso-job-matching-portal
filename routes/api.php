@@ -52,8 +52,14 @@ Route::post('submit-work-experience/{id}', [ApplicantController::class, 'submitW
 Route::post('submit-skills/{id}', [ApplicantController::class, 'submitSkills']);
 Route::post('confirm-onboarding/{id}', [ApplicantController::class, 'confirmOnboarding']);
 
+// Update Onboarding user
+Route::put('update-personal-information/{id}', [ApplicantController::class, 'updatePersonalInformation']);
+Route::put('update-educational-background/{id}', [ApplicantController::class, 'updateEducationalBackground']);
+Route::put('update-work-experience/{id}', [ApplicantController::class, 'updateWorkExperience']);
+Route::put('update-skills/{id}', [ApplicantController::class, 'updateSkills']);
+
 // Portal user
-Route::put('my-profile/update-personal-information/{id}', [ApplicantController::class, 'updatePersonalInformation']);
+Route::put('my-profile/update-profile-information/{id}', [ApplicantController::class, 'updateProfileInformation']);
 Route::put('my-profile/update-password/{id}', [ApplicantController::class, 'updatePassword']);
 Route::post('my-profile/logout-other-sessions/{id}', [ApplicantController::class, 'logoutOtherSessions']);
 
