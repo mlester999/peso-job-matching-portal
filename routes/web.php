@@ -73,14 +73,30 @@ Route::middleware([
             Route::delete('/delete/{id}', [UserController::class, 'delete'])->name('delete');
         });
 
-        Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
+        Route::group(['prefix' => 'applications', 'as' => 'applications.'], function() {
             Route::get('/', [ApplicantController::class, 'index'])->name('index');
 
-            Route::get('/edit/{id}', [ApplicantController::class, 'edit'])->name('edit');
+            Route::get('/view/{id}', [ApplicantController::class, 'view'])->name('view');
     
             Route::post('/store', [ApplicantController::class, 'store'])->name('store');
     
             Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+
+            Route::put('/update-status/{id}', [ApplicantController::class, 'updateStatus'])->name('updateStatus');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'for-interview', 'as' => 'for-interview.'], function() {
+            Route::get('/', [ApplicantController::class, 'forInterview'])->name('forInterview');
+
+            Route::get('/view-for-interview/{id}', [ApplicantController::class, 'viewForInterview'])->name('viewForInterview');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+
+            Route::put('/update-status/{id}', [ApplicantController::class, 'updateStatus'])->name('updateStatus');
     
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });
@@ -131,14 +147,31 @@ Route::middleware([
             Route::delete('/delete/{id}', [JobAdvertisementController::class, 'delete'])->name('delete');
         });
 
-        Route::group(['prefix' => 'applicants', 'as' => 'applicants.'], function() {
+        Route::group(['prefix' => 'applications', 'as' => 'applications.'], function() {
             Route::get('/', [ApplicantController::class, 'index'])->name('index');
 
-            Route::get('/edit/{id}', [ApplicantController::class, 'edit'])->name('edit');
+            Route::get('/view/{id}', [ApplicantController::class, 'view'])->name('view');
     
             Route::post('/store', [ApplicantController::class, 'store'])->name('store');
     
             Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+
+            Route::put('/update-status/{id}', [ApplicantController::class, 'updateStatus'])->name('updateStatus');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
+        
+        Route::group(['prefix' => 'for-interview', 'as' => 'for-interview.'], function() {
+            Route::get('/', [ApplicantController::class, 'forInterview'])->name('forInterview');
+
+            Route::get('/view-for-interview/{id}', [ApplicantController::class, 'viewForInterview'])->name('viewForInterview');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
+
+            Route::put('/update-status/{id}', [ApplicantController::class, 'updateStatus'])->name('updateStatus');
     
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });

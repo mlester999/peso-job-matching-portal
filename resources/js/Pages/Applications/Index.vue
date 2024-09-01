@@ -7,9 +7,10 @@ import { ref, watch } from 'vue';
 import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
+import Badge from '@/Components/Badge.vue';
 
 const props = defineProps({
-    applicants: Object,
+    applications: Object,
     pagination: Object,
     filters: Object,
 });
@@ -18,13 +19,17 @@ let search = ref(props.filters.search);
 
 const page = usePage()
 
-const updateInfo = (applicantId) => {
+const updateInfo = (applicationId) => {
     if (page.props.auth.user.employer) {
-        router.get(`/employer/applicants/edit/${applicantId}`);
+        router.get(`/employer/applications/view/${applicationId}`);
     } else if (page.props.auth.user.admin) {
-        router.get(`/admin/applicants/edit/${applicantId}`);
+        router.get(`/admin/applications/view/${applicationId}`);
     }
 }
+
+const truncate = (text) => {
+    return text.length > 20 ? text.substring(0, 20) + '...' : text;
+};
 
 watch(
     search,
@@ -34,12 +39,12 @@ watch(
             query.search = value;
         }
         if (page.props.auth.user.employer) {
-            router.get(`/employer/applicants`, query, {
+            router.get(`/employer/applications`, query, {
                 preserveState: true,
                 replace: true,
             });
         } else if (page.props.auth.user.admin) {
-            router.get(`/admin/applicants`, query, {
+            router.get(`/admin/applications`, query, {
                 preserveState: true,
                 replace: true,
             });
@@ -49,26 +54,26 @@ watch(
     }, 500)
 );
 
-
+console.log(props.applications);
 </script>
 
 <template>
-    <AuthenticatedLayout title="Applicants">
+    <AuthenticatedLayout title="Applications">
         <template #header>
             <div class="px-4">
                 <div class="sm:flex sm:items-center my-4">
                     <div class="sm:flex-auto">
                         <h2 class="text-xl font-semibold leading-tight">
-                            Applicants
+                            Applications
                         </h2>
-                        <!-- <p class="mt-2 text-sm text-gray-700">A list of all the applicants in this portal including
+                        <!-- <p class="mt-2 text-sm text-gray-700">A list of all the applications in this portal including
                             their
                             name, title, email and role.</p> -->
                     </div>
                 </div>
                 <div class="sm:flex sm:items-center">
                     <div class="sm:flex-auto">
-                        <Input v-model="search" placeholder="Search for applicant..." type="search" />
+                        <Input v-model="search" placeholder="Search for application..." type="search" />
                     </div>
 
                 </div>
@@ -95,75 +100,75 @@ watch(
                                             </th>
                                             <th scope="col"
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                Province
+                                                Applied Job
                                             </th>
                                             <th scope="col"
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                City
+                                                Applicant Skills
                                             </th>
                                             <th scope="col"
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                Barangay
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                Street Address
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                Zip Code
+                                                Applied Date
                                             </th>
                                             <th scope="col"
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                                 Status
                                             </th>
+                                            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                                                <span class="sr-only">View</span>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 bg-white">
-                                        <tr v-for="applicant in props.applicants.data" :key="applicant.id">
+                                        <tr v-for="application in props.applications.data" :key="application.id">
                                             <td
                                                 class="whitespace py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                {{ applicant.first_name }}</td>
+                                                {{ application.first_name }}</td>
                                             <td
                                                 class="whitespace py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                {{ applicant.last_name }}</td>
+                                                {{ application.last_name }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                applicant.email }}</td>
+                                                application.email }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
-                                                applicant.contact_number
+                                                application.contact_number
                                             }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                applicant.province }}</td>
+                                                JSON.parse(application.skills).jobPositionTitle }}</td>
+                                            <td
+                                                class="whitespace px-3 py-4 text-sm text-gray-500 flex flex-wrap gap-2 items-center">
+                                                <div class="ml-2"
+                                                    v-for="(skill, index) in JSON.parse(application.skills).skills"
+                                                    :key="skill">
+                                                    <Badge :title="truncate(skill)" :removeTag="removeTag"
+                                                        :index="index" :isClosable="false" />
+                                                </div>
+                                            </td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                applicant.city
-                                            }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                applicant.barangay
-                                            }}</td>
-                                            <td class="whitespace px-3 py-4 text-sm text-gray-500">{{
-                                                applicant.street_address
-                                            }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                applicant.zip_code
+                                                application.created_at
                                             }}</td>
                                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                                <span v-if="applicant.is_active"
+                                                <span v-if="application.is_active"
                                                     class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
                                                 <span v-else
                                                     class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Inactive</span>
                                             </td>
+                                            <td
+                                                class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                <button type="button" @click="updateInfo(application.id)"
+                                                    class="text-blue-600 hover:text-blue-900">View</button>
+                                            </td>
                                         </tr>
 
-                                        <tr v-if="applicants.data.length === 0">
+                                        <tr v-if="applications.data.length === 0">
                                             <td colspan="11"
                                                 class="whitespace-nowrap text-center py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                No Applicant Found</td>
+                                                No Application Found</td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <div
                                     class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between">
-                                    <Pagination :users="applicants" :pagination="pagination" />
+                                    <Pagination :users="applications" :pagination="pagination" />
                                 </div>
                             </div>
                         </div>

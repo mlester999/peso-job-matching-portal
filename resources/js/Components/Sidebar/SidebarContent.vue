@@ -30,8 +30,8 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, 
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="Applicants" :href="route('admin.applicants.index')"
-                :active="route().current('admin.applicants.index')">
+            <SidebarLink title="Applications" :href="route('admin.applications.index')"
+                :active="route().current('admin.applications.index')">
                 <template #icon>
                     <UserGroupIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
@@ -60,14 +60,14 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, 
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="Applicants" :href="route('employer.applicants.index')"
-                :active="route().current('employer.applicants.index')">
+            <SidebarLink title="Applications" :href="route('employer.applications.index')"
+                :active="route().current('employer.applications.index')">
                 <template #icon>
                     <UserGroupIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="For Interview" href="#">
+            <SidebarLink title="For Interview" :href="route('employer.for-interview.forInterview')">
                 <template #icon>
                     <UsersIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
