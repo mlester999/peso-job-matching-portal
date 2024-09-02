@@ -275,7 +275,7 @@ class ApplicantController extends Controller
     /**
      * Display a listing of the resource for interview applications.
      */
-    public function forInterview()
+    public function indexForInterview()
     {
         $filters = Request::only(['search']);
         $searchReq = Request::input('search');
@@ -395,7 +395,7 @@ class ApplicantController extends Controller
             }
     
     
-            return Inertia::render('Applications/Index', [
+            return Inertia::render('ForInterview/Index', [
                 'applications' => $applications,
                 'filters' => $filters,
                 'pagination' => [
@@ -509,7 +509,7 @@ class ApplicantController extends Controller
             }
     
     
-            return Inertia::render('Applications/Index', [
+            return Inertia::render('ForInterview/Index', [
                 'applications' => $applications,
                 'filters' => $filters,
                 'pagination' => [
@@ -596,6 +596,18 @@ class ApplicantController extends Controller
         ]);
     }
 
+        /**
+     * Show the form for viewing the specified resource.
+     */
+    public function viewForInterview($id)
+    {
+        $application = Application::with('applicant.user')->find($id);
+
+        return Inertia::render('ForInterview/View', [
+            'application' => $application,
+        ]);
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -661,7 +673,7 @@ class ApplicantController extends Controller
         $applicant->save();
     }
 
-        /**
+    /**
      * Update the specified resource in storage.
      */
     public function updateStatus($id)
@@ -675,6 +687,55 @@ class ApplicantController extends Controller
         if($applicationValidate['status'] !== $application->status) {
             $application->status = $applicationValidate['status'];
         }
+
+        $application->save();
+    }
+
+            /**
+     * Update the specified resource in storage.
+     */
+    public function updateForInterview($id)
+    {
+        $interviewValidate = Request::validate([
+            'status' => ['required', 'digits:1'],
+            'interview_date' => ['required', 'date', 'after_or_equal:today'],
+            'interview_time' => ['required', 'date_format:H:i'],
+            'interview_type' => ['required', 'in:Online,In-Person'],
+            'interview_location' => ['nullable', 'string', 'max:255'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $application = Application::findOrFail($id);
+
+        $jobPositionTitle = json_decode($application->skills)->jobPositionTitle;
+
+        if($interviewValidate['status'] !== $application->status) {
+            $application->status = $interviewValidate['status'];
+        }
+
+        $interviewDate = \Carbon\Carbon::createFromFormat('Y-m-d', $interviewValidate['interview_date'])->format('F j, Y');
+        $interviewTime = Carbon::createFromFormat('H:i', $interviewValidate['interview_time'])->format('h:i A');
+        $interviewLocation = $interviewValidate['interview_location'];
+        $interviewType = $interviewValidate['interview_type'];
+
+        $message = "Hello {$application->applicant->first_name} {$application->applicant->last_name},
+
+Your interview for the {$jobPositionTitle} position has been scheduled.
+
+Details:
+- Date & Time: {$interviewDate} at {$interviewTime}
+- Location: " . ($interviewLocation == 'Online' ? 'N/A' : $interviewLocation) . "
+- Type: {$interviewType}
+
+Please be prepared for your interview. If you have any questions, feel free to contact us.
+
+Thank you,
+PESO Cabuyao";
+
+        $messageResponse = Semaphore::message()->send(
+            $application->applicant->contact_number,
+            $message
+            );
 
         $application->save();
     }

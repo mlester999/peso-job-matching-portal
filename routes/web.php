@@ -88,15 +88,13 @@ Route::middleware([
         });
 
         Route::group(['prefix' => 'for-interview', 'as' => 'for-interview.'], function() {
-            Route::get('/', [ApplicantController::class, 'forInterview'])->name('forInterview');
+            Route::get('/', [ApplicantController::class, 'indexForInterview'])->name('indexForInterview');
 
-            Route::get('/view-for-interview/{id}', [ApplicantController::class, 'viewForInterview'])->name('viewForInterview');
+            Route::get('/view/{id}', [ApplicantController::class, 'viewForInterview'])->name('viewForInterview');
     
             Route::post('/store', [ApplicantController::class, 'store'])->name('store');
     
-            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
-
-            Route::put('/update-status/{id}', [ApplicantController::class, 'updateStatus'])->name('updateStatus');
+            Route::put('/update-for-interview/{id}', [ApplicantController::class, 'updateForInterview'])->name('updateForInterview');
     
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });
@@ -163,15 +161,13 @@ Route::middleware([
 
         
         Route::group(['prefix' => 'for-interview', 'as' => 'for-interview.'], function() {
-            Route::get('/', [ApplicantController::class, 'forInterview'])->name('forInterview');
+            Route::get('/', [ApplicantController::class, 'indexForInterview'])->name('indexForInterview');
 
-            Route::get('/view-for-interview/{id}', [ApplicantController::class, 'viewForInterview'])->name('viewForInterview');
+            Route::get('/view/{id}', [ApplicantController::class, 'viewForInterview'])->name('viewForInterview');
     
             Route::post('/store', [ApplicantController::class, 'store'])->name('store');
     
-            Route::put('/update/{id}', [ApplicantController::class, 'update'])->name('update');
-
-            Route::put('/update-status/{id}', [ApplicantController::class, 'updateStatus'])->name('updateStatus');
+            Route::put('/update-for-interview/{id}', [ApplicantController::class, 'updateForInterview'])->name('updateForInterview');
     
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });
