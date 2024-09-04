@@ -74,25 +74,29 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, 
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="For Requirements" href="#">
+            <SidebarLink title="For Requirements" :href="route('employer.for-requirements.indexForRequirements')"
+                :active="route().current('employer.for-requirements.indexForRequirements')">
                 <template #icon>
                     <NewspaperIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="Qualified" href="#">
+            <SidebarLink title="Qualified" :href="route('employer.qualified.indexForQualified')"
+                :active="route().current('employer.qualified.indexForQualified')">
                 <template #icon>
                     <ClipboardCheckIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="For Deployment" href="#">
+            <SidebarLink title="For Deployment" :href="route('employer.for-deployment.indexForDeployment')"
+                :active="route().current('employer.for-deployment.indexForDeployment')">
                 <template #icon>
                     <InboxInIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="Deployed" href="#">
+            <SidebarLink title="Deployed" :href="route('employer.deployed.indexForDeployed')"
+                :active="route().current('employer.deployed.indexForDeployed')">
                 <template #icon>
                     <BriefcaseIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>

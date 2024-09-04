@@ -171,6 +171,54 @@ Route::middleware([
     
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });
+
+        Route::group(['prefix' => 'for-requirements', 'as' => 'for-requirements.'], function() {
+            Route::get('/', [ApplicantController::class, 'indexForRequirements'])->name('indexForRequirements');
+
+            Route::get('/view/{id}', [ApplicantController::class, 'viewForRequirements'])->name('viewForRequirements');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update-for-requirements/{id}', [ApplicantController::class, 'updateForRequirements'])->name('updateForRequirements');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'qualified', 'as' => 'qualified.'], function() {
+            Route::get('/', [ApplicantController::class, 'indexForQualified'])->name('indexForQualified');
+
+            Route::get('/view/{id}', [ApplicantController::class, 'viewForQualified'])->name('viewForQualified');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update-for-qualified/{id}', [ApplicantController::class, 'updateForQualified'])->name('updateForQualified');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'for-deployment', 'as' => 'for-deployment.'], function() {
+            Route::get('/', [ApplicantController::class, 'indexForDeployment'])->name('indexForDeployment');
+
+            Route::get('/view/{id}', [ApplicantController::class, 'viewForDeployment'])->name('viewForDeployment');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update-for-deployment/{id}', [ApplicantController::class, 'updateForDeployment'])->name('updateForDeployment');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'deployed', 'as' => 'deployed.'], function() {
+            Route::get('/', [ApplicantController::class, 'indexForDeployed'])->name('indexForDeployed');
+
+            Route::get('/view/{id}', [ApplicantController::class, 'viewForDeployed'])->name('viewForDeployed');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update-for-deployed/{id}', [ApplicantController::class, 'updateForDeployed'])->name('updateForDeployed');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
     });
 
 });
