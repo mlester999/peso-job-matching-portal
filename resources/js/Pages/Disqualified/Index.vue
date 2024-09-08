@@ -21,9 +21,9 @@ const page = usePage()
 
 const updateInfo = (applicationId) => {
     if (page.props.auth.user.employer) {
-        router.get(`/employer/for-interview/view/${applicationId}`);
+        router.get(`/employer/disqualified/view/${applicationId}`);
     } else if (page.props.auth.user.admin) {
-        router.get(`/admin/for-interview/view/${applicationId}`);
+        router.get(`/admin/disqualified/view/${applicationId}`);
     }
 }
 
@@ -39,12 +39,12 @@ watch(
             query.search = value;
         }
         if (page.props.auth.user.employer) {
-            router.get(`/employer/for-interview`, query, {
+            router.get(`/employer/disqualified`, query, {
                 preserveState: true,
                 replace: true,
             });
         } else if (page.props.auth.user.admin) {
-            router.get(`/admin/for-interview`, query, {
+            router.get(`/admin/disqualified`, query, {
                 preserveState: true,
                 replace: true,
             });
@@ -56,13 +56,13 @@ watch(
 </script>
 
 <template>
-    <AuthenticatedLayout title="For Interview">
+    <AuthenticatedLayout title="Disqualified">
         <template #header>
             <div class="px-4">
                 <div class="sm:flex sm:items-center my-4">
                     <div class="sm:flex-auto">
                         <h2 class="text-xl font-semibold leading-tight">
-                            For Interview
+                            Disqualified
                         </h2>
                         <!-- <p class="mt-2 text-sm text-gray-700">A list of all the applications in this portal including
                             their
@@ -160,7 +160,7 @@ watch(
                                         <tr v-if="applications.data.length === 0">
                                             <td colspan="11"
                                                 class="whitespace-nowrap text-center py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                No For Interview Found</td>
+                                                No Disqualified Found</td>
                                         </tr>
                                     </tbody>
                                 </table>

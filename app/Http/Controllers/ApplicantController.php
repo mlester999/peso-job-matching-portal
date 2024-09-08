@@ -908,7 +908,7 @@ class ApplicantController extends Controller
         } else {
             $applications = Application::query()
             ->with('applicant')
-            ->where('status', 3)
+            ->where('status', 4)
             // ->whereHas('applications', function ($query) {
             //     $query->where('status', 1);
             // })
@@ -1011,7 +1011,7 @@ class ApplicantController extends Controller
             }
     
     
-            return Inertia::render('ForRequirements/Index', [
+            return Inertia::render('Qualified/Index', [
                 'applications' => $applications,
                 'filters' => $filters,
                 'pagination' => [
@@ -1022,6 +1022,757 @@ class ApplicantController extends Controller
             ]);
         }
     }
+
+            /**
+     * Display a listing of the resource for for deployment applications.
+     */
+    public function indexForDeployment()
+    {
+        $filters = Request::only(['search']);
+        $searchReq = Request::input('search');
+        $authUser = Auth::user();
+
+        if ($authUser->employer) {
+            $currentJobAds = JobAdvertisement::where(['employer_id' => $authUser->employer->id])->get();
+
+            $applications = Application::query()
+            ->with('applicant')
+            ->where('status', 5)
+            // ->whereHas('applications', function ($query) {
+            //     $query->where('status', 1);
+            // })
+            // ->where(function ($query) use ($currentJobAds) {
+            //     foreach ($currentJobAds as $jobAd) {
+            //         $jobPositionId = $jobAd->jobPosition->id;
+            //         $query->orWhereJsonContains('skills->jobPositionId', $jobPositionId);
+            //     }
+            // })
+            ->when($searchReq, function($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('applicant', function ($query) use ($search) {
+                        $query->whereHas('user', function ($query) use ($search) {
+                            $query->whereRaw('LOWER(email) LIKE ?', ['%' . strtolower($search) . '%'])
+                                  ->orWhereRaw('LOWER(contact_number) LIKE ?', ['%' . strtolower($search) . '%']);
+                        })
+                        ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+                    });
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn($application) => [
+                'id' => $application->id,
+                'first_name' => $application->applicant->first_name,
+                'middle_name' => $application->applicant->middle_name,
+                'last_name' => $application->applicant->last_name,
+                'province' => $application->province,
+                'city' => $application->city,
+                'barangay' => $application->barangay,
+                'street_address' => $application->street_address,
+                'zip_code' => $application->zip_code,
+                'email' => $application->applicant->user->email,
+                'contact_number' => $application->applicant->contact_number,
+                'education' => $application->education,
+                'work_experience' => $application->work_experience,
+                'skills' => $application->skills,
+                'is_active' => $application->applicant->user->is_active,
+                'created_at' => Carbon::parse($application->created_at)->format('F d, Y'),
+            ]);
+    
+            if (empty($searchReq)) {
+                unset($filters['search']);
+            }
+    
+            $currentPage = $applications->currentPage();
+            $lastPage = $applications->lastPage();
+            $firstPage = 1;
+    
+            $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
+            $nextPage = $currentPage + 1 <= $lastPage ? $currentPage + 1 : null;
+    
+            $links = [];
+    
+            if ($previousPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($previousPage),
+                    'label' => 'Previous',
+                ];
+            }
+    
+            $links[] = [
+                'url' => $applications->url(1),
+                'label' => 1,
+            ];
+    
+            if ($currentPage > 3) {
+                $links[] = [
+                    'url' => $applications->url($currentPage - 1),
+                    'label' => '...',
+                ];
+            }
+    
+            $rangeStart = max(2, $currentPage - 1);
+            $rangeEnd = min($lastPage - 1, $currentPage + 1);
+    
+            for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
+                $links[] = [
+                    'url' => $applications->url($i),
+                    'label' => $i,
+                ];
+            }
+    
+    
+            if ($currentPage < $lastPage - 2) {
+                $links[] = [
+                    'url' => $applications->url($currentPage + 1),
+                    'label' => '...',
+                ];
+            }
+    
+            if ($firstPage !== $lastPage) {
+                $links[] = [
+                    'url' => $applications->url($lastPage),
+                    'label' => $lastPage,
+                ];
+            }
+    
+            if ($nextPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($nextPage),
+                    'label' => 'Next',
+                ];
+            }
+    
+    
+            return Inertia::render('ForDeployment/Index', [
+                'applications' => $applications,
+                'filters' => $filters,
+                'pagination' => [
+                    'current_page' => $currentPage,
+                    'last_page' => $lastPage,
+                    'links' => $links,
+                ],
+            ]);
+        } else {
+            $applications = Application::query()
+            ->with('applicant')
+            ->where('status', 5)
+            // ->whereHas('applications', function ($query) {
+            //     $query->where('status', 1);
+            // })
+            ->when($searchReq, function($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('applicant', function ($query) use ($search) {
+                        $query->whereHas('user', function ($query) use ($search) {
+                            $query->whereRaw('LOWER(email) LIKE ?', ['%' . strtolower($search) . '%'])
+                                  ->orWhereRaw('LOWER(contact_number) LIKE ?', ['%' . strtolower($search) . '%']);
+                        })
+                        ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+                    });
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn($application) => [
+                'id' => $application->id,
+                'first_name' => $application->applicant->first_name,
+                'middle_name' => $application->applicant->middle_name,
+                'last_name' => $application->applicant->last_name,
+                'province' => $application->province,
+                'city' => $application->city,
+                'barangay' => $application->barangay,
+                'street_address' => $application->street_address,
+                'zip_code' => $application->zip_code,
+                'email' => $application->applicant->user->email,
+                'contact_number' => $application->applicant->contact_number,
+                'education' => $application->education,
+                'work_experience' => $application->work_experience,
+                'skills' => $application->skills,
+                'is_active' => $application->applicant->user->is_active,
+                'created_at' => Carbon::parse($application->created_at)->format('F d, Y'),
+            ]);
+    
+            if (empty($searchReq)) {
+                unset($filters['search']);
+            }
+    
+            $currentPage = $applications->currentPage();
+            $lastPage = $applications->lastPage();
+            $firstPage = 1;
+    
+            $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
+            $nextPage = $currentPage + 1 <= $lastPage ? $currentPage + 1 : null;
+    
+            $links = [];
+    
+            if ($previousPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($previousPage),
+                    'label' => 'Previous',
+                ];
+            }
+    
+            $links[] = [
+                'url' => $applications->url(1),
+                'label' => 1,
+            ];
+    
+            if ($currentPage > 3) {
+                $links[] = [
+                    'url' => $applications->url($currentPage - 1),
+                    'label' => '...',
+                ];
+            }
+    
+            $rangeStart = max(2, $currentPage - 1);
+            $rangeEnd = min($lastPage - 1, $currentPage + 1);
+    
+            for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
+                $links[] = [
+                    'url' => $applications->url($i),
+                    'label' => $i,
+                ];
+            }
+    
+    
+            if ($currentPage < $lastPage - 2) {
+                $links[] = [
+                    'url' => $applications->url($currentPage + 1),
+                    'label' => '...',
+                ];
+            }
+    
+            if ($firstPage !== $lastPage) {
+                $links[] = [
+                    'url' => $applications->url($lastPage),
+                    'label' => $lastPage,
+                ];
+            }
+    
+            if ($nextPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($nextPage),
+                    'label' => 'Next',
+                ];
+            }
+    
+    
+            return Inertia::render('ForDeployment/Index', [
+                'applications' => $applications,
+                'filters' => $filters,
+                'pagination' => [
+                    'current_page' => $currentPage,
+                    'last_page' => $lastPage,
+                    'links' => $links,
+                ],
+            ]);
+        }
+    }
+
+           /**
+     * Display a listing of the resource for deployed applications.
+     */
+    public function indexForDeployed()
+    {
+        $filters = Request::only(['search']);
+        $searchReq = Request::input('search');
+        $authUser = Auth::user();
+
+        if ($authUser->employer) {
+            $currentJobAds = JobAdvertisement::where(['employer_id' => $authUser->employer->id])->get();
+
+            $applications = Application::query()
+            ->with('applicant')
+            ->where('status', 6)
+            // ->whereHas('applications', function ($query) {
+            //     $query->where('status', 1);
+            // })
+            // ->where(function ($query) use ($currentJobAds) {
+            //     foreach ($currentJobAds as $jobAd) {
+            //         $jobPositionId = $jobAd->jobPosition->id;
+            //         $query->orWhereJsonContains('skills->jobPositionId', $jobPositionId);
+            //     }
+            // })
+            ->when($searchReq, function($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('applicant', function ($query) use ($search) {
+                        $query->whereHas('user', function ($query) use ($search) {
+                            $query->whereRaw('LOWER(email) LIKE ?', ['%' . strtolower($search) . '%'])
+                                  ->orWhereRaw('LOWER(contact_number) LIKE ?', ['%' . strtolower($search) . '%']);
+                        })
+                        ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+                    });
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn($application) => [
+                'id' => $application->id,
+                'first_name' => $application->applicant->first_name,
+                'middle_name' => $application->applicant->middle_name,
+                'last_name' => $application->applicant->last_name,
+                'province' => $application->province,
+                'city' => $application->city,
+                'barangay' => $application->barangay,
+                'street_address' => $application->street_address,
+                'zip_code' => $application->zip_code,
+                'email' => $application->applicant->user->email,
+                'contact_number' => $application->applicant->contact_number,
+                'education' => $application->education,
+                'work_experience' => $application->work_experience,
+                'skills' => $application->skills,
+                'is_active' => $application->applicant->user->is_active,
+                'created_at' => Carbon::parse($application->created_at)->format('F d, Y'),
+            ]);
+    
+            if (empty($searchReq)) {
+                unset($filters['search']);
+            }
+    
+            $currentPage = $applications->currentPage();
+            $lastPage = $applications->lastPage();
+            $firstPage = 1;
+    
+            $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
+            $nextPage = $currentPage + 1 <= $lastPage ? $currentPage + 1 : null;
+    
+            $links = [];
+    
+            if ($previousPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($previousPage),
+                    'label' => 'Previous',
+                ];
+            }
+    
+            $links[] = [
+                'url' => $applications->url(1),
+                'label' => 1,
+            ];
+    
+            if ($currentPage > 3) {
+                $links[] = [
+                    'url' => $applications->url($currentPage - 1),
+                    'label' => '...',
+                ];
+            }
+    
+            $rangeStart = max(2, $currentPage - 1);
+            $rangeEnd = min($lastPage - 1, $currentPage + 1);
+    
+            for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
+                $links[] = [
+                    'url' => $applications->url($i),
+                    'label' => $i,
+                ];
+            }
+    
+    
+            if ($currentPage < $lastPage - 2) {
+                $links[] = [
+                    'url' => $applications->url($currentPage + 1),
+                    'label' => '...',
+                ];
+            }
+    
+            if ($firstPage !== $lastPage) {
+                $links[] = [
+                    'url' => $applications->url($lastPage),
+                    'label' => $lastPage,
+                ];
+            }
+    
+            if ($nextPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($nextPage),
+                    'label' => 'Next',
+                ];
+            }
+    
+    
+            return Inertia::render('Deployed/Index', [
+                'applications' => $applications,
+                'filters' => $filters,
+                'pagination' => [
+                    'current_page' => $currentPage,
+                    'last_page' => $lastPage,
+                    'links' => $links,
+                ],
+            ]);
+        } else {
+            $applications = Application::query()
+            ->with('applicant')
+            ->where('status', 6)
+            // ->whereHas('applications', function ($query) {
+            //     $query->where('status', 1);
+            // })
+            ->when($searchReq, function($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('applicant', function ($query) use ($search) {
+                        $query->whereHas('user', function ($query) use ($search) {
+                            $query->whereRaw('LOWER(email) LIKE ?', ['%' . strtolower($search) . '%'])
+                                  ->orWhereRaw('LOWER(contact_number) LIKE ?', ['%' . strtolower($search) . '%']);
+                        })
+                        ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+                    });
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn($application) => [
+                'id' => $application->id,
+                'first_name' => $application->applicant->first_name,
+                'middle_name' => $application->applicant->middle_name,
+                'last_name' => $application->applicant->last_name,
+                'province' => $application->province,
+                'city' => $application->city,
+                'barangay' => $application->barangay,
+                'street_address' => $application->street_address,
+                'zip_code' => $application->zip_code,
+                'email' => $application->applicant->user->email,
+                'contact_number' => $application->applicant->contact_number,
+                'education' => $application->education,
+                'work_experience' => $application->work_experience,
+                'skills' => $application->skills,
+                'is_active' => $application->applicant->user->is_active,
+                'created_at' => Carbon::parse($application->created_at)->format('F d, Y'),
+            ]);
+    
+            if (empty($searchReq)) {
+                unset($filters['search']);
+            }
+    
+            $currentPage = $applications->currentPage();
+            $lastPage = $applications->lastPage();
+            $firstPage = 1;
+    
+            $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
+            $nextPage = $currentPage + 1 <= $lastPage ? $currentPage + 1 : null;
+    
+            $links = [];
+    
+            if ($previousPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($previousPage),
+                    'label' => 'Previous',
+                ];
+            }
+    
+            $links[] = [
+                'url' => $applications->url(1),
+                'label' => 1,
+            ];
+    
+            if ($currentPage > 3) {
+                $links[] = [
+                    'url' => $applications->url($currentPage - 1),
+                    'label' => '...',
+                ];
+            }
+    
+            $rangeStart = max(2, $currentPage - 1);
+            $rangeEnd = min($lastPage - 1, $currentPage + 1);
+    
+            for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
+                $links[] = [
+                    'url' => $applications->url($i),
+                    'label' => $i,
+                ];
+            }
+    
+    
+            if ($currentPage < $lastPage - 2) {
+                $links[] = [
+                    'url' => $applications->url($currentPage + 1),
+                    'label' => '...',
+                ];
+            }
+    
+            if ($firstPage !== $lastPage) {
+                $links[] = [
+                    'url' => $applications->url($lastPage),
+                    'label' => $lastPage,
+                ];
+            }
+    
+            if ($nextPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($nextPage),
+                    'label' => 'Next',
+                ];
+            }
+    
+    
+            return Inertia::render('Deployed/Index', [
+                'applications' => $applications,
+                'filters' => $filters,
+                'pagination' => [
+                    'current_page' => $currentPage,
+                    'last_page' => $lastPage,
+                    'links' => $links,
+                ],
+            ]);
+        }
+    }
+
+               /**
+     * Display a listing of the resource for deployed applications.
+     */
+    public function indexForDisqualified()
+    {
+        $filters = Request::only(['search']);
+        $searchReq = Request::input('search');
+        $authUser = Auth::user();
+
+        if ($authUser->employer) {
+            $currentJobAds = JobAdvertisement::where(['employer_id' => $authUser->employer->id])->get();
+
+            $applications = Application::query()
+            ->with('applicant')
+            ->where('status', 0)
+            // ->whereHas('applications', function ($query) {
+            //     $query->where('status', 1);
+            // })
+            // ->where(function ($query) use ($currentJobAds) {
+            //     foreach ($currentJobAds as $jobAd) {
+            //         $jobPositionId = $jobAd->jobPosition->id;
+            //         $query->orWhereJsonContains('skills->jobPositionId', $jobPositionId);
+            //     }
+            // })
+            ->when($searchReq, function($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('applicant', function ($query) use ($search) {
+                        $query->whereHas('user', function ($query) use ($search) {
+                            $query->whereRaw('LOWER(email) LIKE ?', ['%' . strtolower($search) . '%'])
+                                  ->orWhereRaw('LOWER(contact_number) LIKE ?', ['%' . strtolower($search) . '%']);
+                        })
+                        ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+                    });
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn($application) => [
+                'id' => $application->id,
+                'first_name' => $application->applicant->first_name,
+                'middle_name' => $application->applicant->middle_name,
+                'last_name' => $application->applicant->last_name,
+                'province' => $application->province,
+                'city' => $application->city,
+                'barangay' => $application->barangay,
+                'street_address' => $application->street_address,
+                'zip_code' => $application->zip_code,
+                'email' => $application->applicant->user->email,
+                'contact_number' => $application->applicant->contact_number,
+                'education' => $application->education,
+                'work_experience' => $application->work_experience,
+                'skills' => $application->skills,
+                'is_active' => $application->applicant->user->is_active,
+                'created_at' => Carbon::parse($application->created_at)->format('F d, Y'),
+            ]);
+    
+            if (empty($searchReq)) {
+                unset($filters['search']);
+            }
+    
+            $currentPage = $applications->currentPage();
+            $lastPage = $applications->lastPage();
+            $firstPage = 1;
+    
+            $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
+            $nextPage = $currentPage + 1 <= $lastPage ? $currentPage + 1 : null;
+    
+            $links = [];
+    
+            if ($previousPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($previousPage),
+                    'label' => 'Previous',
+                ];
+            }
+    
+            $links[] = [
+                'url' => $applications->url(1),
+                'label' => 1,
+            ];
+    
+            if ($currentPage > 3) {
+                $links[] = [
+                    'url' => $applications->url($currentPage - 1),
+                    'label' => '...',
+                ];
+            }
+    
+            $rangeStart = max(2, $currentPage - 1);
+            $rangeEnd = min($lastPage - 1, $currentPage + 1);
+    
+            for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
+                $links[] = [
+                    'url' => $applications->url($i),
+                    'label' => $i,
+                ];
+            }
+    
+    
+            if ($currentPage < $lastPage - 2) {
+                $links[] = [
+                    'url' => $applications->url($currentPage + 1),
+                    'label' => '...',
+                ];
+            }
+    
+            if ($firstPage !== $lastPage) {
+                $links[] = [
+                    'url' => $applications->url($lastPage),
+                    'label' => $lastPage,
+                ];
+            }
+    
+            if ($nextPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($nextPage),
+                    'label' => 'Next',
+                ];
+            }
+    
+    
+            return Inertia::render('Disqualified/Index', [
+                'applications' => $applications,
+                'filters' => $filters,
+                'pagination' => [
+                    'current_page' => $currentPage,
+                    'last_page' => $lastPage,
+                    'links' => $links,
+                ],
+            ]);
+        } else {
+            $applications = Application::query()
+            ->with('applicant')
+            ->where('status', 0)
+            // ->whereHas('applications', function ($query) {
+            //     $query->where('status', 1);
+            // })
+            ->when($searchReq, function($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('applicant', function ($query) use ($search) {
+                        $query->whereHas('user', function ($query) use ($search) {
+                            $query->whereRaw('LOWER(email) LIKE ?', ['%' . strtolower($search) . '%'])
+                                  ->orWhereRaw('LOWER(contact_number) LIKE ?', ['%' . strtolower($search) . '%']);
+                        })
+                        ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                        ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+                    });
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn($application) => [
+                'id' => $application->id,
+                'first_name' => $application->applicant->first_name,
+                'middle_name' => $application->applicant->middle_name,
+                'last_name' => $application->applicant->last_name,
+                'province' => $application->province,
+                'city' => $application->city,
+                'barangay' => $application->barangay,
+                'street_address' => $application->street_address,
+                'zip_code' => $application->zip_code,
+                'email' => $application->applicant->user->email,
+                'contact_number' => $application->applicant->contact_number,
+                'education' => $application->education,
+                'work_experience' => $application->work_experience,
+                'skills' => $application->skills,
+                'is_active' => $application->applicant->user->is_active,
+                'created_at' => Carbon::parse($application->created_at)->format('F d, Y'),
+            ]);
+    
+            if (empty($searchReq)) {
+                unset($filters['search']);
+            }
+    
+            $currentPage = $applications->currentPage();
+            $lastPage = $applications->lastPage();
+            $firstPage = 1;
+    
+            $previousPage = $currentPage - 1 > 0 ? $currentPage - 1 : null;
+            $nextPage = $currentPage + 1 <= $lastPage ? $currentPage + 1 : null;
+    
+            $links = [];
+    
+            if ($previousPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($previousPage),
+                    'label' => 'Previous',
+                ];
+            }
+    
+            $links[] = [
+                'url' => $applications->url(1),
+                'label' => 1,
+            ];
+    
+            if ($currentPage > 3) {
+                $links[] = [
+                    'url' => $applications->url($currentPage - 1),
+                    'label' => '...',
+                ];
+            }
+    
+            $rangeStart = max(2, $currentPage - 1);
+            $rangeEnd = min($lastPage - 1, $currentPage + 1);
+    
+            for ($i = $rangeStart; $i <= $rangeEnd; $i++) {
+                $links[] = [
+                    'url' => $applications->url($i),
+                    'label' => $i,
+                ];
+            }
+    
+    
+            if ($currentPage < $lastPage - 2) {
+                $links[] = [
+                    'url' => $applications->url($currentPage + 1),
+                    'label' => '...',
+                ];
+            }
+    
+            if ($firstPage !== $lastPage) {
+                $links[] = [
+                    'url' => $applications->url($lastPage),
+                    'label' => $lastPage,
+                ];
+            }
+    
+            if ($nextPage !== null) {
+                $links[] = [
+                    'url' => $applications->url($nextPage),
+                    'label' => 'Next',
+                ];
+            }
+    
+    
+            return Inertia::render('Disqualified/Index', [
+                'applications' => $applications,
+                'filters' => $filters,
+                'pagination' => [
+                    'current_page' => $currentPage,
+                    'last_page' => $lastPage,
+                    'links' => $links,
+                ],
+            ]);
+        }
+    }
+
 
     /**
      * Display the add page for applicants.
@@ -1130,6 +1881,42 @@ class ApplicantController extends Controller
         $application = Application::with('applicant.user')->find($id);
 
         return Inertia::render('Qualified/View', [
+            'application' => $application,
+        ]);
+    }
+
+                /**
+     * Show the form for viewing the specified resource.
+     */
+    public function viewForDeployment($id)
+    {
+        $application = Application::with('applicant.user')->find($id);
+
+        return Inertia::render('ForDeployment/View', [
+            'application' => $application,
+        ]);
+    }
+
+                    /**
+     * Show the form for viewing the specified resource.
+     */
+    public function viewForDeployed($id)
+    {
+        $application = Application::with('applicant.user')->find($id);
+
+        return Inertia::render('Deployed/View', [
+            'application' => $application,
+        ]);
+    }
+
+                        /**
+     * Show the form for viewing the specified resource.
+     */
+    public function viewForDisqualified($id)
+    {
+        $application = Application::with('applicant.user')->find($id);
+
+        return Inertia::render('Disqualified/View', [
             'application' => $application,
         ]);
     }
@@ -1367,6 +2154,54 @@ PESO Cabuyao";
 Great news! Your submitted requirements have been reviewed and are all in order. You are now officially qualified and ready for deployment.
 
 We will provide you with the details of your deployment soon, including the date, location, and any additional instructions you need to follow.
+
+- Note: {$notes}
+
+If you have any questions, feel free to contact us.
+
+Thank you,
+PESO Cabuyao";
+    
+            $messageResponse = Semaphore::message()->send(
+                $application->applicant->contact_number,
+                $message
+                );
+        }
+
+        $application->save();
+    }
+
+                       /**
+     * Update the specified resource in storage.
+     */
+    public function updateForDeployment($id)
+    {
+        $interviewValidate = Request::validate([
+            'status' => ['required', 'digits:1'],
+            'work_location' => ['required', 'string'],
+            'start_date' => ['required', 'date', 'after_or_equal:today'],
+            'notes' => ['nullable', 'string'],
+        ]);
+
+        $application = Application::findOrFail($id);
+
+        $jobPositionTitle = json_decode($application->skills)->jobPositionTitle;
+
+        if($interviewValidate['status'] !== $application->status) {
+            $application->status = $interviewValidate['status'];
+        }
+
+        if ($interviewValidate['status']) {
+            $notes = $interviewValidate['notes'];
+
+            $startDate = \Carbon\Carbon::createFromFormat('Y-m-d', $interviewValidate['start_date'])->format('F j, Y');
+            $workLocation = $interviewValidate['work_location'];
+            
+            $message = "Hello {$application->applicant->first_name} {$application->applicant->last_name},
+    
+You are now deployed!
+
+Your deployment is at {$workLocation}. Please ensure you report to the location on {$startDate}. Bring all necessary items and documents as instructed.
 
 - Note: {$notes}
 

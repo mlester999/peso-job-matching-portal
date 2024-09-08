@@ -101,6 +101,13 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, 
                     <BriefcaseIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
             </SidebarLink>
+
+            <SidebarLink title="Disqualified" :href="route('employer.disqualified.indexForDisqualified')"
+                :active="route().current('employer.disqualified.indexForDisqualified')">
+                <template #icon>
+                    <ClipboardCheckIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
         </template>
 
         <!-- <SidebarCollapsible title="Components" :active="route().current('components.*')">
