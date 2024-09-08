@@ -24,6 +24,17 @@ class NotificationController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function updateNotifications($id)
+    {
+        // Update all notifications for the given id, setting is_viewed to 0
+        Notification::where('applicant_id', $id)->update(['is_viewed' => 0]);
+
+        return response()->json(['message' => 'Notifications updated successfully'], 201);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)

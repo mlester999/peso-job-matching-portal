@@ -25,6 +25,11 @@ class Applicant extends Model
         return $this->hasMany(Application::class);
     }
 
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -6,6 +6,7 @@ use App\Models\Applicant;
 use App\Models\Application;
 use App\Models\JobAdvertisement;
 use App\Models\User;
+use App\Models\Notification;
 use App\Mail\SendOtpEmail;
 use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Request;
@@ -2720,6 +2721,13 @@ PESO Cabuyao";
             ->first();
 
             $application->is_draft = 0;
+
+            Notification::create([
+                'applicant_id' => $applicant->id,
+                'title' => 'Welcome to PESO Job Matching Website',
+                'description' => 'Employers are now reviewing your applications. While you wait for the results, feel free to update your profile or explore trending job opportunities. Good luck!',
+                'is_viewed' => 1
+            ]);
 
             $application->save();
 

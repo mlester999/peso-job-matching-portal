@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('applicant_id')->references('id')->on('applicants');
+            $table->foreignId('employer_id')->references('id')->on('employers')->nullable();
+            $table->string('title');
+            $table->string('description');
             $table->timestamps();
         });
     }

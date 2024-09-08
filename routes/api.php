@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\JobPositionController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    $user = $request->user()->load(['applicant', 'applicant.applications']); // Eager load the 'applicant' relationship
+    $user = $request->user()->load(['applicant', 'applicant.applications', 'applicant.notifications']); // Eager load the 'applicant' relationship
     return response()->json($user);
 });
 
@@ -35,6 +36,9 @@ Route::post('refresh', [ApplicantController::class, 'refresh']);
 Route::get('details', [ApplicantController::class, 'details']);
 Route::post('get-email-from-token', [ApplicantController::class, 'getEmailFromToken']);
 Route::post('reset-password', [ApplicantController::class, 'resetPassword']);
+
+// Update notifications
+Route::put('update-notifications/{id}', [NotificationController::class, 'updateNotifications']);
 
 // Job Position
 Route::get('job-positions', [JobPositionController::class, 'jobPositions']);
