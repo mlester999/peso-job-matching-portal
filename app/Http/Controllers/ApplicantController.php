@@ -2030,6 +2030,13 @@ PESO Cabuyao";
                 $message
                 );
 
+        Notification::create([
+            'applicant_id' => $application->applicant->id,
+            'title' => 'Congratulations! Your application has been approved.',
+            'description' => "Please stay tuned for further details regarding your scheduled interview. We will notify you soon with the exact date, time, and venue (or link, if it's a virtual interview). If you have any questions or need further clarification, please feel free to contact us.",
+            'is_viewed' => 1
+        ]);
+
         $application->save();
     }
 
@@ -2080,6 +2087,16 @@ PESO Cabuyao";
                 $application->applicant->contact_number,
                 $message
                 );
+
+            Notification::create([
+                'applicant_id' => $application->applicant->id,
+                'title' => "Your interview for the {$jobPositionTitle} position has been scheduled.",
+                'description' => "Details:
+- Date & Time: {$interviewDate} at {$interviewTime}
+- ". ($interviewType == 'Online' ? 'Type' : 'Location') .": " . ($interviewType == 'Online' ? $interviewType : $interviewLocation) . "
+- Note: {$interviewNotes}",
+                'is_viewed' => 1
+            ]);
         }
 
         $application->save();
@@ -2124,6 +2141,16 @@ PESO Cabuyao";
                 $application->applicant->contact_number,
                 $message
                 );
+
+            Notification::create([
+                'applicant_id' => $application->applicant->id,
+                'title' => "You can now proceed by providing the requirements for the job that will be assigned to you.",
+                'description' => "Below are the requirements you need to bring:
+{$requirements}
+
+Failure to submit all required documents by {$requirementsDeadline} may result in disqualification. Please ensure everything is complete and submitted on time.",
+                'is_viewed' => 1
+            ]);
         }
 
         $application->save();
@@ -2167,6 +2194,15 @@ PESO Cabuyao";
                 $application->applicant->contact_number,
                 $message
                 );
+
+            Notification::create([
+                'applicant_id' => $application->applicant->id,
+                'title' => 'Great news! Your submitted requirements have been reviewed and are all in order. You are now officially qualified and ready for deployment.',
+                'description' => "We will provide you with the details of your deployment soon, including the date, location, and any additional instructions you need to follow.
+
+- Note: {$notes}",
+                'is_viewed' => 1
+            ]);
         }
 
         $application->save();
@@ -2215,6 +2251,15 @@ PESO Cabuyao";
                 $application->applicant->contact_number,
                 $message
                 );
+
+            Notification::create([
+                'applicant_id' => $application->applicant->id,
+                'title' => "You are now deployed! Your deployment is at {$workLocation}.",
+                'description' => "Please ensure you report to the location on {$startDate}. Bring all necessary items and documents as instructed.
+
+- Note: {$notes}",
+                'is_viewed' => 1
+            ]);
         }
 
         $application->save();
