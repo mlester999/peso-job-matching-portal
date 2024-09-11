@@ -2,15 +2,18 @@
 import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import { router, useForm, usePage, Link } from '@inertiajs/vue3';
 import { useToast } from 'vue-toastification';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import Badge from '@/Components/Badge.vue';
+import ApplicationModal from '@/Components/ApplicationModal.vue';
+import ErrorModal from '@/Components/ErrorModal.vue';
 
 const props = defineProps({
     application: Object
 })
 
 const form = useForm({
-    status: null
+    status: null,
+    jobAdvertisementId: null
 });
 
 const page = usePage();
@@ -29,16 +32,47 @@ const truncate = (text) => {
     return text.length > 20 ? text.substring(0, 20) + '...' : text;
 };
 
+const activeJobAds = computed(() => {
+    return page.props.auth.user.employer.job_advertisements.filter(job => job.is_active === 1)
+})
+
+const isShowErrorModal = ref(false);
+const isShowApplicationModal = ref(false);
+const modalTitle = ref('');
+const modalDescription = ref('');
+
+const handleCloseModal = () => {
+    isShowErrorModal.value = false;
+    isShowApplicationModal.value = false;
+    modalTitle.value = '';
+    modalDescription.value = '';
+}
+
+const handleApplication = (jobAdvertisementId) => {
+    form.jobAdvertisementId = jobAdvertisementId;
+    form.put(`/employer/applications/update-status/${props.application.id}`, {
+        onSuccess: () => {
+            toast.success("Application updated successfully!");
+            router.visit('/employer/applications');
+        },
+    });
+}
+
 const submit = (status) => {
     form.status = status;
-
     if (page.props.auth.user.employer) {
-        form.put(`/employer/applications/update-status/${props.application.id}`, {
-            onSuccess: () => {
-                toast.success("Application updated successfully!");
-                router.visit('/employer/applications');
-            },
-        });
+        if (activeJobAds.value.length > 0) {
+            if (status) {
+                modalTitle.value = "Please select a job advertisement for this applicant.";
+                isShowApplicationModal.value = true;
+            } else {
+                handleApplication();
+            }
+        } else {
+            modalTitle.value = "Ooops! You don't have a job advertisement yet.";
+            modalDescription.value = "You haven't posted any job ads yet. Create a new job listing to attract candidates and start receiving applications!";
+            isShowErrorModal.value = true;
+        }
     } else if (page.props.auth.user.admin) {
         form.put(`/admin/applications/update-status/${props.application.id}`, {
             onSuccess: () => {
@@ -57,6 +91,7 @@ const formattedDate = (date) => {
         day: '2-digit',
     })
 }
+
 </script>
 
 <template>
@@ -290,5 +325,12 @@ const formattedDate = (date) => {
                     class="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Approve</button>
             </div>
         </template>
+
+        <ErrorModal v-if="isShowErrorModal" :title="modalTitle" :description="modalDescription"
+            :href="route('employer.job-ads.index')" linkTitle="Go to Job Ads" :onClose="handleCloseModal" />
+
+        <ApplicationModal v-if="isShowApplicationModal" :title="modalTitle" :href="route('employer.job-ads.index')"
+            linkTitle="Go to Job Ads" :jobAdvertisements="activeJobAds" :onClose="handleCloseModal"
+            :onSubmit="handleApplication" />
     </AuthenticatedLayout>
 </template>

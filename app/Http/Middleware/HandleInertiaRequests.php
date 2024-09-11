@@ -34,7 +34,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $user ? $user->load('admin')->load('employer')->load('applicant') : null,
+                'user' => $user ? $user->load('admin')->load(['employer', 'employer.jobAdvertisements.jobPosition'])->load('applicant') : null,
             ],
         ];
     }

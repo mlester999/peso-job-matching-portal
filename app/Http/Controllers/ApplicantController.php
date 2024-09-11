@@ -1993,13 +1993,18 @@ class ApplicantController extends Controller
     public function updateStatus($id)
     {
         $applicationValidate = Request::validate([
-            'status' => ['required', 'digits:1']
+            'status' => ['required', 'digits:1'],
+            'jobAdvertisementId' => ['nullable', 'string'],
         ]);
 
         $application = Application::findOrFail($id);
 
         if($applicationValidate['status'] !== $application->status) {
             $application->status = $applicationValidate['status'];
+        }
+
+        if($applicationValidate['jobAdvertisementId'] !== $application->job_advertisement_id) {
+            $application->job_advertisement_id = $applicationValidate['jobAdvertisementId'];
         }
 
         if ($applicationValidate['status']) {
