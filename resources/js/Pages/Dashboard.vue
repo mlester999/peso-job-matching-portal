@@ -5,11 +5,43 @@ import { GithubIcon } from '@/Components/Icons/brands'
 import { Bar } from 'vue-chartjs'
 import BarChart from '@/Components/BarChart.vue';
 import LineChart from '@/Components/LineChart.vue';
+import { ref } from 'vue';
+import { format, eachMonthOfInterval } from 'date-fns';
 
 const props = defineProps({
     userCount: String,
     employerCount: String,
     applicantCount: String,
+    qualifiedApplicants: Array,
+    disqualifiedApplicants: Array,
+})
+
+// Generate all months using date-fns
+const months = eachMonthOfInterval({
+    start: new Date(2024, 0, 1), // Start from January of the current year
+    end: new Date(2024, 11, 31)  // End at December of the current year
+}).map((date) => format(date, 'MMMM')); // Format each month as full month name
+
+const chartData = ref({
+    labels: months,
+    datasets: [
+
+        {
+            label: 'Qualified Applicants',
+            backgroundColor: '#0066ff',
+            data: props.qualifiedApplicants
+        },
+
+        {
+            label: 'Disqualified Applicants',
+            backgroundColor: '#f87979',
+            data: props.disqualifiedApplicants
+        },
+    ]
+})
+
+const chartOptions = ref({
+    responsive: true
 })
 
 </script>
@@ -45,10 +77,10 @@ const props = defineProps({
             <div class="p-4">
                 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between my-4">
                     <h2 class="text-xl font-semibold leading-tight">
-                        Bar Chart
+                        Applications Chart
                     </h2>
                 </div>
-                <BarChart />
+                <BarChart :chartData="chartData" :chartOptions="chartOptions" />
             </div>
 
             <div class="p-4">

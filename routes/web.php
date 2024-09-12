@@ -12,6 +12,7 @@ use App\Http\Controllers\JobAdvertisementController;
 use App\Models\User;
 use App\Models\Employer;
 use App\Models\Applicant;
+use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,14 +30,52 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
+    // Initialize an array with 12 zeros, representing each month.
+    $qualifiedApplicantsData = array_fill(0, 12, 0);
+    $disqualifiedApplicantsData = array_fill(0, 12, 0);
+
     $userCount = Applicant::count();
     $employerCount = Employer::count();
     $applicantCount = Applicant::whereHas('applications')->count();
+    $qualifiedApplicants = Applicant::whereHas('applications', function ($query) {
+            $query->where('status', 6);
+        })->get();
+    $disqualifiedApplicants = Applicant::whereHas('applications', function ($query) {
+        $query->where('status', 0);
+    })->get();
+
+    // Loop through each applicant and check the month of the application.
+    foreach ($qualifiedApplicants as $applicant) {
+        foreach ($applicant->applications as $application) {
+            if ($application->status == 6) {
+                // Assuming 'created_at' is the date field for each application.
+                $month = Carbon::parse($application->created_at)->month;
+
+                // Increment the corresponding month in the array.
+                $qualifiedApplicantsData[$month - 1]++; // Subtract 1 because arrays are 0-indexed.
+            }
+        }
+    }
+
+        // Loop through each applicant and check the month of the application.
+        foreach ($disqualifiedApplicants as $applicant) {
+            foreach ($applicant->applications as $application) {
+                if ($application->status == 0) {
+                    // Assuming 'created_at' is the date field for each application.
+                    $month = Carbon::parse($application->created_at)->month;
+    
+                    // Increment the corresponding month in the array.
+                    $disqualifiedApplicantsData[$month - 1]++; // Subtract 1 because arrays are 0-indexed.
+                }
+            }
+        }
 
     return Inertia::render('Dashboard', [
         'userCount' => $userCount,
         'employerCount' => $employerCount,
         'applicantCount' => $applicantCount,
+        'qualifiedApplicants' => $qualifiedApplicantsData,
+        'disqualifiedApplicants' => $disqualifiedApplicantsData,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
