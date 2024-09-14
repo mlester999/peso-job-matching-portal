@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Applicant;
 use App\Models\Application;
 use App\Models\JobAdvertisement;
+use App\Models\JobPosition;
 use App\Models\User;
 use App\Models\Notification;
 use App\Mail\SendOtpEmail;
@@ -28,13 +29,22 @@ class ApplicantController extends Controller
      */
     public function index()
     {
-        $filters = Request::only(['search']);
+        $filters = Request::only(['search', 'classification', 'location', 'jobPosition', 'listedTime']);
         $searchReq = Request::input('search');
+        $classificationReq = Request::input('classification');
+        $locationReq = Request::input('location');
+        $jobPositionReq = Request::input('jobPosition');
+        $listedTimeReq = Request::input('listedTime');
         $authUser = Auth::user();
+
+        $jobPositions = JobPosition::where('is_active', 1)->get();
+
+        // $applicationQuery = Application::query()->whereJsonContains('skills', strtolower($searchReq))->get();
+
+        // dd($applicationQuery);
 
         if ($authUser->employer) {
             $currentJobAds = JobAdvertisement::where(['employer_id' => $authUser->employer->id])->get();
-
             $applications = Application::query()
             ->with('applicant')
             ->where('status', 1)
@@ -56,8 +66,52 @@ class ApplicantController extends Controller
                         })
                         ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
-                    });
+                    })->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.skills'))) LIKE ?", ['%' . strtolower($search) . '%']);
                 });
+            })
+            ->when($classificationReq, function($query, $search) {
+                    $query->whereRaw("
+                    LOWER(JSON_UNQUOTE(JSON_EXTRACT(work_experience, CONCAT('$[', JSON_LENGTH(work_experience) - 1, '].industry')))) LIKE ?", 
+                    ['%' . strtolower($search) . '%']
+                );
+            })
+            ->when($locationReq, function($query, $search) {
+                $query->whereRaw('LOWER(barangay) LIKE ?', ['%' . strtolower($search) . '%']);
+            })
+            ->when($jobPositionReq, function($query, $search) {
+                    $query->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.jobPositionTitle'))) LIKE ?", ['%' . strtolower($search) . '%']);
+            })
+            ->when($listedTimeReq, function($query, $search) {
+                switch (strtolower($search)) {
+                    case 'any time':
+                        // No date filter for "any time"
+                        break;
+            
+                    case 'today':
+                        // Filter for today's records
+                        $query->whereDate('created_at', today());
+                        break;
+            
+                    case 'last 3 days':
+                        // Filter for the last 3 days
+                        $query->whereDate('created_at', '>=', now()->subDays(3));
+                        break;
+            
+                    case 'last week':
+                        // Filter for the last 7 days (1 week)
+                        $query->whereDate('created_at', '>=', now()->subWeek());
+                        break;
+            
+                    case 'last month':
+                        // Filter for the last 30 days (1 month)
+                        $query->whereDate('created_at', '>=', now()->subMonth());
+                        break;
+            
+                    default:
+                        // In case the search term does not match any of the above
+                        $query->whereRaw('LOWER(created_at) LIKE ?', ['%' . strtolower($search) . '%']);
+                        break;
+                }
             })
             ->orderBy('id', 'desc')
             ->paginate(10)
@@ -83,6 +137,22 @@ class ApplicantController extends Controller
     
             if (empty($searchReq)) {
                 unset($filters['search']);
+            }
+
+            if (empty($classificationReq)) {
+                unset($filters['classification']);
+            }
+
+            if (empty($locationReq)) {
+                unset($filters['location']);
+            }
+
+            if (empty($jobPositionReq)) {
+                unset($filters['jobPosition']);
+            }
+
+            if (empty($listedTimeReq)) {
+                unset($filters['listedTime']);
             }
     
             $currentPage = $applications->currentPage();
@@ -149,6 +219,7 @@ class ApplicantController extends Controller
             return Inertia::render('Applications/Index', [
                 'applications' => $applications,
                 'filters' => $filters,
+                'jobPositions' => $jobPositions,
                 'pagination' => [
                     'current_page' => $currentPage,
                     'last_page' => $lastPage,
@@ -171,8 +242,49 @@ class ApplicantController extends Controller
                         })
                         ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
-                    });
+                    })->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.skills'))) LIKE ?", ['%' . strtolower($search) . '%']);
                 });
+            })
+            ->when($classificationReq, function($query, $search) {
+                $query->whereRaw("
+                LOWER(JSON_UNQUOTE(JSON_EXTRACT(work_experience, CONCAT('$[', JSON_LENGTH(work_experience) - 1, '].industry')))) LIKE ?", 
+                ['%' . strtolower($search) . '%']
+            );
+            })
+            ->when($locationReq, function($query, $search) {
+                $query->whereRaw('LOWER(barangay) LIKE ?', ['%' . strtolower($search) . '%']);
+            })
+            ->when($listedTimeReq, function($query, $search) {
+                switch (strtolower($search)) {
+                    case 'any time':
+                        // No date filter for "any time"
+                        break;
+            
+                    case 'today':
+                        // Filter for today's records
+                        $query->whereDate('created_at', today());
+                        break;
+            
+                    case 'last 3 days':
+                        // Filter for the last 3 days
+                        $query->whereDate('created_at', '>=', now()->subDays(3));
+                        break;
+            
+                    case 'last week':
+                        // Filter for the last 7 days (1 week)
+                        $query->whereDate('created_at', '>=', now()->subWeek());
+                        break;
+            
+                    case 'last month':
+                        // Filter for the last 30 days (1 month)
+                        $query->whereDate('created_at', '>=', now()->subMonth());
+                        break;
+            
+                    default:
+                        // In case the search term does not match any of the above
+                        $query->whereRaw('LOWER(created_at) LIKE ?', ['%' . strtolower($search) . '%']);
+                        break;
+                }
             })
             ->orderBy('id', 'desc')
             ->paginate(10)
@@ -198,6 +310,22 @@ class ApplicantController extends Controller
     
             if (empty($searchReq)) {
                 unset($filters['search']);
+            }
+
+            if (empty($classificationReq)) {
+                unset($filters['classification']);
+            }
+
+            if (empty($locationReq)) {
+                unset($filters['location']);
+            }
+
+            if (empty($workTypeReq)) {
+                unset($filters['workType']);
+            }
+
+            if (empty($listedTimeReq)) {
+                unset($filters['listedTime']);
             }
     
             $currentPage = $applications->currentPage();
@@ -264,6 +392,7 @@ class ApplicantController extends Controller
             return Inertia::render('Applications/Index', [
                 'applications' => $applications,
                 'filters' => $filters,
+                'jobPositions' => $jobPositions,
                 'pagination' => [
                     'current_page' => $currentPage,
                     'last_page' => $lastPage,

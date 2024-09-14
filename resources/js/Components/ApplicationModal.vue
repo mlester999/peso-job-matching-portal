@@ -1,9 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { XCircleIcon, ExclamationCircleIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { Link } from '@inertiajs/vue3';
 import SelectField from './SelectField.vue';
+import debounce from 'lodash.debounce';
 
 const props = defineProps({
     title: String,
@@ -11,16 +12,35 @@ const props = defineProps({
     onSubmit: Function,
     href: String,
     linkTitle: String,
-    jobAdvertisements: Array
+    jobAdvertisements: Array,
+    applicantSkills: Array
 })
 
 const open = ref(true)
 const selectedJobAdvertisementId = ref(null)
+const matchedPercentage = ref('')
 
 const handleCloseModal = () => {
     open.value = false;
     props.onClose();
 }
+
+watch(
+    selectedJobAdvertisementId,
+    debounce((value) => {
+        const jobAds = props.jobAdvertisements.find(jobAds => jobAds.id === Number(value))
+        const jobAdsSkills = JSON.parse(jobAds.skills);
+
+        // Find the intersection (common elements)
+        const commonSkills = jobAdsSkills.filter(item => props.applicantSkills.includes(item));
+
+        // Calculate the percentage of matched items
+        const matchPercentage = (commonSkills.length / jobAdsSkills.length) * 100;
+
+        matchedPercentage.value = matchPercentage.toFixed(2);
+        console.log(matchedPercentage.value);
+    }, 500)
+);
 
 </script>
 
@@ -57,7 +77,7 @@ const handleCloseModal = () => {
                                 <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                     <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
                                         {{ title }}</DialogTitle>
-                                    <div class="mt-2sm:max-w-lg">
+                                    <div class="mt-2 sm:max-w-lg">
                                         <SelectField id="jobAdvertisement" v-model="selectedJobAdvertisementId">
                                             <option value="" disabled selected hidden>~ Select Job Advertisement ~
                                             </option>
@@ -67,11 +87,25 @@ const handleCloseModal = () => {
                                             </option>
                                         </SelectField>
                                     </div>
+
                                 </div>
+                            </div>
+                            <div v-if="matchedPercentage" class="mt-4 sm:max-w-lg text-center">
+                                <p class="text-sm">Matched Percentage:
+                                    <span v-if="Number(matchedPercentage) === 50"
+                                        class="inline-flex items-center gap-x-0.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 text-ellipsis">{{
+                                            matchedPercentage }}%</span>
+                                    <span v-else-if="Number(matchedPercentage) < 50"
+                                        class="inline-flex items-center gap-x-0.5 rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-600 text-ellipsis">{{
+                                            matchedPercentage }}%</span>
+                                    <span v-else-if="Number(matchedPercentage) > 50"
+                                        class="inline-flex items-center gap-x-0.5 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-600 text-ellipsis">{{
+                                            matchedPercentage }}%</span>
+                                </p>
                             </div>
                             <div class="mx-auto text-center mt-4">
                                 <button @click="props.onSubmit(selectedJobAdvertisementId)" type="button"
-                                    :disabled="!selectedJobAdvertisementId"
+                                    :disabled="!selectedJobAdvertisementId || !matchedPercentage"
                                     class="disabled:bg-blue-300 inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                                     Submit</button>
                             </div>

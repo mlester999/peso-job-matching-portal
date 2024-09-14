@@ -12,8 +12,11 @@ const props = defineProps({
     userCount: String,
     employerCount: String,
     applicantCount: String,
+    jobAdvertisementCount: String,
+    applicationCount: String,
     qualifiedApplicants: Array,
     disqualifiedApplicants: Array,
+    jobAdvertisements: Array,
 })
 
 // Generate all months using date-fns
@@ -22,7 +25,7 @@ const months = eachMonthOfInterval({
     end: new Date(2024, 11, 31)  // End at December of the current year
 }).map((date) => format(date, 'MMMM')); // Format each month as full month name
 
-const chartData = ref({
+const barChartData = ref({
     labels: months,
     datasets: [
 
@@ -40,7 +43,22 @@ const chartData = ref({
     ]
 })
 
-const chartOptions = ref({
+const barChartOptions = ref({
+    responsive: true
+})
+
+const lineChartData = ref({
+    labels: months,
+    datasets: [
+        {
+            label: 'Job Advertisements',
+            backgroundColor: '#0066ff',
+            data: props.jobAdvertisements
+        }
+    ]
+})
+
+const lineChartOptions = ref({
     responsive: true
 })
 
@@ -67,6 +85,16 @@ const chartOptions = ref({
                 <p>{{ applicantCount }}</p>
             </div>
 
+            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+                <h1 class="font-semibold">Total Applications</h1>
+                <p>{{ applicationCount }}</p>
+            </div>
+
+            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+                <h1 class="font-semibold">Total Job Advertisements</h1>
+                <p>{{ jobAdvertisementCount }}</p>
+            </div>
+
             <div v-if="$page.props.auth.user.admin" class="p-6 overflow-hidden bg-white rounded-md shadow-md">
                 <h1 class="font-semibold">Total Users</h1>
                 <p>{{ userCount }}</p>
@@ -80,16 +108,16 @@ const chartOptions = ref({
                         Applications Chart
                     </h2>
                 </div>
-                <BarChart :chartData="chartData" :chartOptions="chartOptions" />
+                <BarChart :chartData="barChartData" :chartOptions="barChartOptions" />
             </div>
 
             <div class="p-4">
                 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between my-4">
                     <h2 class="text-xl font-semibold leading-tight">
-                        Line Chart
+                        Job Advertisements Chart
                     </h2>
                 </div>
-                <LineChart />
+                <LineChart :chartData="lineChartData" :chartOptions="lineChartOptions" />
             </div>
         </div>
 

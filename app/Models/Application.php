@@ -31,4 +31,9 @@ class Application extends Model
     {
         return $this->belongsTo(Applicant::class);
     }
+
+    public function jobAdvertisement(): BelongsTo
+    {
+        return $this->belongsTo(JobAdvertisement::class);
+    }
 }

@@ -8,14 +8,69 @@ import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Badge from '@/Components/Badge.vue';
+import SelectField from '@/Components/SelectField.vue';
 
 const props = defineProps({
     applications: Object,
     pagination: Object,
     filters: Object,
+    jobPositions: Object,
 });
 
+const barangays = [
+    'Baclaran',
+    'Banay-Banay',
+    'Banlic',
+    'Bigaa',
+    'Butong',
+    'Casile',
+    'Diezmo',
+    'Gulod',
+    'Mamatid',
+    'Marinig',
+    'Niugan',
+    'Pittland',
+    'Pulo',
+    'Sala',
+    'San Isidro',
+    'Barangay I Poblacion',
+    'Barangay II Poblacion',
+    'Barangay III Poblacion',
+]
+
+const industries = [
+    { value: "Agriculture", text: "Agriculture" },
+    { value: "ActivitiesOfPrivateHouseholds", text: "Activities Of Private Households" },
+    { value: "Construction", text: "Construction" },
+    { value: "Education", text: "Education" },
+    { value: "ElectricityGasAndWaterSupply", text: "Electricity, Gas And Water Supply" },
+    { value: "ExtraTerritorialOrganizationsAndBodies", text: "Extra-Territorial Organizations And Bodies" },
+    { value: "FinancialIntermediation", text: "Financial Intermediation" },
+    { value: "Fishing", text: "Fishing" },
+    { value: "HealthAndSocialWork", text: "Health And Social Work" },
+    { value: "HotelsAndRestaurants", text: "Hotels And Restaurants" },
+    { value: "IT", text: "IT BPO" },
+    { value: "Manufacturing", text: "Manufacturing" },
+    { value: "MiningAndQuarrying", text: "Mining And Quarrying" },
+    { value: "OtherCommunitySocialAndPersonalServiceActivities", text: "Other Community, Social And Personal Service Activities" },
+    { value: "PublicAdministrationAndDefense", text: "Public Administration And Defense" },
+    { value: "RealEstateRentingAndBusinessActivities", text: "Real Estate, Renting And Business Activities" },
+    { value: "TransportStorageAndCommunication", text: "Transport, Storage And Communication" },
+    { value: "WholesaleAndRetailTrade", text: "Wholesale And Retail Trade" }
+];
+
+const roles = [
+    { id: 'full-time', title: 'Full Time' },
+    { id: 'part-time', title: 'Part Time' },
+    { id: 'contract', title: 'Contract' },
+    { id: 'temporary', title: 'Temporary' },
+]
+
 let search = ref(props.filters.search);
+let classification = ref(props.filters.classification);
+let location = ref(props.filters.location);
+let jobPosition = ref(props.filters.jobPosition);
+let listedTime = ref(props.filters.listedTime);
 
 const page = usePage()
 
@@ -53,6 +108,98 @@ watch(
 
     }, 500)
 );
+
+watch(
+    classification,
+    debounce((value) => {
+        const query = {};
+        if (value) {
+            query.classification = value;
+        }
+        if (page.props.auth.user.employer) {
+            router.get(`/employer/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        } else if (page.props.auth.user.admin) {
+            router.get(`/admin/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        }
+
+
+    }, 500)
+);
+
+watch(
+    location,
+    debounce((value) => {
+        const query = {};
+        if (value) {
+            query.location = value;
+        }
+        if (page.props.auth.user.employer) {
+            router.get(`/employer/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        } else if (page.props.auth.user.admin) {
+            router.get(`/admin/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        }
+
+
+    }, 500)
+);
+
+watch(
+    jobPosition,
+    debounce((value) => {
+        const query = {};
+        if (value) {
+            query.jobPosition = value;
+        }
+        if (page.props.auth.user.employer) {
+            router.get(`/employer/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        } else if (page.props.auth.user.admin) {
+            router.get(`/admin/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        }
+
+
+    }, 500)
+);
+
+watch(
+    listedTime,
+    debounce((value) => {
+        const query = {};
+        if (value) {
+            query.listedTime = value;
+        }
+        if (page.props.auth.user.employer) {
+            router.get(`/employer/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        } else if (page.props.auth.user.admin) {
+            router.get(`/admin/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        }
+
+
+    }, 500)
+);
 </script>
 
 <template>
@@ -69,11 +216,53 @@ watch(
                             name, title, email and role.</p> -->
                     </div>
                 </div>
-                <div class="sm:flex sm:items-center">
+                <div class="sm:flex sm:items-center sm:justify-center">
                     <div class="sm:flex-auto">
                         <Input v-model="search" placeholder="Search for application..." type="search" />
                     </div>
 
+                    <div class="mx-4 -mt-1">
+                        <SelectField id="classification" v-model="classification">
+                            <option value="" selected>~ Select Classification ~
+                            </option>
+                            <option v-for="(industry, index) in industries" :key="index" :value="industry.value">
+                                {{ industry.text }}
+                            </option>
+                        </SelectField>
+                    </div>
+
+                    <div class="mx-4 -mt-1">
+                        <SelectField id="location" v-model="location">
+                            <option value="" selected>~ Select Location ~
+                            </option>
+                            <option v-for="(barangay, index) in barangays" :key="index" :value="barangay">
+                                {{ barangay }}
+                            </option>
+                        </SelectField>
+                    </div>
+
+                    <div class="mx-4 -mt-1">
+                        <SelectField id="jobPosition" v-model="jobPosition">
+                            <option value="" selected>~ Select Job Position ~
+                            </option>
+                            <option v-for="(jobPosition, index) in props.jobPositions" :key="index"
+                                :value="jobPosition.title">
+                                {{ jobPosition.title }}
+                            </option>
+                        </SelectField>
+                    </div>
+
+                    <div class="mx-4 -mt-1">
+                        <SelectField id="listedTime" v-model="listedTime">
+                            <option value="" selected>~ Select Listed Time ~
+                            </option>
+                            <option value="Any Time">Any Time</option>
+                            <option value="Today">Today</option>
+                            <option value="Last 3 Days">Last 3 Days</option>
+                            <option value="Last Week">Last Week</option>
+                            <option value="Last Month">Last Month</option>
+                        </SelectField>
+                    </div>
                 </div>
                 <div class="mt-8 flow-root">
                     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -129,7 +318,7 @@ watch(
                                                 application.email }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
                                                 application.contact_number
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 JSON.parse(application.skills).jobPositionTitle }}</td>
                                             <td
@@ -143,7 +332,7 @@ watch(
                                             </td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 application.created_at
-                                                }}</td>
+                                            }}</td>
                                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                                                 <span v-if="application.is_active"
                                                     class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>

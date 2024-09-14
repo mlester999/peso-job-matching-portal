@@ -331,6 +331,6 @@ const formattedDate = (date) => {
 
         <ApplicationModal v-if="isShowApplicationModal" :title="modalTitle" :href="route('employer.job-ads.index')"
             linkTitle="Go to Job Ads" :jobAdvertisements="activeJobAds" :onClose="handleCloseModal"
-            :onSubmit="handleApplication" />
+            :onSubmit="handleApplication" :applicantSkills="JSON.parse(props.application.skills).skills" />
     </AuthenticatedLayout>
 </template>

@@ -31,4 +31,9 @@ class JobAdvertisement extends Model
     {
         return $this->belongsTo(Employer::class);
     }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(Application::class);
+    }
 }

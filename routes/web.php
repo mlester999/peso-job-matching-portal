@@ -2,7 +2,7 @@
 
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
+// use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\ApplicantController;
@@ -12,6 +12,8 @@ use App\Http\Controllers\JobAdvertisementController;
 use App\Models\User;
 use App\Models\Employer;
 use App\Models\Applicant;
+use App\Models\JobAdvertisement;
+use App\Models\Application;
 use Carbon\Carbon;
 
 /*
@@ -33,21 +35,30 @@ Route::get('/dashboard', function () {
     // Initialize an array with 12 zeros, representing each month.
     $qualifiedApplicantsData = array_fill(0, 12, 0);
     $disqualifiedApplicantsData = array_fill(0, 12, 0);
+    $jobAdvertisementsData = array_fill(0, 12, 0);
 
+    $authUser = Auth::user();
     $userCount = Applicant::count();
     $employerCount = Employer::count();
+    $applicationCount = Application::whereHas('jobAdvertisement', function ($query) {
+        $authUser = Auth::user();
+        $query->where('employer_id', $authUser->employer->id);
+    })->count();
+    $jobAdvertisementCount = JobAdvertisement::where('employer_id', $authUser->employer->id)->where('is_active', 1)->count();
     $applicantCount = Applicant::whereHas('applications')->count();
+
     $qualifiedApplicants = Applicant::whereHas('applications', function ($query) {
             $query->where('status', 6);
         })->get();
     $disqualifiedApplicants = Applicant::whereHas('applications', function ($query) {
         $query->where('status', 0);
     })->get();
+    $jobAdvertisements = JobAdvertisement::where('employer_id', $authUser->employer->id)->where('is_active', 1)->get();
 
     // Loop through each applicant and check the month of the application.
     foreach ($qualifiedApplicants as $applicant) {
         foreach ($applicant->applications as $application) {
-            if ($application->status == 6) {
+            if ($application->status == 6 && $application->jobAdvertisement->employer_id === $authUser->employer->id) {
                 // Assuming 'created_at' is the date field for each application.
                 $month = Carbon::parse($application->created_at)->month;
 
@@ -57,25 +68,37 @@ Route::get('/dashboard', function () {
         }
     }
 
-        // Loop through each applicant and check the month of the application.
-        foreach ($disqualifiedApplicants as $applicant) {
-            foreach ($applicant->applications as $application) {
-                if ($application->status == 0) {
-                    // Assuming 'created_at' is the date field for each application.
-                    $month = Carbon::parse($application->created_at)->month;
-    
-                    // Increment the corresponding month in the array.
-                    $disqualifiedApplicantsData[$month - 1]++; // Subtract 1 because arrays are 0-indexed.
-                }
+    // Loop through each applicant and check the month of the application.
+    foreach ($disqualifiedApplicants as $applicant) {
+        foreach ($applicant->applications as $application) {
+            if ($application->status == 0 && $application->jobAdvertisement->employer_id === $authUser->employer->id) {
+                // Assuming 'created_at' is the date field for each application.
+                $month = Carbon::parse($application->created_at)->month;
+
+                // Increment the corresponding month in the array.
+                $disqualifiedApplicantsData[$month - 1]++; // Subtract 1 because arrays are 0-indexed.
             }
         }
+    }
+
+    // Loop through each job ads and check the month of the application.
+    foreach ($jobAdvertisements as $jobAd) {
+        // Assuming 'created_at' is the date field for each application.
+        $month = Carbon::parse($jobAd->created_at)->month;
+
+        // Increment the corresponding month in the array.
+        $jobAdvertisementsData[$month - 1]++; // Subtract 1 because arrays are 0-indexed.
+    }
 
     return Inertia::render('Dashboard', [
         'userCount' => $userCount,
         'employerCount' => $employerCount,
         'applicantCount' => $applicantCount,
+        'jobAdvertisementCount' => $jobAdvertisementCount,
+        'applicationCount' => $applicationCount,
         'qualifiedApplicants' => $qualifiedApplicantsData,
         'disqualifiedApplicants' => $disqualifiedApplicantsData,
+        'jobAdvertisements' => $jobAdvertisementsData
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

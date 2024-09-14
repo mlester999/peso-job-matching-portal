@@ -4,7 +4,7 @@ import SidebarLink from '@/Components/Sidebar/SidebarLink.vue'
 import { DashboardIcon } from '@/Components/Icons/outline'
 import SidebarCollapsible from '@/Components/Sidebar/SidebarCollapsible.vue'
 import SidebarCollapsibleItem from '@/Components/Sidebar/SidebarCollapsibleItem.vue'
-import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, CalendarIcon, ClipboardCheckIcon, NewspaperIcon, ClipboardListIcon, InboxInIcon } from '@heroicons/vue/outline'
+import { ArchiveIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, CalendarIcon, ClipboardCheckIcon, NewspaperIcon, ClipboardListIcon, InboxInIcon } from '@heroicons/vue/outline'
 </script>
 
 <template>
@@ -105,7 +105,7 @@ import { TemplateIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, 
             <SidebarLink title="Disqualified" :href="route('employer.disqualified.indexForDisqualified')"
                 :active="route().current('employer.disqualified.indexForDisqualified')">
                 <template #icon>
-                    <ClipboardCheckIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                    <ArchiveIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
             </SidebarLink>
         </template>
