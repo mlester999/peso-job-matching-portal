@@ -88,7 +88,7 @@ const submit = () => {
                                     class="sm:max-w-md" :error="form.errors.email" />
                             </div>
 
-                            <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+                            <!-- <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
                                 <SelectField id="province" label="Province" v-model="form.province"
                                     :error="form.errors.province" class="sm:max-w-xs" disabled>
                                     <option>Laguna</option>
@@ -120,7 +120,7 @@ const submit = () => {
                             <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
                                 <InputField id="zip-code" v-model="form.zip_code" type="text" label="ZIP / Postal Code"
                                     class="sm:max-w-sm" :error="form.errors.zip_code" :isNumber="true" disabled />
-                            </div>
+                            </div> -->
 
                             <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
                                 <InputField id="contact-number" v-model="form.contact_number" type="text"
@@ -140,7 +140,7 @@ const submit = () => {
                 </div>
 
                 <div class="mt-6 flex items-center justify-end gap-x-6">
-                    <a :href="route('admin.employers.index')"
+                    <a :href="route('admin.users.index')"
                         class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
                     <button type="submit"
                         class="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Save</button>

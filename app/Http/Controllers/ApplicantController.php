@@ -254,6 +254,9 @@ class ApplicantController extends Controller
             ->when($locationReq, function($query, $search) {
                 $query->whereRaw('LOWER(barangay) LIKE ?', ['%' . strtolower($search) . '%']);
             })
+            ->when($jobPositionReq, function($query, $search) {
+                $query->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.jobPositionTitle'))) LIKE ?", ['%' . strtolower($search) . '%']);
+        })
             ->when($listedTimeReq, function($query, $search) {
                 switch (strtolower($search)) {
                     case 'any time':
@@ -320,8 +323,8 @@ class ApplicantController extends Controller
                 unset($filters['location']);
             }
 
-            if (empty($workTypeReq)) {
-                unset($filters['workType']);
+            if (empty($jobPositionReq)) {
+                unset($filters['jobPosition']);
             }
 
             if (empty($listedTimeReq)) {

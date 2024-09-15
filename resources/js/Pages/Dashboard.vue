@@ -85,12 +85,12 @@ const lineChartOptions = ref({
                 <p>{{ applicantCount }}</p>
             </div>
 
-            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+            <div v-if="$page.props.auth.user.employer" class="p-6 overflow-hidden bg-white rounded-md shadow-md">
                 <h1 class="font-semibold">Total Applications</h1>
                 <p>{{ applicationCount }}</p>
             </div>
 
-            <div class="p-6 overflow-hidden bg-white rounded-md shadow-md">
+            <div v-if="$page.props.auth.user.employer" class="p-6 overflow-hidden bg-white rounded-md shadow-md">
                 <h1 class="font-semibold">Total Job Advertisements</h1>
                 <p>{{ jobAdvertisementCount }}</p>
             </div>
@@ -101,7 +101,7 @@ const lineChartOptions = ref({
             </div>
         </div>
 
-        <div class="p-4 grid grid-cols-2 gap-8">
+        <div v-if="$page.props.auth.user.employer" class="p-4 grid grid-cols-2 gap-8">
             <div class="p-4">
                 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between my-4">
                     <h2 class="text-xl font-semibold leading-tight">
