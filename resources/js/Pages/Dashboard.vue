@@ -30,7 +30,7 @@ const barChartData = ref({
     datasets: [
 
         {
-            label: 'Qualified Applicants',
+            label: 'Deployed Applicants',
             backgroundColor: '#0066ff',
             data: props.qualifiedApplicants
         },

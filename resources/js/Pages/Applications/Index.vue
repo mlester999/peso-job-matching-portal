@@ -9,11 +9,14 @@ import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Badge from '@/Components/Badge.vue';
 import SelectField from '@/Components/SelectField.vue';
+import { EyeIcon } from '@heroicons/vue/solid';
+import ApplicationInfo from '@/Components/ApplicationInfo.vue';
 
 const props = defineProps({
     applications: Object,
     pagination: Object,
     filters: Object,
+    jobAds: Object,
     jobPositions: Object,
 });
 
@@ -52,7 +55,6 @@ const industries = [
     { value: "IT", text: "IT BPO" },
     { value: "Manufacturing", text: "Manufacturing" },
     { value: "MiningAndQuarrying", text: "Mining And Quarrying" },
-    { value: "OtherCommunitySocialAndPersonalServiceActivities", text: "Other Community, Social And Personal Service Activities" },
     { value: "PublicAdministrationAndDefense", text: "Public Administration And Defense" },
     { value: "RealEstateRentingAndBusinessActivities", text: "Real Estate, Renting And Business Activities" },
     { value: "TransportStorageAndCommunication", text: "Transport, Storage And Communication" },
@@ -69,8 +71,14 @@ const roles = [
 let search = ref(props.filters.search);
 let classification = ref(props.filters.classification);
 let location = ref(props.filters.location);
-let jobPosition = ref(props.filters.jobPosition);
-let listedTime = ref(props.filters.listedTime);
+let jobAdvertisement = ref(props.filters.jobAdvertisement);
+let listedTime = ref(props.filters.listedTime)
+
+const selectedApplication = ref(null);
+
+const matchedPercentage = ref('')
+
+let applicantsPercentages = ref([])
 
 const page = usePage()
 
@@ -85,6 +93,10 @@ const updateInfo = (applicationId) => {
 const truncate = (text) => {
     return text.length > 20 ? text.substring(0, 20) + '...' : text;
 };
+
+const selectApplication = (application) => {
+    selectedApplication.value = application;
+}
 
 watch(
     search,
@@ -156,25 +168,27 @@ watch(
 );
 
 watch(
-    jobPosition,
+    jobAdvertisement,
     debounce((value) => {
-        const query = {};
         if (value) {
-            query.jobPosition = value;
-        }
-        if (page.props.auth.user.employer) {
-            router.get(`/employer/applications`, query, {
-                preserveState: true,
-                replace: true,
-            });
-        } else if (page.props.auth.user.admin) {
-            router.get(`/admin/applications`, query, {
-                preserveState: true,
-                replace: true,
-            });
-        }
+            const jobAds = props.jobAds.find(jobAds => jobAds.id === Number(value))
+            const jobAdsSkills = JSON.parse(jobAds.skills);
 
+            props.applications.data.forEach(el => {
+                const applicantSkills = JSON.parse(el.skills).skills;
+                // Find the intersection (common elements)
+                const commonSkills = jobAdsSkills.filter(item => applicantSkills.includes(item));
 
+                // Calculate the percentage of matched items
+                const matchPercentage = (commonSkills.length / jobAdsSkills.length) * 100;
+
+                matchedPercentage.value = matchPercentage.toFixed(2);
+
+                applicantsPercentages.value.push(matchedPercentage.value);
+            })
+        } else {
+            applicantsPercentages.value = [];
+        }
     }, 500)
 );
 
@@ -200,6 +214,9 @@ watch(
 
     }, 500)
 );
+
+
+
 </script>
 
 <template>
@@ -221,141 +238,111 @@ watch(
                         <Input v-model="search" placeholder="Search for application..." type="search" />
                     </div>
 
-                    <div class="mx-4 -mt-1">
-                        <SelectField id="classification" v-model="classification">
-                            <option value="" selected>~ Select Classification ~
-                            </option>
-                            <option v-for="(industry, index) in industries" :key="index" :value="industry.value">
-                                {{ industry.text }}
-                            </option>
-                        </SelectField>
+                    <div class="space-y-2">
+                        <div class="mx-4 -mt-1">
+                            <SelectField id="classification" v-model="classification">
+                                <option value="" selected>~ Select Classification ~
+                                </option>
+                                <option v-for="(industry, index) in industries" :key="index" :value="industry.value">
+                                    {{ industry.text }}
+                                </option>
+                            </SelectField>
+                        </div>
+
+                        <div class="mx-4 -mt-1">
+                            <SelectField id="location" v-model="location">
+                                <option value="" selected>~ Select Location ~
+                                </option>
+                                <option v-for="(barangay, index) in barangays" :key="index" :value="barangay">
+                                    {{ barangay }}
+                                </option>
+                            </SelectField>
+                        </div>
                     </div>
 
-                    <div class="mx-4 -mt-1">
-                        <SelectField id="location" v-model="location">
-                            <option value="" selected>~ Select Location ~
-                            </option>
-                            <option v-for="(barangay, index) in barangays" :key="index" :value="barangay">
-                                {{ barangay }}
-                            </option>
-                        </SelectField>
-                    </div>
+                    <div class="space-y-2">
+                        <div class="mx-4 -mt-1">
+                            <SelectField id="jobAdvertisement" v-model="jobAdvertisement">
+                                <option value="" selected>~ Select Job Advertisement ~
+                                </option>
+                                <option v-for="(jobAdvertisement, index) in props.jobAds" :key="index"
+                                    :value="jobAdvertisement.id">
+                                    {{ jobAdvertisement.job_position.title }}
+                                </option>
+                            </SelectField>
+                        </div>
 
-                    <div class="mx-4 -mt-1">
-                        <SelectField id="jobPosition" v-model="jobPosition">
-                            <option value="" selected>~ Select Job Position ~
-                            </option>
-                            <option v-for="(jobPosition, index) in props.jobPositions" :key="index"
-                                :value="jobPosition.title">
-                                {{ jobPosition.title }}
-                            </option>
-                        </SelectField>
-                    </div>
-
-                    <div class="mx-4 -mt-1">
-                        <SelectField id="listedTime" v-model="listedTime">
-                            <option value="" selected>~ Select Listed Time ~
-                            </option>
-                            <option value="Any Time">Any Time</option>
-                            <option value="Today">Today</option>
-                            <option value="Last 3 Days">Last 3 Days</option>
-                            <option value="Last Week">Last Week</option>
-                            <option value="Last Month">Last Month</option>
-                        </SelectField>
+                        <div class="mx-4 -mt-1">
+                            <SelectField id="listedTime" v-model="listedTime">
+                                <option value="" selected>~ Select Listed Time ~
+                                </option>
+                                <option value="Any Time">Any Time</option>
+                                <option value="Today">Today</option>
+                                <option value="Last 3 Days">Last 3 Days</option>
+                                <option value="Last Week">Last Week</option>
+                                <option value="Last Month">Last Month</option>
+                            </SelectField>
+                        </div>
                     </div>
                 </div>
-                <div class="mt-8 flow-root">
-                    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                            <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-                                <table class="min-w-full divide-y divide-gray-300">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th scope="col"
-                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                                                First Name</th>
-                                            <th scope="col"
-                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                                                Last Name</th>
-                                            <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email
-                                                Address
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                Contact Number
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                Applied Job
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                Applicant Skills
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                Applied Date
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                Status
-                                            </th>
-                                            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                                <span class="sr-only">View</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200 bg-white">
-                                        <tr v-for="application in props.applications.data" :key="application.id">
-                                            <td
-                                                class="whitespace py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                {{ application.first_name }}</td>
-                                            <td
-                                                class="whitespace py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                {{ application.last_name }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                application.email }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
-                                                application.contact_number
-                                            }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                JSON.parse(application.skills).jobPositionTitle }}</td>
-                                            <td
-                                                class="whitespace px-3 py-4 text-sm text-gray-500 flex flex-wrap gap-2 items-center">
-                                                <div class="ml-2"
-                                                    v-for="(skill, index) in JSON.parse(application.skills).skills"
-                                                    :key="skill">
-                                                    <Badge :title="truncate(skill)" :removeTag="removeTag"
-                                                        :index="index" :isClosable="false" />
-                                                </div>
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
-                                                application.created_at
-                                            }}</td>
-                                            <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                                <span v-if="application.is_active"
-                                                    class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
-                                                <span v-else
-                                                    class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Inactive</span>
-                                            </td>
-                                            <td
-                                                class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <button type="button" @click="updateInfo(application.id)"
-                                                    class="text-blue-600 hover:text-blue-900">View</button>
-                                            </td>
-                                        </tr>
+                <div class="mt-8 flow-root grid grid-cols-6">
+                    <div class="flex flex-col h-screen col-span-1">
+                        <nav class="h-full overflow-y-auto flex-grow" aria-label="Directory">
+                            <div class="relative">
+                                <ul role="list" class="divide-y divide-gray-100">
+                                    <h1 class="font-bold text-md mb-2">List of Applicants: </h1>
+                                    <li v-for="(application, index) in props.applications.data" :key="application.id"
+                                        class="flex gap-x-4 px-3 py-2 justify-between items-center">
+                                        <div class="min-w-0 border-b">
+                                            <p class="text-sm font-semibold leading-6 text-gray-900">{{
+                                                application.first_name }} {{ application.last_name }}
+                                            </p>
 
-                                        <tr v-if="applications.data.length === 0">
-                                            <td colspan="11"
-                                                class="whitespace-nowrap text-center py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                No Application Found</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div
-                                    class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between">
-                                    <Pagination :users="applications" :pagination="pagination" />
+                                            <p class="mt-1 truncate text-xs leading-5 text-gray-500">{{
+                                                application.email }}
+                                            </p>
+                                            <p class="mt-1 truncate text-xs leading-5 text-gray-500">{{
+                                                JSON.parse(application.skills).jobPositionTitle }}
+                                            </p>
+                                            <p v-if="applicantsPercentages.length > 0"
+                                                class="mt-1 truncate text-xs leading-5 text-gray-900 mb-1 font-semibold">
+                                                Matched:
+                                                <span v-if="Number(applicantsPercentages[index]) === 50"
+                                                    class="inline-flex items-center gap-x-0.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 text-ellipsis">{{
+                                                        applicantsPercentages[index] }}%</span>
+                                                <span v-else-if="Number(applicantsPercentages[index]) < 50"
+                                                    class="inline-flex items-center gap-x-0.5 rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-600 text-ellipsis">{{
+                                                        applicantsPercentages[index] }}%</span>
+                                                <span v-else-if="Number(applicantsPercentages[index]) > 50"
+                                                    class="inline-flex items-center gap-x-0.5 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-600 text-ellipsis">{{
+                                                        applicantsPercentages[index] }}%</span>
+                                            </p>
+                                        </div>
+                                        <button @click="selectApplication(application)" type="button">
+                                            <EyeIcon class="h-6 w-6" />
+                                        </button>
+                                    </li>
+
+                                    <li v-if="props.applications.data.length === 0"
+                                        class="flex gap-x-4 px-3 py-2 justify-between items-center">
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-semibold leading-6 text-gray-900">No Applicants Found
+                                            </p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+
+                    <div class="flex flex-col h-screen overflow-y-auto col-start-3 col-span-4 bg-white p-8">
+                        <ApplicationInfo v-if="selectedApplication" :application="selectedApplication" />
+                        <div v-else class="p-4 overflow-y-auto h-max">
+                            <div>
+                                <div class="flex items-center justify-center">
+                                    <h2 class="text-xl font-semibold leading-tight">
+                                        Please select an applicant to view info
+                                    </h2>
                                 </div>
                             </div>
                         </div>

@@ -29,7 +29,7 @@ class ApplicantController extends Controller
      */
     public function index()
     {
-        $filters = Request::only(['search', 'classification', 'location', 'jobPosition', 'listedTime']);
+        $filters = Request::only(['search', 'classification', 'location', 'jobAds', 'listedTime']);
         $searchReq = Request::input('search');
         $classificationReq = Request::input('classification');
         $locationReq = Request::input('location');
@@ -38,13 +38,13 @@ class ApplicantController extends Controller
         $authUser = Auth::user();
 
         $jobPositions = JobPosition::where('is_active', 1)->get();
+        $currentJobAds = JobAdvertisement::where('employer_id', $authUser->employer->id)->where('is_active', 1)->with('jobPosition')->get();
 
         // $applicationQuery = Application::query()->whereJsonContains('skills', strtolower($searchReq))->get();
 
         // dd($applicationQuery);
 
         if ($authUser->employer) {
-            $currentJobAds = JobAdvertisement::where(['employer_id' => $authUser->employer->id])->get();
             $applications = Application::query()
             ->with('applicant')
             ->where('status', 1)
@@ -121,6 +121,8 @@ class ApplicantController extends Controller
                 'first_name' => $application->applicant->first_name,
                 'middle_name' => $application->applicant->middle_name,
                 'last_name' => $application->applicant->last_name,
+                'sex' => $application->sex,
+                'birth_date' => $application->birth_date,
                 'province' => $application->province,
                 'city' => $application->city,
                 'barangay' => $application->barangay,
@@ -220,6 +222,7 @@ class ApplicantController extends Controller
                 'applications' => $applications,
                 'filters' => $filters,
                 'jobPositions' => $jobPositions,
+                'jobAds' => $currentJobAds,
                 'pagination' => [
                     'current_page' => $currentPage,
                     'last_page' => $lastPage,
