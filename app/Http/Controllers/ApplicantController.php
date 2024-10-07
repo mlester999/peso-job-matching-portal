@@ -39,13 +39,13 @@ class ApplicantController extends Controller
         $authUser = Auth::user();
 
         $jobPositions = JobPosition::where('is_active', 1)->get();
-        $currentJobAds = JobAdvertisement::where('employer_id', $authUser->employer->id)->where('is_active', 1)->with('jobPosition')->get();
 
         // $applicationQuery = Application::query()->whereJsonContains('skills', strtolower($searchReq))->get();
 
         // dd($applicationQuery);
 
         if ($authUser->employer) {
+            $currentJobAds = JobAdvertisement::where('employer_id', $authUser->employer->id)->where('is_active', 1)->with('jobPosition')->get();
             $applications = Application::query()
             ->with('applicant')
             ->where('status', 1)

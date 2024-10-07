@@ -85,6 +85,10 @@ watch(
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                                 Contact Number
                                             </th>
+                                            <th scope="col"
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                Type
+                                            </th>
 
                                             <th scope="col"
                                                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -107,7 +111,8 @@ watch(
                                                 user.email }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
                                                 user.contact_number
-                                            }}</td>
+                                                }}</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Applicant</td>
 
                                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                                                 <span v-if="user.is_active"
