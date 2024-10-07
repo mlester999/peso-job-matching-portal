@@ -44,6 +44,15 @@ const activate = (id) => {
     });
 }
 
+const browseMatches = (id) => {
+    const query = {};
+    query.jobAdvertisementId = id;
+    router.get(`/employer/applications`, query, {
+        preserveState: true,
+        replace: true,
+    });
+}
+
 // let search = ref(props.filters.search);
 
 // const updateInfo = (userId) => {
@@ -163,7 +172,7 @@ const activate = (id) => {
                                         class="px-6 py-5 text-center text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-200">
                                         Activate
                                     </button>
-                                    <button
+                                    <button @click="browseMatches(jobAdvertisement.id)"
                                         class="px-6 py-5 text-center text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-200">
                                         Browse matches
                                     </button>

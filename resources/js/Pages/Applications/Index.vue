@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import Button from '@/Components/Button.vue'
 import { GithubIcon } from '@/Components/Icons/brands'
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -18,7 +18,28 @@ const props = defineProps({
     filters: Object,
     jobAds: Object,
     jobPositions: Object,
+    jobAdvertisementId: String
 });
+
+onMounted(() => {
+    if (props.jobAdvertisementId) {
+        const jobAds = props.jobAds.find(jobAds => jobAds.id === Number(props.jobAdvertisementId))
+        const jobAdsSkills = JSON.parse(jobAds.skills);
+
+        props.applications.data.forEach(el => {
+            const applicantSkills = JSON.parse(el.skills).skills;
+            // Find the intersection (common elements)
+            const commonSkills = jobAdsSkills.filter(item => applicantSkills.includes(item));
+
+            // Calculate the percentage of matched items
+            const matchPercentage = (commonSkills.length / jobAdsSkills.length) * 100;
+
+            matchedPercentage.value = matchPercentage.toFixed(2);
+
+            applicantsPercentages.value.push(matchedPercentage.value);
+        })
+    }
+})
 
 const barangays = [
     'Baclaran',
@@ -68,19 +89,19 @@ const roles = [
     { id: 'temporary', title: 'Temporary' },
 ]
 
+const page = usePage()
+
 let search = ref(props.filters.search);
 let classification = ref(props.filters.classification);
 let location = ref(props.filters.location);
-let jobAdvertisement = ref(props.filters.jobAdvertisement);
-let listedTime = ref(props.filters.listedTime)
+let jobAdvertisement = ref(props.filters.jobAdvertisement || props.jobAdvertisementId);
+let listedTime = ref(props.filters.listedTime);
 
 const selectedApplication = ref(null);
 
 const matchedPercentage = ref('')
 
 let applicantsPercentages = ref([])
-
-const page = usePage()
 
 const updateInfo = (applicationId) => {
     if (page.props.auth.user.employer) {
@@ -97,13 +118,18 @@ const truncate = (text) => {
 const selectApplication = (application) => {
     selectedApplication.value = application;
 }
-
+const query = {};
 watch(
     search,
     debounce((value) => {
-        const query = {};
         if (value) {
             query.search = value;
+            query.jobAdvertisementId = null
+            jobAdvertisement.value = null;
+        } else {
+            query.search = null;
+            query.jobAdvertisementId = null
+            jobAdvertisement.value = null;
         }
         if (page.props.auth.user.employer) {
             router.get(`/employer/applications`, query, {
@@ -124,9 +150,14 @@ watch(
 watch(
     classification,
     debounce((value) => {
-        const query = {};
         if (value) {
             query.classification = value;
+            query.jobAdvertisementId = null
+            jobAdvertisement.value = null;
+        } else {
+            query.classification = null;
+            query.jobAdvertisementId = null
+            jobAdvertisement.value = null;
         }
         if (page.props.auth.user.employer) {
             router.get(`/employer/applications`, query, {
@@ -147,9 +178,14 @@ watch(
 watch(
     location,
     debounce((value) => {
-        const query = {};
         if (value) {
             query.location = value;
+            query.jobAdvertisementId = null
+            jobAdvertisement.value = null;
+        } else {
+            query.location = null;
+            query.jobAdvertisementId = null
+            jobAdvertisement.value = null;
         }
         if (page.props.auth.user.employer) {
             router.get(`/employer/applications`, query, {
@@ -171,6 +207,7 @@ watch(
     jobAdvertisement,
     debounce((value) => {
         if (value) {
+            applicantsPercentages.value = [];
             const jobAds = props.jobAds.find(jobAds => jobAds.id === Number(value))
             const jobAdsSkills = JSON.parse(jobAds.skills);
 
@@ -186,8 +223,18 @@ watch(
 
                 applicantsPercentages.value.push(matchedPercentage.value);
             })
+            query.jobAdvertisementId = value;
+            router.get(`/employer/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
         } else {
+            query.jobAdvertisementId = null;
             applicantsPercentages.value = [];
+            router.get(`/employer/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
         }
     }, 500)
 );
@@ -195,9 +242,14 @@ watch(
 watch(
     listedTime,
     debounce((value) => {
-        const query = {};
         if (value) {
             query.listedTime = value;
+            query.jobAdvertisementId = null
+            jobAdvertisement.value = null;
+        } else {
+            query.listedTime = null;
+            query.jobAdvertisementId = null
+            jobAdvertisement.value = null;
         }
         if (page.props.auth.user.employer) {
             router.get(`/employer/applications`, query, {
@@ -261,7 +313,7 @@ watch(
                     </div>
 
                     <div class="space-y-2">
-                        <div class="mx-4 -mt-1">
+                        <div class="-mt-1">
                             <SelectField id="jobAdvertisement" v-model="jobAdvertisement">
                                 <option value="" selected>~ Select Job Advertisement ~
                                 </option>
@@ -272,7 +324,7 @@ watch(
                             </SelectField>
                         </div>
 
-                        <div class="mx-4 -mt-1">
+                        <div class="-mt-1">
                             <SelectField id="listedTime" v-model="listedTime">
                                 <option value="" selected>~ Select Listed Time ~
                                 </option>
@@ -286,11 +338,11 @@ watch(
                     </div>
                 </div>
                 <div class="mt-8 flow-root grid grid-cols-6">
-                    <div class="flex flex-col h-screen col-span-1">
-                        <nav class="h-full overflow-y-auto flex-grow" aria-label="Directory">
+                    <div class="flex flex-col col-span-2">
+                        <nav class="h-[calc(100vh-300px)] overflow-y-auto flex-grow" aria-label="Directory">
                             <div class="relative">
                                 <ul role="list" class="divide-y divide-gray-100">
-                                    <h1 class="font-bold text-md mb-2">List of Applicants: </h1>
+                                    <h1 class="font-bold text-md mb-2">List of Applications: </h1>
                                     <li v-for="(application, index) in props.applications.data" :key="application.id"
                                         class="flex gap-x-4 px-3 py-2 justify-between items-center">
                                         <div class="min-w-0 border-b">
@@ -326,7 +378,8 @@ watch(
                                     <li v-if="props.applications.data.length === 0"
                                         class="flex gap-x-4 px-3 py-2 justify-between items-center">
                                         <div class="min-w-0">
-                                            <p class="text-sm font-semibold leading-6 text-gray-900">No Applicants Found
+                                            <p class="text-sm font-semibold leading-6 text-gray-900">No Applications
+                                                Found
                                             </p>
                                         </div>
                                     </li>
@@ -335,9 +388,10 @@ watch(
                         </nav>
                     </div>
 
-                    <div class="flex flex-col h-screen overflow-y-auto col-start-3 col-span-4 bg-white p-8">
+                    <div
+                        class="flex flex-col h-[calc(100vh-300px)] overflow-y-auto col-start-3 col-span-5 bg-white p-8">
                         <ApplicationInfo v-if="selectedApplication" :application="selectedApplication" />
-                        <div v-else class="p-4 overflow-y-auto h-max">
+                        <div v-else class="p-4 overflow-y-auto">
                             <div>
                                 <div class="flex items-center justify-center">
                                     <h2 class="text-xl font-semibold leading-tight">

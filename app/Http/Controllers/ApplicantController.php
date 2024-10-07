@@ -29,12 +29,13 @@ class ApplicantController extends Controller
      */
     public function index()
     {
-        $filters = Request::only(['search', 'classification', 'location', 'jobAds', 'listedTime']);
+        $filters = Request::only(['search', 'classification', 'location', 'jobAds', 'listedTime', 'jobAdvertisementId']);
         $searchReq = Request::input('search');
         $classificationReq = Request::input('classification');
         $locationReq = Request::input('location');
         $jobPositionReq = Request::input('jobPosition');
         $listedTimeReq = Request::input('listedTime');
+        $jobAdvertisementReq = Request::input('jobAdvertisementId');
         $authUser = Auth::user();
 
         $jobPositions = JobPosition::where('is_active', 1)->get();
@@ -136,7 +137,7 @@ class ApplicantController extends Controller
                 'is_active' => $application->applicant->user->is_active,
                 'created_at' => Carbon::parse($application->created_at)->format('F d, Y'),
             ]);
-    
+
             if (empty($searchReq)) {
                 unset($filters['search']);
             }
@@ -217,12 +218,12 @@ class ApplicantController extends Controller
                 ];
             }
     
-    
             return Inertia::render('Applications/Index', [
                 'applications' => $applications,
                 'filters' => $filters,
                 'jobPositions' => $jobPositions,
                 'jobAds' => $currentJobAds,
+                'jobAdvertisementId' => $jobAdvertisementReq,
                 'pagination' => [
                     'current_page' => $currentPage,
                     'last_page' => $lastPage,
