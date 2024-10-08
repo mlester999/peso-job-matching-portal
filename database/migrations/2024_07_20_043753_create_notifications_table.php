@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('applicant_id')->references('id')->on('applicants');
             $table->foreignId('employer_id')->references('id')->on('employers')->nullable();
-            $table->string('title');
-            $table->string('description');
+            $table->text('title');
+            $table->text('description');
             $table->timestamps();
         });
     }

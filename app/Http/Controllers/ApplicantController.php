@@ -2139,8 +2139,10 @@ class ApplicantController extends Controller
             $application->status = $applicationValidate['status'];
         }
 
-        if($applicationValidate['jobAdvertisementId'] !== $application->job_advertisement_id) {
-            $application->job_advertisement_id = $applicationValidate['jobAdvertisementId'];
+        if(isset($applicationValidate['jobAdvertisementId'])) {
+            if($applicationValidate['jobAdvertisementId'] !== $application->job_advertisement_id) {
+                $application->job_advertisement_id = $applicationValidate['jobAdvertisementId'];
+            }
         }
 
         if ($applicationValidate['status']) {

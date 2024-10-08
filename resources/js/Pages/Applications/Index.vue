@@ -266,9 +266,6 @@ watch(
 
     }, 500)
 );
-
-
-
 </script>
 
 <template>
@@ -354,7 +351,7 @@ watch(
                                                 application.email }}
                                             </p>
                                             <p class="mt-1 truncate text-xs leading-5 text-gray-500">{{
-                                                JSON.parse(application.skills).jobPositionTitle }}
+                                                JSON.parse(application.skills)?.jobPositionTitle }}
                                             </p>
                                             <p v-if="applicantsPercentages.length > 0"
                                                 class="mt-1 truncate text-xs leading-5 text-gray-900 mb-1 font-semibold">
