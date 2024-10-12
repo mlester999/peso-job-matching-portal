@@ -60,12 +60,14 @@ Route::get('/dashboard', function () {
         // Loop through each applicant and check the month of the application.
         foreach ($qualifiedApplicants as $applicant) {
             foreach ($applicant->applications as $application) {
-                if ($application->status == 6 && $application->jobAdvertisement->employer_id === $authUser->employer->id) {
-                    // Assuming 'created_at' is the date field for each application.
-                    $month = Carbon::parse($application->created_at)->month;
-
-                    // Increment the corresponding month in the array.
-                    $qualifiedApplicantsData[$month - 1]++; // Subtract 1 because arrays are 0-indexed.
+                if ($application->jobAdvertisement) {
+                    if ($application->status == 6 && $application->jobAdvertisement->employer_id === $authUser->employer->id) {
+                        // Assuming 'created_at' is the date field for each application.
+                        $month = Carbon::parse($application->created_at)->month;
+    
+                        // Increment the corresponding month in the array.
+                        $qualifiedApplicantsData[$month - 1]++; // Subtract 1 because arrays are 0-indexed.
+                    }
                 }
             }
         }
@@ -73,12 +75,14 @@ Route::get('/dashboard', function () {
         // Loop through each applicant and check the month of the application.
         foreach ($disqualifiedApplicants as $applicant) {
             foreach ($applicant->applications as $application) {
-                if ($application->status == 0 && $application->jobAdvertisement->employer_id === $authUser->employer->id) {
-                    // Assuming 'created_at' is the date field for each application.
-                    $month = Carbon::parse($application->created_at)->month;
-
-                    // Increment the corresponding month in the array.
-                    $disqualifiedApplicantsData[$month - 1]++; // Subtract 1 because arrays are 0-indexed.
+                if ($application->jobAdvertisement) {
+                    if ($application->status == 0 && $application->jobAdvertisement->employer_id === $authUser->employer->id) {
+                        // Assuming 'created_at' is the date field for each application.
+                        $month = Carbon::parse($application->created_at)->month;
+    
+                        // Increment the corresponding month in the array.
+                        $disqualifiedApplicantsData[$month - 1]++; // Subtract 1 because arrays are 0-indexed.
+                    }
                 }
             }
         }

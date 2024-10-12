@@ -102,8 +102,6 @@ const formattedDate = (date) => {
                     Applicant: {{ application.first_name }} {{ application.last_name }}
                 </h2>
                 <div class="space-x-4">
-                    <button @click="submit(0)" type="button"
-                        class="inline-flex justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">Disapprove</button>
                     <button @click="submit(2)" type="button"
                         class="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Approve</button>
                 </div>

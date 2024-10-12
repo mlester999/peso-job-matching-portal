@@ -13,7 +13,9 @@ const props = defineProps({
     class: String,
     isContactNumber: Boolean,
     isNumber: Boolean,
-    isMultiline: Boolean
+    isMultiline: Boolean,
+    min: String,
+    max: String,
 });
 
 const previewSkills = ref(props.modelValue);
@@ -52,6 +54,12 @@ const checkDigit = (event) => {
     if (props.isNumber && event.key.length === 1 && isNaN(Number(event.key))) {
         event.preventDefault();
     }
+
+    if (!isNaN(Number(event.key)) && event.key < 1) {
+        event.key = 1;
+    } else if (!isNaN(Number(event.key)) && event.key > 100) {
+        event.key = 100;
+    }
 };
 
 const handleInput = (event) => {
@@ -67,6 +75,20 @@ const handleInput = (event) => {
             modelValue.value = value;
             emit('update:modelValue', value);
             event.target.value = value;
+        }
+    } else if (props.isNumber) {
+        if (Number(value) < 1) {
+            modelValue.value = '';
+            emit('update:modelValue', '');
+            event.target.value = '';
+        } else if (Number(value) > 100) {
+            modelValue.value = 100;
+            emit('update:modelValue', 100);
+            event.target.value = 100;
+        } else {
+            modelValue.value = Number(value);
+            emit('update:modelValue', Number(value));
+            event.target.value = Number(value);
         }
     } else {
         modelValue.value = value;

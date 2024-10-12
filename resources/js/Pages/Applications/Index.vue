@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import Button from '@/Components/Button.vue'
 import { GithubIcon } from '@/Components/Icons/brands'
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -11,6 +11,7 @@ import Badge from '@/Components/Badge.vue';
 import SelectField from '@/Components/SelectField.vue';
 import { EyeIcon } from '@heroicons/vue/solid';
 import ApplicationInfo from '@/Components/ApplicationInfo.vue';
+import InputField from '@/Components/InputField.vue';
 
 const props = defineProps({
     applications: Object,
@@ -35,8 +36,10 @@ onMounted(() => {
             const matchPercentage = (commonSkills.length / jobAdsSkills.length) * 100;
 
             matchedPercentage.value = matchPercentage.toFixed(2);
-
-            applicantsPercentages.value.push(matchedPercentage.value);
+            applicantsWithPercentage.value.push({
+                ...el,
+                value: matchedPercentage.value
+            });
         })
     }
 })
@@ -96,12 +99,13 @@ let classification = ref(props.filters.classification);
 let location = ref(props.filters.location);
 let jobAdvertisement = ref(props.filters.jobAdvertisement || props.jobAdvertisementId);
 let listedTime = ref(props.filters.listedTime);
+let percentage = ref(props.matchedPercentage);
 
 const selectedApplication = ref(null);
 
 const matchedPercentage = ref('')
 
-let applicantsPercentages = ref([])
+let applicantsWithPercentage = ref([])
 
 const updateInfo = (applicationId) => {
     if (page.props.auth.user.employer) {
@@ -118,6 +122,7 @@ const truncate = (text) => {
 const selectApplication = (application) => {
     selectedApplication.value = application;
 }
+
 const query = {};
 watch(
     search,
@@ -207,7 +212,7 @@ watch(
     jobAdvertisement,
     debounce((value) => {
         if (value) {
-            applicantsPercentages.value = [];
+            applicantsWithPercentage.value = [];
             const jobAds = props.jobAds.find(jobAds => jobAds.id === Number(value))
             const jobAdsSkills = JSON.parse(jobAds.skills);
 
@@ -221,7 +226,11 @@ watch(
 
                 matchedPercentage.value = matchPercentage.toFixed(2);
 
-                applicantsPercentages.value.push(matchedPercentage.value);
+                applicantsWithPercentage.value.push({
+                    ...el,
+                    value: matchedPercentage.value
+                });
+                // applicantsWithPercentage.value.push(matchedPercentage.value);
             })
             query.jobAdvertisementId = value;
             router.get(`/employer/applications`, query, {
@@ -230,7 +239,7 @@ watch(
             });
         } else {
             query.jobAdvertisementId = null;
-            applicantsPercentages.value = [];
+            applicantsWithPercentage.value = [];
             router.get(`/employer/applications`, query, {
                 preserveState: true,
                 replace: true,
@@ -266,6 +275,53 @@ watch(
 
     }, 500)
 );
+
+watch(
+    percentage,
+    debounce((value) => {
+        query.matchedPercentage = value;
+        query.jobAdvertisementId = jobAdvertisement.value;
+
+        applicantsWithPercentage.value = [];
+        const jobAds = props.jobAds.find(jobAds => jobAds.id === Number(jobAdvertisement.value))
+        const jobAdsSkills = JSON.parse(jobAds.skills);
+
+        props.applications.data.forEach(el => {
+            const applicantSkills = JSON.parse(el.skills).skills;
+            // Find the intersection (common elements)
+            const commonSkills = jobAdsSkills.filter(item => applicantSkills.includes(item));
+
+            // Calculate the percentage of matched items
+            const matchPercentage = (commonSkills.length / jobAdsSkills.length) * 100;
+
+            matchedPercentage.value = matchPercentage.toFixed(2);
+
+            if (matchedPercentage.value < value || !value) {
+                applicantsWithPercentage.value.push({
+                    ...el,
+                    value: matchedPercentage.value
+                });
+            }
+            // applicantsWithPercentage.value.push(matchedPercentage.value);
+        })
+        router.get(`/employer/applications`, query, {
+            preserveState: true,
+            replace: true,
+        });
+
+        if (page.props.auth.user.employer) {
+            router.get(`/employer/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        } else if (page.props.auth.user.admin) {
+            router.get(`/admin/applications`, query, {
+                preserveState: true,
+                replace: true,
+            });
+        }
+    }, 500)
+);
 </script>
 
 <template>
@@ -282,7 +338,8 @@ watch(
                             name, title, email and role.</p> -->
                     </div>
                 </div>
-                <div class="sm:flex sm:items-center sm:justify-center">
+                <div class="sm:flex sm:items-center sm:justify-center"
+                    :class="props.jobAdvertisementId ? 'border-b-2 pb-4 border-gray-300' : ''">
                     <div class="sm:flex-auto">
                         <Input v-model="search" placeholder="Search for application..." type="search" />
                     </div>
@@ -334,15 +391,22 @@ watch(
                         </div>
                     </div>
                 </div>
+                <div v-if="props.jobAdvertisementId" class="sm:flex">
+                    <div class="mt-4">
+                        <InputField v-model="percentage" placeholder="% of Matched..." min="1" max="100"
+                            :isNumber="true" />
+                    </div>
+                </div>
                 <div class="mt-8 flow-root grid grid-cols-6">
-                    <div class="flex flex-col col-span-2">
+                    <div class="flex flex-col col-span-2 mr-4">
                         <nav class="h-[calc(100vh-300px)] overflow-y-auto flex-grow" aria-label="Directory">
                             <div class="relative">
                                 <ul role="list" class="divide-y divide-gray-100">
                                     <h1 class="font-bold text-md mb-2">List of Applications: </h1>
-                                    <li v-for="(application, index) in props.applications.data" :key="application.id"
-                                        class="flex gap-x-4 px-3 py-2 justify-between items-center">
-                                        <div class="min-w-0 border-b">
+                                    <li v-for="(application, index) in applicantsWithPercentage.length ? applicantsWithPercentage.sort((a, b) => b.value - a.value) : percentage ? [] : props.applications.data"
+                                        :key="application.id"
+                                        class="flex gap-x-4 px-3 py-2 mb-4 justify-between items-center bg-white">
+                                        <div class="min-w-0">
                                             <p class="text-sm font-semibold leading-6 text-gray-900">{{
                                                 application.first_name }} {{ application.last_name }}
                                             </p>
@@ -353,18 +417,18 @@ watch(
                                             <p class="mt-1 truncate text-xs leading-5 text-gray-500">{{
                                                 JSON.parse(application.skills)?.jobPositionTitle }}
                                             </p>
-                                            <p v-if="applicantsPercentages.length > 0"
+                                            <p v-if="application?.value"
                                                 class="mt-1 truncate text-xs leading-5 text-gray-900 mb-1 font-semibold">
                                                 Matched:
-                                                <span v-if="Number(applicantsPercentages[index]) === 50"
+                                                <span v-if="application?.value === 50"
                                                     class="inline-flex items-center gap-x-0.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 text-ellipsis">{{
-                                                        applicantsPercentages[index] }}%</span>
-                                                <span v-else-if="Number(applicantsPercentages[index]) < 50"
+                                                        application?.value }}%</span>
+                                                <span v-else-if="application?.value < 50"
                                                     class="inline-flex items-center gap-x-0.5 rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-600 text-ellipsis">{{
-                                                        applicantsPercentages[index] }}%</span>
-                                                <span v-else-if="Number(applicantsPercentages[index]) > 50"
+                                                        application?.value }}%</span>
+                                                <span v-else-if="application?.value > 50"
                                                     class="inline-flex items-center gap-x-0.5 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-600 text-ellipsis">{{
-                                                        applicantsPercentages[index] }}%</span>
+                                                        application?.value }}%</span>
                                             </p>
                                         </div>
                                         <button @click="selectApplication(application)" type="button">
@@ -372,7 +436,7 @@ watch(
                                         </button>
                                     </li>
 
-                                    <li v-if="props.applications.data.length === 0"
+                                    <li v-if="props.applications.data.length === 0 || (applicantsWithPercentage.length === 0 && percentage)"
                                         class="flex gap-x-4 px-3 py-2 justify-between items-center">
                                         <div class="min-w-0">
                                             <p class="text-sm font-semibold leading-6 text-gray-900">No Applications

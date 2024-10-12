@@ -44,7 +44,15 @@ const barChartData = ref({
 })
 
 const barChartOptions = ref({
-    responsive: true
+    responsive: true,
+    scales: {
+        y: {
+            ticks: {
+                stepSize: 1,
+                beginAtZero: true,
+            },
+        }
+    }
 })
 
 const lineChartData = ref({
@@ -59,7 +67,15 @@ const lineChartData = ref({
 })
 
 const lineChartOptions = ref({
-    responsive: true
+    responsive: true,
+    scales: {
+        y: {
+            ticks: {
+                stepSize: 1,
+                beginAtZero: true,
+            },
+        }
+    }
 })
 
 </script>
