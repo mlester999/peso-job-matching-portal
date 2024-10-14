@@ -7,7 +7,9 @@ import ApplicationModal from '@/Components/ApplicationModal.vue';
 import ErrorModal from '@/Components/ErrorModal.vue';
 
 const props = defineProps({
-    application: Object
+    application: Object,
+    jobAds: Object,
+    selectedJobAdsId: Number
 })
 
 const form = useForm({
@@ -90,6 +92,11 @@ const formattedDate = (date) => {
         day: '2-digit',
     })
 }
+
+const matchedJobSkills = computed(() => {
+    const matchedJob = props.jobAds.find((el) => props.selectedJobAdsId === el.id);
+    return JSON.parse(matchedJob.skills);
+});
 
 </script>
 
@@ -308,9 +315,10 @@ const formattedDate = (date) => {
                             <dt class="text-sm font-medium text-gray-900">Skills</dt>
                             <dd
                                 class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 whitespace flex flex-wrap gap-2 items-center">
-                                <div v-for="(skill, index) in JSON.parse(props.application.skills).skills" :key="skill">
+                                <div v-for="(skill, index) in matchedJobSkills" :key="skill">
                                     <Badge :title="truncate(skill)" :removeTag="removeTag" :index="index"
-                                        :isClosable="false" />
+                                        :isClosable="false"
+                                        :applicationSkills="JSON.parse(props.application.skills).skills" />
                                 </div>
                             </dd>
                         </div>

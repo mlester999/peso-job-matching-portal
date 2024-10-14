@@ -1,9 +1,13 @@
 <script setup>
+import { computed } from 'vue';
+
+
 const props = defineProps({
     title: String,
     removeTag: Function,
     index: Number,
-    isClosable: Boolean
+    isClosable: Boolean,
+    applicationSkills: Object
 });
 
 const handleClick = () => {
@@ -11,11 +15,16 @@ const handleClick = () => {
         props.removeTag(props.index);
     }
 };
+
+const highlightSkill = computed(() => {
+    return props.applicationSkills.some(el => el.toLowerCase() === props.title);
+});
 </script>
 
 <template>
     <span
-        class="inline-flex items-center gap-x-0.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 text-ellipsis">
+        class="inline-flex items-center gap-x-0.5 rounded-md px-2 py-1 text-xs font-medium text-gray-600 text-ellipsis"
+        :class="highlightSkill ? 'bg-green-100' : 'bg-gray-100'">
         {{ title }}
         <button v-if="isClosable" @click="handleClick" type="button"
             class="group relative -mr-1 h-3.5 w-3.5 rounded-sm hover:bg-gray-500/20">

@@ -451,7 +451,8 @@ watch(
 
                     <div
                         class="flex flex-col h-[calc(100vh-300px)] overflow-y-auto col-start-3 col-span-5 bg-white p-8">
-                        <ApplicationInfo v-if="selectedApplication" :application="selectedApplication" />
+                        <ApplicationInfo v-if="selectedApplication" :application="selectedApplication"
+                            :jobAds="props.jobAds" :selectedJobAdsId="Number(jobAdvertisement)" />
                         <div v-else class="p-4 overflow-y-auto">
                             <div>
                                 <div class="flex items-center justify-center">
