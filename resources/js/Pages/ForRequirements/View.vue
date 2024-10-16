@@ -91,7 +91,7 @@ const submit = (status) => {
                             class="px-4 sm:px-6 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
                             <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
                                 <InputField class="sm:max-w-sm" id="requirements" type="text" label="Requirements"
-                                    v-model="form.requirements" :error="form.errors.requirements" />
+                                    v-model="form.requirements" :error="form.errors.requirements" :isTextArea="true" />
                             </div>
 
                             <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">

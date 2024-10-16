@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import Button from '@/Components/Button.vue'
 import { GithubIcon } from '@/Components/Icons/brands'
 import { Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -14,10 +14,37 @@ const props = defineProps({
     jobAdvertisements: Object,
     filters: Object,
     draftJobsCounts: Number,
-    postedJobsCount: Number
+    postedJobsCount: Number,
+    applications: Object
 });
 
+onMounted(() => {
+    if (props.applications && props.jobAdvertisements) {
+        props.jobAdvertisements.forEach(el => {
+            const jobAds = props.jobAdvertisements.find(jobAds => jobAds.id === Number(el.id))
+            const jobAdsSkills = JSON.parse(jobAds.skills);
+            let totalCount = 0;
+
+            props.applications.forEach(el => {
+                const applicantSkills = JSON.parse(el.skills).skills;
+                // Find the intersection (common elements)
+                const commonSkills = jobAdsSkills.filter(item => applicantSkills.includes(item));
+
+                // Calculate the percentage of matched items
+                const matchPercentage = (commonSkills.length / jobAdsSkills.length) * 100;
+
+                if (matchPercentage > 0) totalCount += 1;
+            })
+            browseMatchesCount.value.push(totalCount);
+        });
+    }
+})
+
 const toast = useToast();
+
+const matchedPercentage = ref('');
+
+let browseMatchesCount = ref([]);
 
 const tabs = [
     { name: 'Posted Jobs', alias: 'postedJobs', href: 'employer.reports.index', count: props.postedJobsCount, params: { tab: 'postedJobs' } },
@@ -121,7 +148,7 @@ const browseMatches = (id) => {
                             </div>
                         </div>
                     </div>
-                    <div v-for="jobAdvertisement in jobAdvertisements" :key="jobAdvertisement.id"
+                    <div v-for="(jobAdvertisement, index) in jobAdvertisements" :key="jobAdvertisement.id"
                         class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                             <div class="overflow-hidden rounded-lg bg-white shadow">
@@ -174,7 +201,12 @@ const browseMatches = (id) => {
                                     </button>
                                     <button @click="browseMatches(jobAdvertisement.id)"
                                         class="px-6 py-5 text-center text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-200">
-                                        Browse matches
+                                        <span class=" relative inline-block">
+                                            <span>Browse matches</span>
+                                            <span
+                                                class="absolute -top-3 ml-1 text-xs rounded-full ring-2 ring-red-400 text-red-500 p-1">{{
+                                                    browseMatchesCount[index] }}</span>
+                                        </span>
                                     </button>
                                 </div>
                             </div>

@@ -95,7 +95,9 @@ const formattedDate = (date) => {
 
 const matchedJobSkills = computed(() => {
     const matchedJob = props.jobAds.find((el) => props.selectedJobAdsId === el.id);
-    return JSON.parse(matchedJob.skills);
+    if (matchedJob) {
+        return JSON.parse(matchedJob.skills);
+    }
 });
 
 </script>
@@ -315,10 +317,9 @@ const matchedJobSkills = computed(() => {
                             <dt class="text-sm font-medium text-gray-900">Skills</dt>
                             <dd
                                 class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 whitespace flex flex-wrap gap-2 items-center">
-                                <div v-for="(skill, index) in matchedJobSkills" :key="skill">
+                                <div v-for="(skill, index) in JSON.parse(props.application.skills).skills" :key="skill">
                                     <Badge :title="truncate(skill)" :removeTag="removeTag" :index="index"
-                                        :isClosable="false"
-                                        :applicationSkills="JSON.parse(props.application.skills).skills" />
+                                        :isClosable="false" :matchedJobSkills="matchedJobSkills" />
                                 </div>
                             </dd>
                         </div>

@@ -67,7 +67,7 @@ import { ArchiveIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, C
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="For Interview" :href="route('employer.for-interview.indexForInterview')"
+            <SidebarLink title="Interview" :href="route('employer.for-interview.indexForInterview')"
                 :active="route().current('employer.for-interview.indexForInterview')">
                 <template #icon>
                     <UsersIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />

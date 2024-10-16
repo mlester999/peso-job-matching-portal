@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JobAdvertisement;
 use App\Models\JobPosition;
+use App\Models\Application;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
@@ -30,6 +31,9 @@ class JobAdvertisementController extends Controller
         $postedJobsCounts = JobAdvertisement::with('jobPosition')->where('is_draft', false)->count();
         $draftJobsCounts = JobAdvertisement::with('jobPosition')->where('is_draft', true)->count();
         $jobAdvertisements;
+        $applications = Application::query()
+            ->with('applicant')
+            ->where('status', 1)->get();
 
         if (isset($filters['tab']) && $filters['tab'] === 'drafts') {
             $jobAdvertisements = JobAdvertisement::with('jobPosition')->where('is_draft', true)->get();
@@ -41,7 +45,8 @@ class JobAdvertisementController extends Controller
             'jobAdvertisements' => $jobAdvertisements,
             'filters' => $filters,
             'postedJobsCount' => $postedJobsCounts,
-            'draftJobsCounts' => $draftJobsCounts
+            'draftJobsCounts' => $draftJobsCounts,
+            'applications' => $applications
         ]);
     }
 

@@ -7,7 +7,7 @@ const props = defineProps({
     removeTag: Function,
     index: Number,
     isClosable: Boolean,
-    applicationSkills: Object
+    matchedJobSkills: Object
 });
 
 const handleClick = () => {
@@ -17,7 +17,9 @@ const handleClick = () => {
 };
 
 const highlightSkill = computed(() => {
-    return props.applicationSkills.some(el => el.toLowerCase() === props.title);
+    if (props.matchedJobSkills) {
+        return props.matchedJobSkills.some(el => el.toLowerCase() === props.title);
+    }
 });
 </script>
 
