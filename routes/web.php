@@ -264,6 +264,8 @@ Route::middleware([
 
             Route::put('/deactivate/{id}', [JobAdvertisementController::class, 'deactivate'])->name('deactivate');
     
+            Route::put('/add-skill/{id}', [JobAdvertisementController::class, 'addNewSkill'])->name('addSkill');
+
             Route::delete('/delete/{id}', [JobAdvertisementController::class, 'delete'])->name('delete');
         });
 

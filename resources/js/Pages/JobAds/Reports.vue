@@ -204,7 +204,7 @@ const browseMatches = (id) => {
                                         <span class=" relative inline-block">
                                             <span>Browse matches</span>
                                             <span
-                                                class="absolute -top-3 ml-1 text-xs rounded-full ring-2 ring-red-400 text-red-500 p-1">{{
+                                                class="absolute -top-2 ml-1 text-xs rounded-full ring-2 ring-red-400 text-red-500 px-1 py-0">{{
                                                     browseMatchesCount[index] }}</span>
                                         </span>
                                     </button>

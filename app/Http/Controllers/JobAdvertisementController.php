@@ -146,6 +146,23 @@ class JobAdvertisementController extends Controller
         ]);
     }
 
+    public function addNewSkill($id)
+    {
+        $jobPositionValidate = Request::validate([
+            'skillToBeAdd' => ['required'],
+        ]);
+
+        $jobPosition = JobPosition::findOrFail($id);
+
+        $currentSkills = json_decode($jobPosition->skills);
+
+        $currentSkills[] = $jobPositionValidate['skillToBeAdd'];
+
+        $jobPosition->skills = $currentSkills;
+
+        $jobPosition->save();
+    }
+
     /**
      * Display the specified resource.
      */

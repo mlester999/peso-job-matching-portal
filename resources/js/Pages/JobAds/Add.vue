@@ -7,6 +7,7 @@ import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { ref, watch, onBeforeUnmount, onBeforeUpdate } from 'vue';
 import debounce from 'lodash.debounce'
 import { useToast } from 'vue-toastification';
+import AddMoreSkillModal from '@/Components/AddMoreSkillModal.vue';
 
 const roles = [
     { id: 'full-time', title: 'Full Time' },
@@ -75,7 +76,8 @@ const form = useForm({
     position_level: "",
     years_of_experience: "",
     location: "",
-    is_draft: true
+    is_draft: true,
+    skillToBeAdd: ''
 });
 
 const addSkill = (val) => {
@@ -109,6 +111,32 @@ const submit = () => {
         },
     });
 };
+
+
+const isShowAddMoreSkillModal = ref(false);
+const modalTitle = ref('');
+
+const handleAddModal = () => {
+    modalTitle.value = "Please input the specific skill that you want to add";
+    isShowAddMoreSkillModal.value = true;
+};
+
+const handleCloseModal = () => {
+    isShowAddMoreSkillModal.value = false;
+    modalTitle.value = '';
+}
+
+
+const handleAddSkill = (value) => {
+    form.skillToBeAdd = value;
+    form.put(`/employer/job-ads/add-skill/${selectedJobPositiondId.value}`, {
+        onSuccess: () => {
+            handleCloseModal();
+            toast.success("Skill added successfully!");
+            router.visit('/employer/job-ads/add');
+        },
+    });
+}
 
 watch(
     selectedJobPositiondId,
@@ -275,6 +303,8 @@ onBeforeUnmount(() => {
                                         <CheckboxList :index="index" :title="jobSkill" :addSkill="addSkill"
                                             :removeSkill="removeSkill" />
                                     </template>
+                                    <CheckboxList :index="index" title="Add More Skills" :isAdd="true"
+                                        :handleAddModal="handleAddModal" />
                                 </template>
 
                                 <template v-else>
@@ -285,6 +315,10 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
             </div>
+
+            <AddMoreSkillModal v-if="isShowAddMoreSkillModal" :title="modalTitle"
+                :href="route('employer.job-ads.index')" linkTitle="Go to Job Ads" :jobAdvertisements="activeJobAds"
+                :onClose="handleCloseModal" :onSubmit="handleAddSkill" />
         </template>
     </AuthenticatedLayout>
 </template>

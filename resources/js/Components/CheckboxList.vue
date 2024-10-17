@@ -1,4 +1,5 @@
 <script setup>
+import { PlusIcon } from '@heroicons/vue/solid';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -8,9 +9,13 @@ const props = defineProps({
     addSkill: Function,
     removeSkill: Function,
     currentSkills: Object,
+    isAdd: Boolean,
+    handleAddModal: Function
 })
 
 const isTapped = ref(props.currentSkills?.some(skill => skill === props.title) ?? false);
+const isShowAddMoreSkillModal = ref(false);
+const modalTitle = ref('');
 
 // Computed property to capitalize the first letter of the title
 const capitalizedTitle = computed(() => {
@@ -27,12 +32,16 @@ const toggleBorder = () => {
 
     isTapped.value = !isTapped.value;
 };
+
+const addMoreSkill = () => {
+    props.handleAddModal();
+};
 </script>
 
 <template>
     <!-- component -->
     <div class="bg-white">
-        <div v-if="!isNoRecord" @click="toggleBorder" class="container mx-auto">
+        <div v-if="!isNoRecord && !isAdd" @click="toggleBorder" class="container mx-auto">
             <div>
                 <div v-if="isTapped"
                     class="flex items-center justify-between px-8 py-4 border border-blue-500 cursor-pointer">
@@ -61,6 +70,20 @@ const toggleBorder = () => {
 
                         <div class="flex flex-col items-center mx-5 space-y-1">
                             <h2 class="text-lg font-medium text-gray-700 sm:text-2xl">{{ capitalizedTitle }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-else-if="isAdd" @click="addMoreSkill" class="container mx-auto mt-4 cursor-pointer hover:bg-gray-300">
+            <div>
+                <div class="flex items-center justify-between px-8 py-4 border-dashed border-2">
+                    <div class="flex items-center">
+                        <PlusIcon class="h-6 w-6" />
+
+                        <div class="flex flex-col items-center mx-5 space-y-1">
+                            <h2 class="text-lg font-medium text-gray-700 sm:text-2xl">{{ title }}</h2>
                         </div>
                     </div>
                 </div>
