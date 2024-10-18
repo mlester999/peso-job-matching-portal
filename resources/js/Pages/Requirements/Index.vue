@@ -21,9 +21,9 @@ const page = usePage()
 
 const updateInfo = (applicationId) => {
     if (page.props.auth.user.employer) {
-        router.get(`/employer/for-interview/view/${applicationId}`);
+        router.get(`/employer/requirements/view/${applicationId}`);
     } else if (page.props.auth.user.admin) {
-        router.get(`/admin/for-interview/view/${applicationId}`);
+        router.get(`/admin/requirements/view/${applicationId}`);
     }
 }
 
@@ -31,11 +31,11 @@ const truncate = (text) => {
     return text.length > 20 ? text.substring(0, 20) + '...' : text;
 };
 
-const getInterviewLink = computed(() => {
+const getForRequirementsLink = computed(() => {
     if (page.props.auth.user.employer) {
-        return route('employer.interview.indexInterview');
+        return route('employer.for-requirements.indexForRequirements');
     } else if (page.props.auth.user.admin) {
-        return route('admin.interview.indexInterview');
+        return route('admin.for-requirements.indexForRequirements');
     }
 });
 
@@ -47,12 +47,12 @@ watch(
             query.search = value;
         }
         if (page.props.auth.user.employer) {
-            router.get(`/employer/for-interview`, query, {
+            router.get(`/employer/for-requirements`, query, {
                 preserveState: true,
                 replace: true,
             });
         } else if (page.props.auth.user.admin) {
-            router.get(`/admin/for-interview`, query, {
+            router.get(`/admin/for-requirements`, query, {
                 preserveState: true,
                 replace: true,
             });
@@ -64,13 +64,13 @@ watch(
 </script>
 
 <template>
-    <AuthenticatedLayout title="Interview">
+    <AuthenticatedLayout title="For Requirements">
         <template #header>
             <div class="px-4">
                 <div class="sm:flex sm:items-center my-4">
                     <div class="sm:flex-auto">
                         <h2 class="text-xl font-semibold leading-tight">
-                            List of Applicants
+                            For Requirements
                         </h2>
                         <!-- <p class="mt-2 text-sm text-gray-700">A list of all the applications in this portal including
                             their
@@ -83,10 +83,10 @@ watch(
                     </div>
 
                     <div>
-                        <Link :href="getInterviewLink"
+                        <Link :href="getForRequirementsLink"
                             class="text-sm font-semibold leading-6 text-gray-900 px-4 py-2 border-blue-500 border-2 bg-white hover:bg-gray-100">
-                        Back to
-                        Interview
+                        For
+                        Requirements
                         </Link>
                     </div>
 
@@ -145,7 +145,7 @@ watch(
                                                 application.email }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
                                                 application.contact_number
-                                            }}</td>
+                                                }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 JSON.parse(application.skills).jobPositionTitle }}</td>
                                             <td
@@ -159,7 +159,7 @@ watch(
                                             </td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 application.created_at
-                                            }}</td>
+                                                }}</td>
                                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                                                 <span v-if="application.is_active"
                                                     class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
@@ -176,7 +176,7 @@ watch(
                                         <tr v-if="applications.data.length === 0">
                                             <td colspan="11"
                                                 class="whitespace-nowrap text-center py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                No Interview Found</td>
+                                                No For Requirements Found</td>
                                         </tr>
                                     </tbody>
                                 </table>

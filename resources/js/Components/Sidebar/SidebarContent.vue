@@ -67,15 +67,15 @@ import { ArchiveIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, C
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="Interview" :href="route('employer.for-interview.indexForInterview')"
-                :active="route().current('employer.for-interview.indexForInterview')">
+            <SidebarLink title="Interview" :href="route('employer.interview.indexInterview')"
+                :active="route().current('employer.interview.indexInterview')">
                 <template #icon>
                     <UsersIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="For Requirements" :href="route('employer.for-requirements.indexForRequirements')"
-                :active="route().current('employer.for-requirements.indexForRequirements')">
+            <SidebarLink title="Requirements" :href="route('employer.requirements.indexRequirements')"
+                :active="route().current('employer.requirements.indexRequirements')">
                 <template #icon>
                     <NewspaperIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>

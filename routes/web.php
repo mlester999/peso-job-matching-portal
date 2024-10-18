@@ -161,6 +161,18 @@ Route::middleware([
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });
 
+        Route::group(['prefix' => 'interview', 'as' => 'interview.'], function() {
+            Route::get('/', [ApplicantController::class, 'indexInterview'])->name('indexInterview');
+
+            Route::get('/view/{id}', [ApplicantController::class, 'viewInterview'])->name('viewInterview');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update-interview/{id}', [ApplicantController::class, 'updateInterview'])->name('updateInterview');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
         Route::group(['prefix' => 'for-interview', 'as' => 'for-interview.'], function() {
             Route::get('/', [ApplicantController::class, 'indexForInterview'])->name('indexForInterview');
 
@@ -169,6 +181,18 @@ Route::middleware([
             Route::post('/store', [ApplicantController::class, 'store'])->name('store');
     
             Route::put('/update-for-interview/{id}', [ApplicantController::class, 'updateForInterview'])->name('updateForInterview');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'requirements', 'as' => 'requirements.'], function() {
+            Route::get('/', [ApplicantController::class, 'indexRequirements'])->name('indexRequirements');
+
+            Route::get('/view/{id}', [ApplicantController::class, 'viewRequirements'])->name('viewRequirements');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update-requirements/{id}', [ApplicantController::class, 'updateRequirements'])->name('updateRequirements');
     
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });
@@ -283,6 +307,18 @@ Route::middleware([
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });
 
+        Route::group(['prefix' => 'interview', 'as' => 'interview.'], function() {
+            Route::get('/', [ApplicantController::class, 'indexInterview'])->name('indexInterview');
+
+            Route::get('/view/{id}', [ApplicantController::class, 'viewInterview'])->name('viewInterview');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update-interview/{id}', [ApplicantController::class, 'updateInterview'])->name('updateInterview');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
         
         Route::group(['prefix' => 'for-interview', 'as' => 'for-interview.'], function() {
             Route::get('/', [ApplicantController::class, 'indexForInterview'])->name('indexForInterview');
@@ -292,6 +328,18 @@ Route::middleware([
             Route::post('/store', [ApplicantController::class, 'store'])->name('store');
     
             Route::put('/update-for-interview/{id}', [ApplicantController::class, 'updateForInterview'])->name('updateForInterview');
+    
+            Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'requirements', 'as' => 'requirements.'], function() {
+            Route::get('/', [ApplicantController::class, 'indexRequirements'])->name('indexRequirements');
+
+            Route::get('/view/{id}', [ApplicantController::class, 'viewRequirements'])->name('viewRequirements');
+    
+            Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    
+            Route::put('/update-requirements/{id}', [ApplicantController::class, 'updateRequirements'])->name('updateRequirements');
     
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
         });

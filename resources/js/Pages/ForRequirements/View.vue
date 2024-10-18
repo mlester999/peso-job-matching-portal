@@ -13,8 +13,7 @@ const props = defineProps({
 
 const form = useForm({
     status: null,
-    requirements: null,
-    requirements_deadline: null
+    notes: null
 });
 
 const page = usePage();
@@ -79,25 +78,23 @@ const submit = (status) => {
             <div class="space-y-12 sm:space-y-16 px-4">
                 <div>
                     <h2 class="text-xl font-semibold leading-tight">
-                        Set Requirements
+                        Approve Requirements
                     </h2>
                     <div class="mt-10 overflow-hidden bg-white shadow sm:rounded-lg">
                         <div class="px-4 py-6 sm:px-6">
-                            <h3 class="text-base font-semibold leading-7 text-gray-900">Set Requirements</h3>
-                            <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">This section is for setting
+                            <h3 class="text-base font-semibold leading-7 text-gray-900">Approve Requirements</h3>
+                            <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">This section is for approving
                                 requirements for applicants.</p>
                         </div>
                         <div
                             class="px-4 sm:px-6 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
-                            <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-                                <InputField class="sm:max-w-sm" id="requirements" type="text" label="Requirements"
-                                    v-model="form.requirements" :error="form.errors.requirements" :isTextArea="true" />
-                            </div>
+                            <div
+                                class="px-4 sm:px-6 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
+                                <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+                                    <InputField class="sm:max-w-sm" id="notes" type="text" label="Notes (Optional)"
+                                        v-model="form.notes" :error="form.errors.notes" />
+                                </div>
 
-                            <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
-                                <InputField class="sm:max-w-sm" id="requirements_deadline" type="date"
-                                    label="Requirements Deadline" v-model="form.requirements_deadline"
-                                    :error="form.errors.requirements_deadline" />
                             </div>
                         </div>
                     </div>
@@ -108,8 +105,8 @@ const submit = (status) => {
                 <Link :href="getCancelLink" class="text-sm font-semibold leading-6 text-gray-900">Cancel</Link>
                 <button @click="submit(0)" type="button"
                     class="inline-flex justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">Disapprove</button>
-                <button @click="submit(4)" type="button"
-                    class="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Set
+                <button @click="submit(6)" type="button"
+                    class="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Approve
                     Requirements</button>
             </div>
         </template>

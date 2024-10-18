@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/Authenticated.vue'
 import Button from '@/Components/Button.vue'
 import { GithubIcon } from '@/Components/Icons/brands'
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import debounce from 'lodash.debounce'
 import Input from '@/Components/Input.vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -26,6 +26,14 @@ const updateInfo = (applicationId) => {
         router.get(`/admin/for-requirements/view/${applicationId}`);
     }
 }
+
+const getRequirementsLink = computed(() => {
+    if (page.props.auth.user.employer) {
+        return route('employer.requirements.indexRequirements');
+    } else if (page.props.auth.user.admin) {
+        return route('admin.requirements.indexRequirements');
+    }
+});
 
 const truncate = (text) => {
     return text.length > 20 ? text.substring(0, 20) + '...' : text;
@@ -72,6 +80,14 @@ watch(
                 <div class="sm:flex sm:items-center">
                     <div class="sm:flex-auto">
                         <Input v-model="search" placeholder="Search for application..." type="search" />
+                    </div>
+
+                    <div>
+                        <Link :href="getRequirementsLink"
+                            class="text-sm font-semibold leading-6 text-gray-900 px-4 py-2 border-blue-500 border-2 bg-white hover:bg-gray-100">
+                        Back to
+                        Requirements
+                        </Link>
                     </div>
 
                 </div>
@@ -129,7 +145,7 @@ watch(
                                                 application.email }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">+63{{
                                                 application.contact_number
-                                            }}</td>
+                                                }}</td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 JSON.parse(application.skills).jobPositionTitle }}</td>
                                             <td
@@ -143,7 +159,7 @@ watch(
                                             </td>
                                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{
                                                 application.created_at
-                                            }}</td>
+                                                }}</td>
                                             <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                                                 <span v-if="application.is_active"
                                                     class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>

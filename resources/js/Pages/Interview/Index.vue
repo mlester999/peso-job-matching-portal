@@ -21,9 +21,9 @@ const page = usePage()
 
 const updateInfo = (applicationId) => {
     if (page.props.auth.user.employer) {
-        router.get(`/employer/for-interview/view/${applicationId}`);
+        router.get(`/employer/interview/view/${applicationId}`);
     } else if (page.props.auth.user.admin) {
-        router.get(`/admin/for-interview/view/${applicationId}`);
+        router.get(`/admin/interview/view/${applicationId}`);
     }
 }
 
@@ -31,11 +31,11 @@ const truncate = (text) => {
     return text.length > 20 ? text.substring(0, 20) + '...' : text;
 };
 
-const getInterviewLink = computed(() => {
+const getForInterviewLink = computed(() => {
     if (page.props.auth.user.employer) {
-        return route('employer.interview.indexInterview');
+        return route('employer.for-interview.indexForInterview');
     } else if (page.props.auth.user.admin) {
-        return route('admin.interview.indexInterview');
+        return route('admin.for-interview.indexForInterview');
     }
 });
 
@@ -47,12 +47,12 @@ watch(
             query.search = value;
         }
         if (page.props.auth.user.employer) {
-            router.get(`/employer/for-interview`, query, {
+            router.get(`/employer/interview`, query, {
                 preserveState: true,
                 replace: true,
             });
         } else if (page.props.auth.user.admin) {
-            router.get(`/admin/for-interview`, query, {
+            router.get(`/admin/interview`, query, {
                 preserveState: true,
                 replace: true,
             });
@@ -83,9 +83,9 @@ watch(
                     </div>
 
                     <div>
-                        <Link :href="getInterviewLink"
+                        <Link :href="getForInterviewLink"
                             class="text-sm font-semibold leading-6 text-gray-900 px-4 py-2 border-blue-500 border-2 bg-white hover:bg-gray-100">
-                        Back to
+                        For
                         Interview
                         </Link>
                     </div>
