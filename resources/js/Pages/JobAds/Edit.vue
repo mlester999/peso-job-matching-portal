@@ -61,6 +61,26 @@ const barangays = [
     'Barangay III Poblacion',
 ]
 
+const industries = [
+    { value: "Agriculture", text: "Agriculture" },
+    { value: "ActivitiesOfPrivateHouseholds", text: "Activities Of Private Households" },
+    { value: "Construction", text: "Construction" },
+    { value: "Education", text: "Education" },
+    { value: "ElectricityGasAndWaterSupply", text: "Electricity, Gas And Water Supply" },
+    { value: "ExtraTerritorialOrganizationsAndBodies", text: "Extra-Territorial Organizations And Bodies" },
+    { value: "FinancialIntermediation", text: "Financial Intermediation" },
+    { value: "Fishing", text: "Fishing" },
+    { value: "HealthAndSocialWork", text: "Health And Social Work" },
+    { value: "HotelsAndRestaurants", text: "Hotels And Restaurants" },
+    { value: "IT", text: "IT BPO" },
+    { value: "Manufacturing", text: "Manufacturing" },
+    { value: "MiningAndQuarrying", text: "Mining And Quarrying" },
+    { value: "PublicAdministrationAndDefense", text: "Public Administration And Defense" },
+    { value: "RealEstateRentingAndBusinessActivities", text: "Real Estate, Renting And Business Activities" },
+    { value: "TransportStorageAndCommunication", text: "Transport, Storage And Communication" },
+    { value: "WholesaleAndRetailTrade", text: "Wholesale And Retail Trade" }
+];
+
 const props = defineProps({
     jobPositions: Object,
     jobAdvertisement: Object
@@ -73,6 +93,7 @@ const form = useForm({
     position_level: props.jobAdvertisement.position_level,
     years_of_experience: props.jobAdvertisement.years_of_experience,
     location: props.jobAdvertisement.location,
+    industry: props.jobAdvertisement.industry,
     is_draft: props.jobAdvertisement.is_draft
 });
 
@@ -256,6 +277,24 @@ onBeforeUnmount(() => {
                                                         <option v-for="(barangay, index) in barangays" :key="index"
                                                             :value="barangay">
                                                             {{ barangay }}
+                                                        </option>
+                                                    </SelectField>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-span-full">
+                                            <label for="title"
+                                                class="block text-md font-semibold leading-6 text-gray-900">Industry</label>
+                                            <div class="mt-2">
+                                                <div class="sm:max-w-lg">
+                                                    <SelectField id="industry" v-model="form.industry"
+                                                        :error="form.errors.industry">
+                                                        <option value="" disabled selected hidden>~ Select Industry ~
+                                                        </option>
+                                                        <option v-for="(industry, index) in industries" :key="index"
+                                                            :value="industry.text">
+                                                            {{ industry.text }}
                                                         </option>
                                                     </SelectField>
                                                 </div>

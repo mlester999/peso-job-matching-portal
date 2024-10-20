@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\JobPositionController;
+use App\Http\Controllers\JobAdvertisementController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,14 @@ Route::post('refresh', [ApplicantController::class, 'refresh']);
 Route::get('details', [ApplicantController::class, 'details']);
 Route::post('get-email-from-token', [ApplicantController::class, 'getEmailFromToken']);
 Route::post('reset-password', [ApplicantController::class, 'resetPassword']);
+
+// Job Trends Data
+Route::get('top-skills-demand', [JobAdvertisementController::class, 'topSkillsDemand']);
+Route::get('industry-growth', [JobAdvertisementController::class, 'industryGrowth']);
+Route::get('salary-trends', [JobAdvertisementController::class, 'salaryTrends']);
+Route::get('top-hiring-companies', [JobAdvertisementController::class, 'topHiringCompanies']);
+Route::get('location-based-trends', [JobAdvertisementController::class, 'locationBasedTrends']);
+Route::get('skill-based-trends', [JobAdvertisementController::class, 'skillBasedTrends']);
 
 // Update notifications
 Route::put('update-notifications/{id}', [NotificationController::class, 'updateNotifications']);

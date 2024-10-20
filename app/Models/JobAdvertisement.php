@@ -18,6 +18,7 @@ class JobAdvertisement extends Model
         'position_level',
         'years_of_experience',
         'location',
+        'industry',
         'is_draft',
         'is_active',
     ];
