@@ -312,14 +312,12 @@ class JobAdvertisementController extends Controller
     {
         $currentYear = Carbon::now()->year;
 
-        // Step 2: Retrieve job advertisements for the current year
         $jobAdvertisements = JobAdvertisement::select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'), 'industry')
             ->where('is_draft', 0)
             ->where('is_active', 1)
             ->whereYear('created_at', $currentYear) // Filter for the current year
             ->get();
 
-        // Step 3: Count occurrences of each industry per month and overall
         $monthlyIndustryCount = [];
         $overallIndustryCount = [];
 
@@ -347,7 +345,6 @@ class JobAdvertisementController extends Controller
             $overallIndustryCount[$industry]++;
         }
 
-        // Step 4: Get the top 3 industries per month
         $topIndustriesPerMonth = [];
 
         foreach ($monthlyIndustryCount as $month => $industries) {
@@ -361,11 +358,10 @@ class JobAdvertisementController extends Controller
                 ->values()
                 ->toArray();
 
-            // Add to the final array with month
             $topIndustriesPerMonth[$month] = $topIndustries;
         }
 
-        // Step 5: Get the overall top 3 industries for the entire year
+
         $overallTopIndustries = collect($overallIndustryCount)
             ->sortDesc()
             ->take(3)
@@ -375,7 +371,7 @@ class JobAdvertisementController extends Controller
             ->values()
             ->toArray();
 
-        // Step 6: Return both results
+
         return response()->json([
             'top_industries_per_month' => $topIndustriesPerMonth,
             'overall_top_industries' => $overallTopIndustries,
@@ -389,12 +385,45 @@ class JobAdvertisementController extends Controller
 
     public function topHiringCompanies()
     {
-        // Logic for top hiring companies will go here
+
+        $currentYear = Carbon::now()->year;
+
+        $startDate = Carbon::create($currentYear, 1, 1)->startOfDay(); // January 1st
+
+        $endDate = Carbon::now()->subMonthNoOverflow()->endOfMonth(); // Last day of the previous month
+
+        $topHiringCompanies = DB::table('applications')
+            ->join('job_advertisements', 'applications.job_advertisement_id', '=', 'job_advertisements.id')
+            ->join('employers', 'job_advertisements.employer_id', '=', 'employers.id')
+            ->select('employers.name', DB::raw('COUNT(applications.id) as total_applications'))
+            ->where('applications.status', 8)
+            ->whereBetween('applications.created_at', [$startDate, $endDate]) // Filter from January to last month
+            ->groupBy('employers.name')
+            ->orderByDesc('total_applications')
+            ->take(3) // Get the top 3 companies
+            ->get();
+
+        return response()->json($topHiringCompanies);
     }
 
     public function locationBasedTrends()
     {
-        // Logic for location-based trends will go here
+        $currentYear = Carbon::now()->year;
+
+        $startDate = Carbon::create($currentYear, 1, 1)->startOfDay(); // January 1st
+
+        $endDate = Carbon::now()->subMonthNoOverflow()->endOfMonth(); // Last day of the previous month
+
+        $topLocationBasedTrends = DB::table('applications')
+            ->select('applications.barangay', DB::raw('COUNT(applications.barangay) as total_barangays'))
+            ->where('applications.status', 8)
+            ->whereBetween('applications.created_at', [$startDate, $endDate]) // Filter from January to last month
+            ->groupBy('applications.barangay')
+            ->orderByDesc('total_barangays')
+            ->take(3) // Get the top 3 companies
+            ->get();
+
+        return response()->json($topLocationBasedTrends);
     }
 
     public function skillBasedTrends()

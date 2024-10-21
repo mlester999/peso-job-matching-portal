@@ -2877,7 +2877,7 @@ Failure to submit all required documents by {$requirementsDeadline} may result i
     {
         $interviewValidate = Request::validate([
             'status' => ['required', 'digits:1'],
-            'notes' => ['nullable', 'string', 'max:255']
+            'notes' => ['required', 'string', 'max:255']
         ]);
 
         $application = Application::findOrFail($id);
