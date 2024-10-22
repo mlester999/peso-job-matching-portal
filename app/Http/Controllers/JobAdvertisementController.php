@@ -79,6 +79,8 @@ class JobAdvertisementController extends Controller
             'years_of_experience' => ['nullable', 'string'],
             'location' => ['nullable', 'string'],
             'industry' => ['nullable', 'string'],
+            'minimum_salary' => ['nullable', 'numeric', 'lt:maximum_salary'], // Ensure min is less than max
+            'maximum_salary' => ['nullable', 'numeric', 'gt:minimum_salary'], // Ensure max is greater than min
         ]);
 
         $data = JobAdvertisement::updateOrCreate(
@@ -92,6 +94,8 @@ class JobAdvertisementController extends Controller
                 'years_of_experience' => $jobPositionValidate['years_of_experience'],
                 'location' => $jobPositionValidate['location'],
                 'industry' => $jobPositionValidate['industry'],
+                'minimum_salary' => $jobPositionValidate['minimum_salary'],
+                'maximum_salary' => $jobPositionValidate['maximum_salary'],
                 'is_draft' => true,
                 'is_active' => 0
             ]
@@ -110,6 +114,8 @@ class JobAdvertisementController extends Controller
             'years_of_experience' => ['nullable', 'string'],
             'location' => ['nullable', 'string'],
             'industry' => ['nullable', 'string'],
+            'minimum_salary' => ['nullable', 'numeric', 'lt:maximum_salary'], // Ensure min is less than max
+            'maximum_salary' => ['nullable', 'numeric', 'gt:minimum_salary'], // Ensure max is greater than min
         ]);
 
         $data = JobAdvertisement::updateOrCreate(
@@ -123,6 +129,8 @@ class JobAdvertisementController extends Controller
                 'years_of_experience' => $jobPositionValidate['years_of_experience'],
                 'location' => $jobPositionValidate['location'],
                 'industry' => $jobPositionValidate['industry'],
+                'minimum_salary' => $jobPositionValidate['minimum_salary'],
+                'maximum_salary' => $jobPositionValidate['maximum_salary'],
                 'is_draft' => true,
                 'is_active' => 0
             ]
@@ -144,6 +152,8 @@ class JobAdvertisementController extends Controller
             'years_of_experience' => ['required', 'string'],
             'location' => ['required', 'string'],
             'industry' => ['required', 'string'],
+            'minimum_salary' => ['nullable', 'numeric', 'lt:maximum_salary'], // Ensure min is less than max
+            'maximum_salary' => ['nullable', 'numeric', 'gt:minimum_salary'], // Ensure max is greater than min
         ]);
 
         JobAdvertisement::create([
@@ -155,6 +165,8 @@ class JobAdvertisementController extends Controller
             'years_of_experience' => $jobPositionValidate['years_of_experience'],
             'location' => $jobPositionValidate['location'],
             'industry' => $jobPositionValidate['industry'],
+            'minimum_salary' => $jobPositionValidate['minimum_salary'],
+            'maximum_salary' => $jobPositionValidate['maximum_salary'],
             'is_draft' => false,
             'is_active' => 1
         ]);
@@ -219,6 +231,8 @@ class JobAdvertisementController extends Controller
             'years_of_experience' => ['required', 'string'],
             'location' => ['required', 'string'],
             'industry' => ['required', 'string'],
+            'minimum_salary' => ['nullable', 'numeric', 'lt:maximum_salary'], // Ensure min is less than max
+            'maximum_salary' => ['nullable', 'numeric', 'gt:minimum_salary'], // Ensure max is greater than min
         ]);
 
         $jobAdvertisement = JobAdvertisement::findOrFail($id);
@@ -249,6 +263,14 @@ class JobAdvertisementController extends Controller
 
         if($jobAdvertisementValidate['industry'] !== $jobAdvertisement->industry) {
             $jobAdvertisement->industry = $jobAdvertisementValidate['industry'];
+        }
+
+        if($jobAdvertisementValidate['minimum_salary'] !== $jobAdvertisement->minimum_salary) {
+            $jobAdvertisement->minimum_salary = $jobAdvertisementValidate['minimum_salary'];
+        }
+
+        if($jobAdvertisementValidate['maximum_salary'] !== $jobAdvertisement->maximum_salary) {
+            $jobAdvertisement->maximum_salary = $jobAdvertisementValidate['maximum_salary'];
         }
 
         if ($jobAdvertisement->is_draft) {
@@ -380,7 +402,50 @@ class JobAdvertisementController extends Controller
 
     public function salaryTrends()
     {
-        // Logic for salary trends will go here
+        $currentYear = Carbon::now()->year;
+        $currentMonth = Carbon::now()->month;
+    
+        // Step 1: Generate a list of months from January to the current month
+        $months = [];
+        for ($month = 1; $month <= $currentMonth; $month++) {
+            $months[] = Carbon::create($currentYear, $month, 1)->format('Y-m'); // e.g. "2024-01", "2024-02"
+        }
+    
+        // Step 2: Query to get average salary per industry per month, filtering out empty industry and zero salaries
+        $averageSalaryChanges = DB::table('job_advertisements')
+            ->select(
+                'industry',
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+                DB::raw('AVG((minimum_salary + maximum_salary) / 2) as average_salary')
+            )
+            ->whereYear('created_at', $currentYear)
+            ->where('industry', '!=', '') // Exclude empty industry
+            ->where(function($query) {
+                // Exclude zero salaries
+                $query->where('minimum_salary', '>', 0)
+                      ->orWhere('maximum_salary', '>', 0);
+            })
+            ->groupBy('industry', 'month')
+            ->orderBy('month')
+            ->get();
+    
+        // Step 3: Format the result to include all months and fill missing data with null
+        $formattedResult = [];
+        foreach ($averageSalaryChanges->groupBy('industry') as $industry => $records) {
+            $industryData = [];
+            foreach ($months as $month) {
+                // Find the record for the current month
+                $record = $records->firstWhere('month', $month);
+                $industryData[] = [
+                    'industry' => $industry,
+                    'month' => $month,
+                    'average_salary' => $record->average_salary ?? null
+                ];
+            }
+            $formattedResult[] = $industryData;
+        }
+    
+        return response()->json($formattedResult);
     }
 
     public function topHiringCompanies()
@@ -428,6 +493,21 @@ class JobAdvertisementController extends Controller
 
     public function skillBasedTrends()
     {
-        // Logic for skill-based trends will go here
+        $currentYear = Carbon::now()->year;
+
+        $startDate = Carbon::create($currentYear, 1, 1)->startOfDay(); // January 1st
+
+        $endDate = Carbon::now()->subMonthNoOverflow()->endOfMonth(); // Last day of the previous month
+
+        $topSkillBasedTrends = DB::table('applications')
+        ->select(DB::raw('JSON_UNQUOTE(JSON_EXTRACT(applications.skills, "$.jobPositionTitle")) as jobPositionTitle'), DB::raw('COUNT(*) as total_skills'))
+        ->where('applications.status', 8)
+        ->whereBetween('applications.created_at', [$startDate, $endDate]) // Filter from January to last month
+        ->groupBy('jobPositionTitle')
+        ->orderByDesc('total_skills')
+        ->take(3) // Get the top 3 skills based on job position title
+        ->get();
+
+    return response()->json($topSkillBasedTrends);
     }
 }

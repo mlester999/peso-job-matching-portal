@@ -8,6 +8,7 @@ import { ref, watch, onBeforeUnmount, onBeforeUpdate } from 'vue';
 import debounce from 'lodash.debounce'
 import { useToast } from 'vue-toastification';
 import AddMoreSkillModal from '@/Components/AddMoreSkillModal.vue';
+import InputField from '@/Components/InputField.vue';
 
 const roles = [
     { id: 'full-time', title: 'Full Time' },
@@ -97,6 +98,8 @@ const form = useForm({
     years_of_experience: "",
     location: "",
     industry: "",
+    minimum_salary: "",
+    maximum_salary: "",
     is_draft: true,
     skillToBeAdd: ''
 });
@@ -320,6 +323,32 @@ onBeforeUnmount(() => {
                                                             {{ industry.text }}
                                                         </option>
                                                     </SelectField>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-span-3">
+                                            <label for="title"
+                                                class="block text-md font-semibold leading-6 text-gray-900">Minimum
+                                                Salary</label>
+                                            <div class="mt-2">
+                                                <div class="sm:max-w-lg">
+                                                    <InputField id="minimum_salary" v-model="form.minimum_salary"
+                                                        type="number" class="sm:max-w-sm" min="0"
+                                                        :error="form.errors.minimum_salary" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-span-3">
+                                            <label for="title"
+                                                class="block text-md font-semibold leading-6 text-gray-900">Maximum
+                                                Salary</label>
+                                            <div class="mt-2">
+                                                <div class="sm:max-w-lg">
+                                                    <InputField id="maximum_salary" v-model="form.maximum_salary"
+                                                        type="number" class="sm:max-w-sm" min="0"
+                                                        :error="form.errors.maximum_salary" />
                                                 </div>
                                             </div>
                                         </div>

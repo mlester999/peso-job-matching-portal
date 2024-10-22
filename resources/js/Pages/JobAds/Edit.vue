@@ -7,6 +7,7 @@ import { Link, router, useForm } from '@inertiajs/vue3';
 import { ref, watch, onBeforeUnmount, onBeforeUpdate } from 'vue';
 import debounce from 'lodash.debounce'
 import { useToast } from 'vue-toastification';
+import InputField from '@/Components/InputField.vue';
 
 const roles = [
     { id: 'full-time', title: 'Full Time' },
@@ -94,6 +95,8 @@ const form = useForm({
     years_of_experience: props.jobAdvertisement.years_of_experience,
     location: props.jobAdvertisement.location,
     industry: props.jobAdvertisement.industry,
+    minimumSalary: props.jobAdvertisement.minimumSalary,
+    maximumSalary: props.jobAdvertisement.maximumSalary,
     is_draft: props.jobAdvertisement.is_draft
 });
 
@@ -297,6 +300,32 @@ onBeforeUnmount(() => {
                                                             {{ industry.text }}
                                                         </option>
                                                     </SelectField>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-span-6">
+                                            <label for="title"
+                                                class="block text-md font-semibold leading-6 text-gray-900">Minimum
+                                                Salary</label>
+                                            <div class="mt-2">
+                                                <div class="sm:max-w-lg">
+                                                    <InputField id="minimumSalary" v-model="form.minimumSalary"
+                                                        type="text" class="sm:max-w-sm"
+                                                        :error="form.errors.minimumSalary" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-span-6">
+                                            <label for="title"
+                                                class="block text-md font-semibold leading-6 text-gray-900">Maximum
+                                                Salary</label>
+                                            <div class="mt-2">
+                                                <div class="sm:max-w-lg">
+                                                    <InputField id="maximumSalary" v-model="form.maximumSalary"
+                                                        type="text" class="sm:max-w-sm"
+                                                        :error="form.errors.maximumSalary" />
                                                 </div>
                                             </div>
                                         </div>

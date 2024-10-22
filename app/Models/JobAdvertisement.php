@@ -19,6 +19,8 @@ class JobAdvertisement extends Model
         'years_of_experience',
         'location',
         'industry',
+        'minimum_salary',
+        'maximum_salary',
         'is_draft',
         'is_active',
     ];

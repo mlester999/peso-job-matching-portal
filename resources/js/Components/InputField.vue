@@ -115,11 +115,13 @@ watch(() => props.modelValue, (newVal) => {
     <div v-if="!isMultiline" class="mt-2 sm:col-span-2 sm:mt-0">
         <p v-if="isContactNumber" class="absolute text-sm mt-2 ml-2">+63</p>
         <input v-if="!isTextArea" :type="props.type" :value="modelValue" @input="handleInput" @keydown="checkDigit"
-            :id="props.id" :placeholder="props.placeholder" :aria-label="props.label" :disabled="props.disabled"
+            :id="props.id" :placeholder="props.placeholder" :aria-label="props.label" :min="props.min"
+            :disabled="props.disabled"
             :class="['block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 disabled:bg-gray-200', props.class, props.isContactNumber ? 'pl-10' : '']" />
 
         <textarea v-else rows="6" :type="props.type" :value="modelValue" @input="handleInput" @keydown="checkDigit"
-            :id="props.id" :placeholder="props.placeholder" :aria-label="props.label" :disabled="props.disabled"
+            :id="props.id" :placeholder="props.placeholder" :aria-label="props.label" :min="props.min"
+            :disabled="props.disabled"
             :class="['block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 disabled:bg-gray-200', props.class, props.isContactNumber ? 'pl-10' : '']" />
 
         <p v-if="props.error" class="text-red-500 text-sm mt-2">
