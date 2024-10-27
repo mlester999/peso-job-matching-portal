@@ -50,7 +50,7 @@ Route::get('/dashboard', function () {
         $jobAdvertisementCount = JobAdvertisement::where('employer_id', $authUser->employer->id)->where('is_active', 1)->count();
 
         $qualifiedApplicants = Applicant::whereHas('applications', function ($query) {
-                $query->where('status', 6);
+                $query->where('status', 8);
             })->get();
         $disqualifiedApplicants = Applicant::whereHas('applications', function ($query) {
             $query->where('status', 0);
@@ -61,7 +61,7 @@ Route::get('/dashboard', function () {
         foreach ($qualifiedApplicants as $applicant) {
             foreach ($applicant->applications as $application) {
                 if ($application->jobAdvertisement) {
-                    if ($application->status == 6 && $application->jobAdvertisement->employer_id === $authUser->employer->id) {
+                    if ($application->status == 8 && $application->jobAdvertisement->employer_id === $authUser->employer->id) {
                         // Assuming 'created_at' is the date field for each application.
                         $month = Carbon::parse($application->created_at)->month;
     

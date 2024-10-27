@@ -301,6 +301,48 @@ const matchedJobSkills = computed(() => {
 
             <div class="mt-10 overflow-hidden bg-white shadow sm:rounded-lg">
                 <div class="px-4 py-6 sm:px-6">
+                    <h3 class="text-base font-semibold leading-7 text-gray-900">List of Credentials</h3>
+                    <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">This section showcases an individual's
+                        official certifications, licenses, educational qualifications, and other recognized credentials
+                        that validate their expertise and skills in their professional field.</p>
+                </div>
+                <div v-for="(credential, index) in JSON.parse(props.application.list_of_credentials)"
+                    class="border-t border-gray-100">
+                    <dl class="divide-y divide-gray-100">
+                        <div v-if="index" v class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-900"></dt>
+                        </div>
+                        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-900">Certification Name</dt>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{
+                                credential.certificationName ? credential.certificationName : "N/A" }}
+                            </dd>
+                        </div>
+                        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-900">Certifying Agency</dt>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{
+                                credential.certifyingAgency ? credential.certifyingAgency : "N/A" }}
+                            </dd>
+                        </div>
+                        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-900">Location</dt>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{
+                                credential.location ? credential.location : "N/A" }}
+                            </dd>
+                        </div>
+                        <div v-if="credential.dateOfObtainment"
+                            class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-900">Date of Obtainment</dt>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{
+                                formattedDate(credential.dateOfObtainment) }}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="mt-10 overflow-hidden bg-white shadow sm:rounded-lg">
+                <div class="px-4 py-6 sm:px-6">
                     <h3 class="text-base font-semibold leading-7 text-gray-900">Skills & Profession</h3>
                     <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">This section highlights an
                         individual’s key abilities, competencies, and professional expertise.</p>
