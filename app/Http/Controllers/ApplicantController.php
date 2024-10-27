@@ -3449,6 +3449,74 @@ PESO Cabuyao";
             return response()->json(['message' => 'Work Experience updated successfully'], 201);
         }
 
+        // Submit the list of credentials of the applicant
+        public function submitListOfCredentials(\Illuminate\Http\Request $request, $id)
+        {
+            $input = $request->all();
+
+            // Replace null values with empty strings
+            array_walk_recursive($input, function (&$item) {
+                $item = $item === null ? '' : $item;
+            });
+
+            $validator = Validator::make($input, [
+                '*.certificationName' => 'nullable|string|max:255',
+                '*.certifyingAgency' => 'nullable|string|max:255',
+                '*.dateOfObtainment' => 'nullable|date',
+                '*.location' => 'nullable|string|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $applicant = Applicant::findOrFail($id);
+
+            $application = Application::where(['applicant_id' => $applicant->id])
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+            $validatedData = $validator->validated();
+
+            $application->list_of_credentials = json_encode($validatedData);
+    
+            $application->save();
+
+            return response()->json(['message' => 'Credentials updated successfully'], 201);
+        }
+
+        // Update the list of credentials of the applicant
+        public function updateListOfCredentials(\Illuminate\Http\Request $request, $id)
+        {
+            $input = $request->all();
+
+            // Replace null values with empty strings
+            array_walk_recursive($input, function (&$item) {
+                $item = $item === null ? '' : $item;
+            });
+
+            $validator = Validator::make($input, [
+                '*.certificationName' => 'nullable|string|max:255',
+                '*.certifyingAgency' => 'nullable|string|max:255',
+                '*.dateOfObtainment' => 'nullable|date',
+                '*.location' => 'nullable|string|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            $application = Application::findOrFail($id);
+
+            $validatedData = $validator->validated();
+
+            $application->list_of_credentials = json_encode($validatedData);
+    
+            $application->save();
+
+            return response()->json(['message' => 'Credentials updated successfully'], 201);
+        }
+
          // Submit the skills of the applicant
          public function submitSkills(\Illuminate\Http\Request $request, $id)
          { 

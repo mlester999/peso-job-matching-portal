@@ -22,6 +22,7 @@ class Application extends Model
         'zip_code',
         'education',
         'work_experience',
+        'list_of_credentials',
         'skills',
         'status',
         'is_draft',

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('zip_code')->nullable();
             $table->json('education')->nullable();
             $table->json('work_experience')->nullable();
+            $table->json('list_of_credentials')->nullable();
             $table->json('skills')->nullable();
             $table->tinyInteger('status');
             $table->tinyInteger('is_draft')->nullable();

@@ -62,6 +62,7 @@ Route::put('verify-contact-number/{id}', [ApplicantController::class, 'verifyCon
 Route::post('submit-personal-information/{id}', [ApplicantController::class, 'submitPersonalInformation']);
 Route::post('submit-educational-background/{id}', [ApplicantController::class, 'submitEducationalBackground']);
 Route::post('submit-work-experience/{id}', [ApplicantController::class, 'submitWorkExperience']);
+Route::post('submit-list-of-credentials/{id}', [ApplicantController::class, 'submitListOfCredentials']);
 Route::post('submit-skills/{id}', [ApplicantController::class, 'submitSkills']);
 Route::post('confirm-onboarding/{id}', [ApplicantController::class, 'confirmOnboarding']);
 
@@ -69,6 +70,7 @@ Route::post('confirm-onboarding/{id}', [ApplicantController::class, 'confirmOnbo
 Route::put('update-personal-information/{id}', [ApplicantController::class, 'updatePersonalInformation']);
 Route::put('update-educational-background/{id}', [ApplicantController::class, 'updateEducationalBackground']);
 Route::put('update-work-experience/{id}', [ApplicantController::class, 'updateWorkExperience']);
+Route::put('update-list-of-credentials/{id}', [ApplicantController::class, 'updateListOfCredentials']);
 Route::put('update-skills/{id}', [ApplicantController::class, 'updateSkills']);
 
 // Portal user
