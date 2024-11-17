@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('employer_id')->references('id')->on('employers')->nullable();
             $table->text('title');
             $table->text('description');
+            $table->tinyInteger('is_viewed')->nullable();
             $table->timestamps();
         });
     }

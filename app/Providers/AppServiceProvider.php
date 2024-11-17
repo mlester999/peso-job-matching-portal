@@ -42,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if ($this->app->environment('production')) {
+            \URL::forceScheme('https');
+        }
+        
         $configPath = dirname(__DIR__, 1) . '/Semaphore/config/semaphore.php';
 
         $this->publishes([$configPath => App::configPath('semaphore.php')], 'config');

@@ -21,9 +21,10 @@ return new class extends Migration
             $table->string('years_of_experience')->nullable();
             $table->string('location')->nullable();
             $table->string('industry')->nullable();
-            $table->integer('minimumSalary')->nullable();
-            $table->integer('maximumSalary')->nullable();
+            $table->integer('minimum_salary')->nullable();
+            $table->integer('maximum_salary')->nullable();
             $table->boolean('is_draft')->nullable();
+            $table->boolean('is_active')->nullable();
             $table->timestamps();
         });
     }

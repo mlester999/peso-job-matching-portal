@@ -26,7 +26,7 @@ return new class extends Migration
             $table->json('work_experience')->nullable();
             $table->json('list_of_credentials')->nullable();
             $table->json('skills')->nullable();
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->nullable();
             $table->tinyInteger('is_draft')->nullable();
             $table->timestamps();
         });
