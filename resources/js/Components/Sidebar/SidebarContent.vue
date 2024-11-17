@@ -30,10 +30,10 @@ import { ArchiveIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, C
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="Applications" :href="route('admin.applications.index')"
-                :active="route().current('admin.applications.index')">
+            <SidebarLink title="Monitoring" :href="route('admin.monitoring.index')"
+                :active="route().current('admin.monitoring.index')">
                 <template #icon>
-                    <UserGroupIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                    <BriefcaseIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
             </SidebarLink>
 
@@ -74,17 +74,17 @@ import { ArchiveIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, C
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="Requirements" :href="route('employer.requirements.indexRequirements')"
-                :active="route().current('employer.requirements.indexRequirements')">
-                <template #icon>
-                    <NewspaperIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
-                </template>
-            </SidebarLink>
-
             <SidebarLink title="Qualified" :href="route('employer.qualified.indexForQualified')"
                 :active="route().current('employer.qualified.indexForQualified')">
                 <template #icon>
                     <ClipboardCheckIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                </template>
+            </SidebarLink>
+
+            <SidebarLink title="Requirements" :href="route('employer.requirements.indexRequirements')"
+                :active="route().current('employer.requirements.indexRequirements')">
+                <template #icon>
+                    <NewspaperIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
                 </template>
             </SidebarLink>
 
@@ -102,7 +102,7 @@ import { ArchiveIcon, UserCircleIcon, UsersIcon, UserGroupIcon, BriefcaseIcon, C
                 </template>
             </SidebarLink>
 
-            <SidebarLink title="Disqualified" :href="route('employer.disqualified.indexForDisqualified')"
+            <SidebarLink title="Not Qualified" :href="route('employer.disqualified.indexForDisqualified')"
                 :active="route().current('employer.disqualified.indexForDisqualified')">
                 <template #icon>
                     <ArchiveIcon class="flex-shrink-0 w-6 h-6" aria-hidden="true" />

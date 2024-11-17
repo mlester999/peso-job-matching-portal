@@ -56,13 +56,13 @@ watch(
 </script>
 
 <template>
-    <AuthenticatedLayout title="Disqualified">
+    <AuthenticatedLayout title="Not Qualified">
         <template #header>
             <div class="px-4">
                 <div class="sm:flex sm:items-center my-4">
                     <div class="sm:flex-auto">
                         <h2 class="text-xl font-semibold leading-tight">
-                            Disqualified
+                            Not Qualified
                         </h2>
                         <!-- <p class="mt-2 text-sm text-gray-700">A list of all the applications in this portal including
                             their
@@ -160,7 +160,7 @@ watch(
                                         <tr v-if="applications.data.length === 0">
                                             <td colspan="11"
                                                 class="whitespace-nowrap text-center py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                No Disqualified Found</td>
+                                                No Not Qualified Found</td>
                                         </tr>
                                     </tbody>
                                 </table>

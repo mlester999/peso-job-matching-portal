@@ -21,7 +21,7 @@ defineProps({
         <div style="transition-property: margin; transition-duration: 150ms" :class="[
             'min-h-screen flex flex-col',
             {
-                'lg:ml-64': sidebarState.isOpen,
+                'lg:ml-64': sidebarState.isOpen || sidebarState.isHovered,
                 'md:ml-16': !sidebarState.isOpen,
             },
         ]">

@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\JobPositionController;
+use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\JobAdvertisementController;
 use App\Models\User;
 use App\Models\Employer;
@@ -243,6 +244,10 @@ Route::middleware([
             Route::put('/update-for-deployed/{id}', [ApplicantController::class, 'updateForDeployed'])->name('updateForDeployed');
     
             Route::delete('/delete/{id}', [ApplicantController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'monitoring', 'as' => 'monitoring.'], function() {
+            Route::get('/', [MonitoringController::class, 'index'])->name('index');
         });
 
         Route::group(['prefix' => 'job-positions', 'as' => 'job-positions.'], function() {

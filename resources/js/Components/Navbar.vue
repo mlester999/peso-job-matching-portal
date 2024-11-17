@@ -45,11 +45,11 @@ const page = usePage()
         },
     ]">
         <div class="flex items-center gap-2">
-            <Button iconOnly variant="secondary" type="button" @click="() => { toggleDarkMode() }"
+            <!-- <Button iconOnly variant="secondary" type="button" @click="() => { toggleDarkMode() }"
                 v-slot="{ iconSizeClasses }" class="md:hidden" srText="Toggle dark mode">
                 <MoonIcon v-show="!isDark" aria-hidden="true" :class="iconSizeClasses" />
                 <SunIcon v-show="isDark" aria-hidden="true" :class="iconSizeClasses" />
-            </Button>
+            </Button> -->
         </div>
         <div class="flex items-center gap-2">
             <Button iconOnly variant="secondary" type="button" @click="toggleFullScreen" v-slot="{ iconSizeClasses }"
@@ -108,9 +108,9 @@ const page = usePage()
             'translate-y-0': scrolling.up,
         },
     ]">
-        <Button iconOnly variant="secondary" type="button" v-slot="{ iconSizeClasses }" srText="Search">
+        <!-- <Button iconOnly variant="secondary" type="button" v-slot="{ iconSizeClasses }" srText="Search">
             <SearchIcon aria-hidden="true" :class="iconSizeClasses" />
-        </Button>
+        </Button> -->
 
         <Link :href="route('dashboard')">
         <ApplicationLogo class="w-10 h-10" />

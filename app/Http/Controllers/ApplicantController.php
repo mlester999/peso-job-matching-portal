@@ -926,7 +926,7 @@ class ApplicantController extends Controller
 
             $applications = Application::query()
             ->with('applicant')
-            ->where('status', 4)
+            ->where('status', 5)
             // ->whereHas('applications', function ($query) {
             //     $query->where('status', 1);
             // })
@@ -1047,7 +1047,7 @@ class ApplicantController extends Controller
         } else {
             $applications = Application::query()
             ->with('applicant')
-            ->where('status', 4)
+            ->where('status', 5)
             // ->whereHas('applications', function ($query) {
             //     $query->where('status', 1);
             // })
@@ -1176,7 +1176,7 @@ class ApplicantController extends Controller
 
             $applications = Application::query()
             ->with('applicant')
-            ->where('status', 5)
+            ->where('status', 6)
             // ->whereHas('applications', function ($query) {
             //     $query->where('status', 1);
             // })
@@ -1297,7 +1297,7 @@ class ApplicantController extends Controller
         } else {
             $applications = Application::query()
             ->with('applicant')
-            ->where('status', 5)
+            ->where('status', 6)
             // ->whereHas('applications', function ($query) {
             //     $query->where('status', 1);
             // })
@@ -1426,7 +1426,7 @@ class ApplicantController extends Controller
 
             $applications = Application::query()
             ->with('applicant')
-            ->where('status', 6)
+            ->where('status', 4)
             // ->whereHas('applications', function ($query) {
             //     $query->where('status', 1);
             // })
@@ -1547,7 +1547,7 @@ class ApplicantController extends Controller
         } else {
             $applications = Application::query()
             ->with('applicant')
-            ->where('status', 6)
+            ->where('status', 4)
             // ->whereHas('applications', function ($query) {
             //     $query->where('status', 1);
             // })

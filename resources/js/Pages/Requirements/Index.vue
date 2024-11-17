@@ -64,13 +64,13 @@ watch(
 </script>
 
 <template>
-    <AuthenticatedLayout title="For Requirements">
+    <AuthenticatedLayout title="Requirements">
         <template #header>
             <div class="px-4">
                 <div class="sm:flex sm:items-center my-4">
                     <div class="sm:flex-auto">
                         <h2 class="text-xl font-semibold leading-tight">
-                            For Requirements
+                            Requirements
                         </h2>
                         <!-- <p class="mt-2 text-sm text-gray-700">A list of all the applications in this portal including
                             their

@@ -31,4 +31,9 @@ class Employer extends Model
     {
         return $this->hasMany(JobAdvertisement::class);
     }
+
+    public function jobAdvertisementsApplications()
+    {
+        return $this->hasManyThrough(Application::class, JobAdvertisement::class, 'employer_id', 'job_advertisement_id');
+    }
 }

@@ -60,12 +60,12 @@ const formattedDate = (date) => {
 </script>
 
 <template>
-    <AuthenticatedLayout title="View Disqualified">
+    <AuthenticatedLayout title="View Not Qualified">
         <template #header>
             <div class="space-y-12 sm:space-y-16 px-4">
                 <div>
                     <h2 class="text-xl font-semibold leading-tight">
-                        View Disqualified
+                        View Not Qualified
                     </h2>
                     <div class="mt-10 overflow-hidden bg-white shadow sm:rounded-lg">
                         <div class="px-4 py-6 sm:px-6">
