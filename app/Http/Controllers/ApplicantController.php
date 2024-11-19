@@ -3771,11 +3771,11 @@ PESO Cabuyao";
             $user = Applicant::findOrFail($id)->user;
             $user->email_verified_at = now();
 
-            // Application::create([
-            //     'applicant_id' => $applicant->id,
-            //     'status' => 1,
-            //     'is_draft' => 1
-            // ]);
+            Application::create([
+                'applicant_id' => $applicant->id,
+                'status' => 1,
+                'is_draft' => 1
+            ]);
 
             $user->save();
             return response()->json(['message' => 'Email address verified successfully'], 201);
