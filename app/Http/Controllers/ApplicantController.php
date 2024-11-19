@@ -3741,11 +3741,18 @@ PESO Cabuyao";
             $applicant = Applicant::findOrFail($id);
             $applicant->contact_number_verified_at = now();
 
-            Application::create([
-                'applicant_id' => $applicant->id,
-                'status' => 1,
-                'is_draft' => 1
-            ]);
+            try {
+                Application::create([
+                    'applicant_id' => $applicant->id,
+                    'status' => 1,
+                    'is_draft' => 1,
+                ]);
+            } catch (\Exception $e) {
+                // Log the error message and trace
+                Log::error('Application creation failed: ' . $e->getMessage());
+                Log::error($e->getTraceAsString());
+                return response()->json(['error' => 'An error occurred. Check logs for details.'], 500);
+            }
 
             $applicant->save();
             return response()->json(['message' => 'Contact number verified successfully'], 201);
