@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000'],
+    'allowed_origins' => ['http://localhost:3000', 'https://peso-job-matching-website-8p2ng.ondigitalocean.app'],
 
     'allowed_origins_patterns' => [],
 

@@ -33,7 +33,7 @@ class ResetPasswordMail extends Mailable
 
     public function build()
     {
-        $frontendUrl = 'http://localhost:3000/reset-password'; // Frontend URL
+        $frontendUrl = 'https://peso-job-matching-website-8p2ng.ondigitalocean.app/reset-password'; // Frontend URL
         $resetLink = $frontendUrl . '?token=' . $this->token . '&email=' . $this->email;
 
         return $this->markdown('mail.reset-password')
