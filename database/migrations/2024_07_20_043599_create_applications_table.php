@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_id')->references('id')->on('applicants');
-            $table->foreignId('job_advertisement_id')->references('id')->on('job_advertisements')->nullable();
+            $table->foreignId('job_advertisement_id')->nullable()->references('id')->on('job_advertisements')->nullable();
             $table->string('birth_date')->nullable();
             $table->string('sex')->nullable();
             $table->string('province')->nullable();

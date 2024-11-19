@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Semaphore\Facades\Semaphore;
@@ -3742,18 +3741,11 @@ PESO Cabuyao";
             $applicant = Applicant::findOrFail($id);
             $applicant->contact_number_verified_at = now();
 
-            try {
-                Application::create([
-                    'applicant_id' => $applicant->id,
-                    'status' => 1,
-                    'is_draft' => 1,
-                ]);
-            } catch (\Exception $e) {
-                // Log the error message and trace
-                Log::error('Application creation failed: ' . $e->getMessage());
-                Log::error($e->getTraceAsString());
-                return response()->json(['error' => 'An error occurred. Check logs for details.'], 500);
-            }
+            Application::create([
+                'applicant_id' => $applicant->id,
+                'status' => 1,
+                'is_draft' => 1
+            ]);
 
             $applicant->save();
             return response()->json(['message' => 'Contact number verified successfully'], 201);
