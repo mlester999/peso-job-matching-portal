@@ -32,7 +32,7 @@ const getCancelLink = computed(() => {
 const truncate = (text) => {
     return text.length > 20 ? text.substring(0, 20) + '...' : text;
 };
-
+console.log('page.props.auth.user.employer: ', page.props.auth.user.employer)
 const activeJobAds = computed(() => {
     return page.props.auth.user.employer.job_advertisements.filter(job => job.is_active === 1)
 })
