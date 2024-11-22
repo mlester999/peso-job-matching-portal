@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('last_name'); 
             $table->string('contact_number')->nullable();
-            $table->unsignedInteger('contact_number_verified_at')->nullable();
+            $table->timestamp('contact_number_verified_at')->nullable();
             $table->timestamps();
         });
     }
