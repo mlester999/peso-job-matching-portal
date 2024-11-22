@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_id')->references('id')->on('applicants');
-            $table->foreignId('employer_id')->references('id')->on('employers')->nullable();
-            $table->text('title');
-            $table->text('description');
+            $table->foreignId('employer_id')->nullable()->references('id')->on('employers')->nullable();
+            $table->text('title')->nullable();
+            $table->text('description')->nullable();
             $table->tinyInteger('is_viewed')->nullable();
             $table->timestamps();
         });
