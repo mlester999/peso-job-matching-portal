@@ -139,12 +139,13 @@ class MonitoringController extends Controller
         ->with('applicant.user')
         ->when($searchReq, function($query, $search) {
             $query->where(function ($query) use ($search) {
-                $query->whereHas('user', function ($query) use ($search) {
+                $query->whereHas('applicant.user', function ($query) use ($search) {
                     $query->whereRaw('LOWER(email) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(contact_number) LIKE LOWER(?)', ['%' . $search . '%']);
-                })
-                        ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
-                        ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+                })->orWhereHas('applicant', function ($query) use ($search) {
+                    $query->whereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
+                    ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
+                });
             });
 
             // Use this if we like to perform a case-insensitive and approximate matching search
