@@ -73,8 +73,8 @@ class ApplicantController extends Controller
             ->when($classificationReq, function($query, $search) {
                 $query->whereRaw("
                 (work_experience IS NOT NULL AND 
-                jsonb_array_length(work_experience) > 0 AND 
-                LOWER((work_experience ->> (jsonb_array_length(work_experience) - 1)::text || '.industry')) LIKE ?)", 
+                jsonb_array_length(work_experience::jsonb) > 0 AND 
+                LOWER((work_experience::jsonb ->> (jsonb_array_length(work_experience::jsonb) - 1)::text || '.industry')) LIKE ?)", 
                 ['%' . strtolower($search) . '%']
             );
             })
@@ -255,8 +255,8 @@ class ApplicantController extends Controller
             ->when($classificationReq, function($query, $search) {
                 $query->whereRaw("
                 (work_experience IS NOT NULL AND 
-                jsonb_array_length(work_experience) > 0 AND 
-                LOWER((work_experience ->> (jsonb_array_length(work_experience) - 1)::text || '.industry')) LIKE ?)", 
+                jsonb_array_length(work_experience::jsonb) > 0 AND 
+                LOWER((work_experience::jsonb ->> (jsonb_array_length(work_experience::jsonb) - 1)::text || '.industry')) LIKE ?)", 
                 ['%' . strtolower($search) . '%']
             );
             })
