@@ -71,9 +71,11 @@ class ApplicantController extends Controller
                     LOWER(skills->>'skills') LIKE ?", 
                     ['%' . strtolower($search) . '%']
                 );
+                // if mysql = orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.skills'))) LIKE ?", ['%' . strtolower($search) . '%']);
                 });
             })
             ->when($classificationReq, function($query, $search) {
+                // if mysql = $query->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(work_experience, CONCAT('$[', JSON_LENGTH(work_experience) - 1, '].industry')))) LIKE ?", ['%' . strtolower($search) . '%']
                 $query->whereRaw("
                 (work_experience IS NOT NULL AND 
                 jsonb_array_length(work_experience::jsonb) > 0 AND 
@@ -85,6 +87,7 @@ class ApplicantController extends Controller
                 $query->whereRaw('LOWER(barangay) LIKE ?', ['%' . strtolower($search) . '%']);
             })
             ->when($jobPositionReq, function($query, $search) {
+                // if mysql = $query->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.jobPositionTitle'))) LIKE ?", ['%' . strtolower($search) . '%']);
                 $query->whereRaw("
                 LOWER(skills->>'jobPositionTitle') LIKE ?", 
                 ['%' . strtolower($search) . '%']

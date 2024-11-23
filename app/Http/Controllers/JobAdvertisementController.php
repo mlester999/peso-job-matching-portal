@@ -334,7 +334,9 @@ class JobAdvertisementController extends Controller
     {
         $currentYear = Carbon::now()->year;
 
-        $jobAdvertisements = JobAdvertisement::select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'), 'industry')
+        // if mysql = DATE_FORMAT(created_at, "%Y-%m") as month
+
+        $jobAdvertisements = JobAdvertisement::select(DB::raw(`TO_CHAR(created_at, 'YYYY-MM') AS month`), 'industry')
             ->where('is_draft', 0)
             ->where('is_active', 1)
             ->whereYear('created_at', $currentYear) // Filter for the current year
@@ -410,12 +412,14 @@ class JobAdvertisementController extends Controller
         for ($month = 1; $month <= $currentMonth; $month++) {
             $months[] = Carbon::create($currentYear, $month, 1)->format('Y-m'); // e.g. "2024-01", "2024-02"
         }
+
+        // if mysql = DATE_FORMAT(created_at, "%Y-%m") as month
     
         // Step 2: Query to get average salary per industry per month, filtering out empty industry and zero salaries
         $averageSalaryChanges = DB::table('job_advertisements')
             ->select(
                 'industry',
-                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+                DB::raw(`TO_CHAR(created_at, 'YYYY-MM') AS month`),
                 DB::raw('AVG((minimum_salary + maximum_salary) / 2) as average_salary')
             )
             ->whereYear('created_at', $currentYear)
@@ -499,8 +503,10 @@ class JobAdvertisementController extends Controller
 
         $endDate = Carbon::now()->subMonthNoOverflow()->endOfMonth(); // Last day of the previous month
 
+        // if mysql = JSON_UNQUOTE(JSON_EXTRACT(applications.skills, "$.jobPositionTitle")) as jobPositionTitle
+
         $topSkillBasedTrends = DB::table('applications')
-        ->select(DB::raw('JSON_UNQUOTE(JSON_EXTRACT(applications.skills, "$.jobPositionTitle")) as jobPositionTitle'), DB::raw('COUNT(*) as total_skills'))
+        ->select(DB::raw(`applications.skills->>'jobPositionTitle' AS jobPositionTitle`), DB::raw('COUNT(*) as total_skills'))
         ->where('applications.status', 8)
         ->whereBetween('applications.created_at', [$startDate, $endDate]) // Filter from January to last month
         ->groupBy('jobPositionTitle')
