@@ -67,7 +67,10 @@ class ApplicantController extends Controller
                         })
                         ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
-                    })->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.skills'))) LIKE ?", ['%' . strtolower($search) . '%']);
+                    })->orWhereRaw("
+                    LOWER(skills->>'skills') LIKE ?", 
+                    ['%' . strtolower($search) . '%']
+                );
                 });
             })
             ->when($classificationReq, function($query, $search) {
@@ -82,7 +85,10 @@ class ApplicantController extends Controller
                 $query->whereRaw('LOWER(barangay) LIKE ?', ['%' . strtolower($search) . '%']);
             })
             ->when($jobPositionReq, function($query, $search) {
-                    $query->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.jobPositionTitle'))) LIKE ?", ['%' . strtolower($search) . '%']);
+                $query->whereRaw("
+                LOWER(skills->>'jobPositionTitle') LIKE ?", 
+                ['%' . strtolower($search) . '%']
+            );
             })
             ->when($listedTimeReq, function($query, $search) {
                 switch (strtolower($search)) {
@@ -249,7 +255,10 @@ class ApplicantController extends Controller
                         })
                         ->orWhereRaw('LOWER(first_name) LIKE LOWER(?)', ['%' . $search . '%'])
                         ->orWhereRaw('LOWER(last_name) LIKE LOWER(?)', ['%' . $search . '%']);
-                    })->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.skills'))) LIKE ?", ['%' . strtolower($search) . '%']);
+                    })->orWhereRaw("
+                    LOWER(skills->>'skills') LIKE ?", 
+                    ['%' . strtolower($search) . '%']
+                );
                 });
             })
             ->when($classificationReq, function($query, $search) {
@@ -264,7 +273,10 @@ class ApplicantController extends Controller
                 $query->whereRaw('LOWER(barangay) LIKE ?', ['%' . strtolower($search) . '%']);
             })
             ->when($jobPositionReq, function($query, $search) {
-                $query->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(skills, '$.jobPositionTitle'))) LIKE ?", ['%' . strtolower($search) . '%']);
+                $query->whereRaw("
+                    LOWER(skills->>'jobPositionTitle') LIKE ?", 
+                    ['%' . strtolower($search) . '%']
+                );
         })
             ->when($listedTimeReq, function($query, $search) {
                 switch (strtolower($search)) {
