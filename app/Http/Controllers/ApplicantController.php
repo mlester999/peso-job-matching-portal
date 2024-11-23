@@ -71,10 +71,11 @@ class ApplicantController extends Controller
                 });
             })
             ->when($classificationReq, function($query, $search) {
-                    $query->whereRaw("
-                    LOWER(JSON_UNQUOTE(JSON_EXTRACT(work_experience, CONCAT('$[', JSON_LENGTH(work_experience) - 1, '].industry')))) LIKE ?", 
-                    ['%' . strtolower($search) . '%']
-                );
+                $query->whereRaw("
+                (JSON_LENGTH(work_experience) > 0 AND 
+                LOWER(JSON_UNQUOTE(JSON_EXTRACT(work_experience, CONCAT('$[', JSON_LENGTH(work_experience) - 1, '].industry')))) LIKE ?)", 
+                ['%' . strtolower($search) . '%']
+            );
             })
             ->when($locationReq, function($query, $search) {
                 $query->whereRaw('LOWER(barangay) LIKE ?', ['%' . strtolower($search) . '%']);
@@ -252,9 +253,8 @@ class ApplicantController extends Controller
             })
             ->when($classificationReq, function($query, $search) {
                 $query->whereRaw("
-                (work_experience IS NOT NULL AND 
-                jsonb_array_length(work_experience) > 0 AND 
-                LOWER((work_experience ->> (jsonb_array_length(work_experience) - 1)::text || '.industry')) LIKE ?)", 
+                (JSON_LENGTH(work_experience) > 0 AND 
+                LOWER(JSON_UNQUOTE(JSON_EXTRACT(work_experience, CONCAT('$[', JSON_LENGTH(work_experience) - 1, '].industry')))) LIKE ?)", 
                 ['%' . strtolower($search) . '%']
             );
             })
